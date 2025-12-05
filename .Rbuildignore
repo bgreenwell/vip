@@ -3,6 +3,7 @@
 ^\.github$
 ^_pkgdown\.yml$
 ^codecov\.yml$
+^CLAUDE\.md$
 ^CRAN-COMMENTS\.md$
 ^data-raw$
 ^docs$

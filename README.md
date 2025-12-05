@@ -1,10 +1,10 @@
-# vip: Variable Importance Plots 
+# vip: Variable Importance Plots
 
 <div align="center">
   <img src="man/figures/logo-vip.png" width="200" height="230" />
-  
-  **🔍 Make your ML models more interpretable with beautiful variable importance plots**
-  
+
+  **Make your ML models more interpretable with beautiful variable importance plots**
+
   [![CRAN Status](https://www.r-pkg.org/badges/version/vip)](https://cran.r-project.org/package=vip)
   [![R-CMD-check](https://github.com/koalaverse/vip/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/koalaverse/vip/actions/workflows/R-CMD-check.yaml)
   [![Codecov](https://codecov.io/gh/koalaverse/vip/graph/badge.svg)](https://app.codecov.io/github/koalaverse/vip?branch=main)
@@ -15,22 +15,20 @@
 
 ---
 
-## 🚀 What is vip?
+## Overview
 
-**vip** provides a unified framework for constructing **variable importance plots** from virtually any machine learning model in R. Stop juggling different `importance()` functions across packages – `vip` gives you **one consistent interface** for interpretable ML.
+**vip** provides a unified framework for constructing variable importance plots from virtually any machine learning model in R. Instead of juggling different `importance()` functions across packages, vip gives you one consistent interface for interpretable ML.
 
-### ✨ Key features
+### Key features
 
-- **Universal interface**: Works with 40+ model types from different packages
-- **Multiple methods**: Model-specific, permutation, SHAP, and variance-based importance
-- **Beautiful plots**: Publication-ready visualizations with ggplot2
-- **Efficient algorithms**: Optimized with parallel processing support
-- **Extensible design**: Easy to add support for new model types
-- **Well-documented**: Comprehensive guides and academic backing
+- Universal interface that works with 40+ model types from different packages
+- Multiple methods: model-specific, permutation, SHAP, and variance-based importance
+- Publication-ready visualizations with ggplot2
+- Optimized algorithms with parallel processing support
+- Easy to add support for new model types
+- Comprehensive guides and academic backing
 
-## 🛠️ Quick start
-
-### Installation
+## Installation
 
 ```r
 # Install from CRAN (stable)
@@ -41,7 +39,7 @@ install.packages("vip")
 pak::pak("koalaverse/vip")
 ```
 
-### 30-second example
+## Quick start
 
 ```r
 library(vip)
@@ -65,7 +63,7 @@ print(vi_scores)
 vip(model)
 ```
 
-## 🎯 Supported methods
+## Supported methods
 
 | Method | Description | Use case | Function |
 |--------|-------------|----------|----------|
@@ -74,7 +72,7 @@ vip(model)
 | **Shapley values** | Game theory attribution | Detailed explanations | `vi(model, method = "shap")` |
 | **Variance-based** | FIRM approach | Feature ranking | `vi(model, method = "firm")` |
 
-## 🔧 Supported models (40+)
+## Supported models
 
 **Tree-based models**
 - [randomForest](https://cran.r-project.org/package=randomForest) • [ranger](https://cran.r-project.org/package=ranger) • [xgboost](https://cran.r-project.org/package=xgboost) • [lightgbm](https://cran.r-project.org/package=lightgbm) • [gbm](https://cran.r-project.org/package=gbm) • [C50](https://cran.r-project.org/package=C50) • [Cubist](https://cran.r-project.org/package=Cubist) • [rpart](https://cran.r-project.org/package=rpart) • [party](https://cran.r-project.org/package=party) • [partykit](https://cran.r-project.org/package=partykit)
@@ -91,7 +89,7 @@ vip(model)
 **Specialized models**
 - [pls](https://cran.r-project.org/package=pls) • [mixOmics](https://bioconductor.org/packages/mixOmics/) (Bioconductor) • And many more...
 
-## 🏃‍♂️ Advanced examples
+## Advanced examples
 
 ### Permutation importance with custom metrics
 
@@ -145,7 +143,7 @@ vip(vi_shap, geom = "col", aesthetics = list(fill = "steelblue", alpha = 0.8)) +
   theme_light()
 ```
 
-## 🤝 Contributing and development
+## Contributing
 
 We welcome contributions! Here's how to get involved:
 
@@ -157,7 +155,6 @@ git clone https://github.com/koalaverse/vip.git
 cd vip
 
 # Open in RStudio or your favorite editor
-# The project includes a comprehensive CLAUDE.md development guide
 ```
 
 ### Testing framework
@@ -176,7 +173,7 @@ tinytest::run_test_file("inst/tinytest/test_vip.R")
 
 1. **Check issues**: Look for [good first issues](https://github.com/koalaverse/vip/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 2. **Create branch**: `git checkout -b feature/awesome-feature`
-3. **Write tests**: Follow TDD principles (see `CLAUDE.md`)
+3. **Write tests**: Follow TDD principles 
 4. **Run checks**: `R CMD check` and tests
 5. **Submit PR**: With clear description
 
@@ -198,31 +195,11 @@ vi_model.your_model_class <- function(object, ...) {
 }
 ```
 
-See `CLAUDE.md` for detailed instructions!
+## Getting help
 
-## 📚 Learning resources
+- Bug reports: [GitHub Issues](https://github.com/koalaverse/vip/issues)
 
-- **[Package website](https://koalaverse.github.io/vip/)** - Comprehensive documentation
-- **[R Journal paper](https://doi.org/10.32614/RJ-2020-013)** - Academic foundation
-- **[IML book](https://christophm.github.io/interpretable-ml-book/)** - Theory background
-- **[Development guide](CLAUDE.md)** - Contributing guidelines
-
-## ✨ What's new in v0.4.1
-
-- ✅ **ggplot2 S7 compatibility** - Future-proof plotting
-- **lightgbm support** - Popular gradient boosting
-- **Enhanced yardstick integration** - Better metrics
-- **Improved documentation** - Clearer examples
-
-See [NEWS.md](NEWS.md) for complete version history and migration notes.
-
-## 🆘 Getting help
-
-- **Bug reports**: [GitHub Issues](https://github.com/koalaverse/vip/issues)
-- **Feature requests**: [GitHub Discussions](https://github.com/koalaverse/vip/discussions)
-- **Questions**: [Stack Overflow](https://stackoverflow.com/questions/tagged/vip) (tag: `vip`)
-
-## 📄 Citation
+## Citation
 
 If you use vip in your research, please cite:
 
@@ -239,16 +216,14 @@ If you use vip in your research, please cite:
 }
 ```
 
-## 📜 License
+## License
 
 GPL (>= 2) © [Brandon M. Greenwell](https://github.com/bgreenwell), [Brad Boehmke](https://github.com/bradleyboehmke)
 
 ---
 
 <div align="center">
-  
-**⭐ Star us on GitHub if vip helps make your models more interpretable! ⭐**
 
-*Built with ❤️ by the [koalaverse](https://github.com/koalaverse) team*
+*Built by the [koalaverse](https://github.com/koalaverse) team*
 
 </div>

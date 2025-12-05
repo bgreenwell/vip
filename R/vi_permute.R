@@ -88,7 +88,7 @@
 #'
 #' @param parallelize_by Character string specifying whether to parallelize
 #' across features (`parallelize_by = "features"`) or repetitions
-#' (`parallelize_by = "reps"`); the latter is only useful whenever
+#' (`parallelize_by = "repetitions"`); the latter is only useful whenever
 #' `nsim > 1`. Default is `"features"`.
 #'
 #' @param ... Additional optional arguments to be passed on to
@@ -470,7 +470,7 @@ vi_permute.default <- function(
   `%do.reps%` <- `%do.features%` <- `%do%`
   if (isTRUE(parallel)) {
     parallelize_by <- match.arg(parallelize_by)
-    if (parallelize_by == "reps") {
+    if (parallelize_by == "repetitions") {
       if (nsim == 1) {
         warning("Parallelizing across repititions only works when `nsim > 1`.",
                 call. = FALSE)

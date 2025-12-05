@@ -4,23 +4,17 @@
 \name{titanic_mice}
 \alias{titanic_mice}
 \title{Survival of Titanic passengers}
-\format{
-An object of class \code{mild} (inherits from \code{list}) of length 21.
-}
 \source{
 Greenwell, Brandon M. (2022). Tree-Based Methods for Statistical Learning in
 R. CRC Press.
-}
-\usage{
-titanic_mice
 }
 \description{
 The \link{titanic} data set contains 263 missing values (i.e., \code{NA}'s) in the
 \code{age} column. This version of the data contains imputed values for the
 \code{age} column using \emph{multivariate imputation by chained equations} via
 the \href{https://cran.r-project.org/package=mice}{mice} package. Consequently,
-this is a list containing 11 imputed versions of the observations containd
-in the \link{titanic} data frame; each completed data sets has the same dimension
+this is a list containing 11 imputed versions of the observations contained
+in the \link{titanic} data frame; each completed data set has the same dimension
 and column structure as \link{titanic}.
 }
 \keyword{datasets}

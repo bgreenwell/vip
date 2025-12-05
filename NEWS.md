@@ -1,3 +1,37 @@
+# vip 0.4.3
+
+## Fixed
+
+* Fixed ggplot class testing for ggplot2 S7 compatibility [(#162)](https://github.com/koalaverse/vip/issues/162). Replaced hardcoded class checks with `ggplot2::is_ggplot()` to ensure forward compatibility with ggplot2's upcoming S7 transition.
+
+* Fixed CRAN warnings by updating arXiv citation to DOI format and removing unnecessary `LazyData` field from DESCRIPTION.
+
+## Changed
+
+* Updated branch references from `master` to `main` throughout the package to align with modern git naming conventions [(#164)](https://github.com/koalaverse/vip/pull/164).
+  - Updated GitHub Actions workflows to trigger on `main` branch
+  - Updated codecov badge link in README
+  - Fixed GitHub links in vignettes to point to `main` branch
+
+* Refined README style and documentation:
+  - Converted all headings to sentence case for consistency
+  - Reduced emoji usage in content while keeping them in section headers
+  - Added canonical CRAN hyperlinks to all package references
+  - Improved overall clarity and professional appearance
+
+## Added
+
+* Added comprehensive CLAUDE.md development guide with:
+  - Detailed TDD workflow and testing patterns
+  - Style guidelines emphasizing sentence case and minimal emoji usage
+  - ggplot2 S7 compatibility guidance
+  - R package best practices and quality assurance checklists
+
+## Removed
+
+* Removed recognition section from README that contained inaccurate statistics.
+
+
 # vip 0.4.1
 
 ## Changed
@@ -75,7 +109,7 @@
 
 ## Miscellaneous
 
-* Change http://spark.rstudio.com/mlib/ to https://spark.rstudio.com/mlib/ in NEWS.md.
+* Change http://spark.rstudio.com/mlib/ to https://spark.posit.co/mlib/ in NEWS.md.
 
 * Remove unnecessary codecov.yml file.
 
@@ -94,7 +128,7 @@
 
 * Switched from Travis-CI to GitHub Actions for continuous integration.
 
-* Added a CITATION file and PDF-based vignette based off of the published article in [The R Journal](https://journal.r-project.org/archive/2020/RJ-2020-013/index.html) [(#109)](https://github.com/koalaverse/vip/issues/109).
+* Added a CITATION file and PDF-based vignette based off of the published article in [The R Journal](https://journal.r-project.org/articles/RJ-2020-013/index.html) [(#109)](https://github.com/koalaverse/vip/issues/109).
 
 * Switch from `tibble::as.tibble()`---which was deprecated in [tibble](https://github.com/tidyverse/tibble) 2.0.0---to `tibble::as_tibble()` in a few function calls [(#101)](https://github.com/koalaverse/vip/issues/101).
 
@@ -239,7 +273,7 @@ grid.arrange(p1, p2, p3, p4, nrow = 2)
 
 * New vignette on using `vip` with unsupported models (using the Keras API to TensorFlow as an example).
 
-* Added basic [sparklyr](https://spark.rstudio.com/mlib/) support.
+* Added basic [sparklyr](https://spark.posit.co/mlib/) support.
 
 
 # vip 0.1.0

@@ -118,7 +118,7 @@ provided. Note that \code{set.seed()} will not not work with
 
 \item{parallelize_by}{Character string specifying whether to parallelize
 across features (\code{parallelize_by = "features"}) or repetitions
-(\code{parallelize_by = "reps"}); the latter is only useful whenever
+(\code{parallelize_by = "repetitions"}); the latter is only useful whenever
 \code{nsim > 1}. Default is \code{"features"}.}
 }
 \value{

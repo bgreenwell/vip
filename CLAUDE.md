@@ -256,24 +256,76 @@ expect_true(inherits(p, "ggplot"))  # fallback option
 - **🔬 Multiple Methods**: Model-specific, permutation, SHAP  # Same issues
 ```
 
-## Development Commands
+## Development Workflow
 
-### Essential R CMD Commands
-```bash
-# Check package
-R CMD check vip_*.tar.gz --as-cran
+The modern R package development workflow uses **devtools** and **usethis** to streamline common tasks. Always ensure devtools is loaded in interactive sessions:
 
-# Build package
-R CMD build .
-
-# Install package
-R CMD INSTALL .
-
-# Generate documentation
-Rscript -e "roxygen2::roxygenise()"
+```r
+# Add to ~/.Rprofile for automatic loading
+if (interactive()) {
+  require("devtools", quietly = TRUE)
+  # automatically attaches usethis
+}
 ```
 
-### Testing Commands
+### Core Development Cycle
+
+The iterative development workflow follows this pattern:
+
+```
+Edit code → load_all() → Run tests → document() → check()
+   ↓            ↓            ↓            ↓          ↓
+ R files    Run code    tinytest    Update     Full
+           locally      suite        docs      checks
+```
+
+### Essential devtools Commands
+
+**Keyboard shortcuts shown for RStudio**
+
+#### Load and Develop
+```r
+# Load all package code (Ctrl/Cmd + Shift + L)
+devtools::load_all()
+# This simulates installing and loading the package
+# Much faster than build + install during development
+```
+
+#### Documentation
+```r
+# Rebuild docs and NAMESPACE (Ctrl/Cmd + Shift + D)
+devtools::document()
+
+# Check documentation with spell check
+devtools::spell_check()
+```
+
+#### Check and Validate
+```r
+# Check complete package (Ctrl/Cmd + Shift + E)
+devtools::check()
+
+# Check with CRAN settings
+devtools::check(cran = TRUE)
+```
+
+#### Build and Install
+```r
+# Build source package (.tar.gz)
+devtools::build()
+
+# Build binary package
+devtools::build(binary = TRUE)
+
+# Install package locally
+devtools::install()
+
+# Install with vignettes
+devtools::install(build_vignettes = TRUE)
+```
+
+### Testing with tinytest
+
 ```r
 # Run all tests
 tinytest::test_package("vip")
@@ -283,18 +335,73 @@ tinytest::run_test_file("inst/tinytest/test_vi_firm.R")
 
 # Test with coverage
 covr::package_coverage()
-
-# Test examples in documentation
-R CMD check --run-donttest --run-dontrun
 ```
 
-### Linting and Style
+### Package Setup (One-Time)
+
+```r
+# Initialize version control
+usethis::use_git()
+
+# Connect to GitHub
+usethis::use_github()
+
+# Set up continuous integration
+usethis::use_github_action("check-standard")
+
+# Set up pkgdown website
+usethis::use_pkgdown_github_pages()
+```
+
+### Creating New Components
+
+```r
+# Create new R file
+usethis::use_r("file-name")
+
+# Create new test file (creates in inst/tinytest/)
+usethis::use_test("file-name")
+
+# Create vignette
+usethis::use_vignette("vignette-name")
+
+# Create article (website only)
+usethis::use_article("article-name")
+
+# Add package dependency
+usethis::use_package("packagename", type = "Imports")
+usethis::use_package("packagename", type = "Suggests")
+```
+
+### Alternative: R CMD Commands
+
+For advanced users or CI/CD pipelines, traditional R CMD commands are available:
+
+```bash
+# Build source package
+R CMD build .
+
+# Check package (CRAN standards)
+R CMD check vip_*.tar.gz --as-cran
+
+# Install package
+R CMD INSTALL .
+
+# Generate documentation (alternative to devtools::document())
+Rscript -e "roxygen2::roxygenise()"
+```
+
+### Code Quality Tools
+
 ```r
 # Check code style
 lintr::lint_package()
 
 # Format code (if using styler)
 styler::style_pkg()
+
+# Check for potential issues
+goodpractice::gp()
 ```
 
 ## Adding New Model Support

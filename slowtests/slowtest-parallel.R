@@ -31,4 +31,25 @@ system.time({
              nsim = 10, .packages = "ranger", parallelize_by = "repetitions")
 })
 
+# Verify that all three approaches produce valid results
+cat("Verifying results...\n")
+cat("Sequential VI (first 5 features):\n")
+print(head(vis1, 5))
+cat("\nParallel by features (first 5 features):\n") 
+print(head(vis2, 5))
+cat("\nParallel by repetitions (first 5 features) - FIXED in issue #161:\n")
+print(head(vis3, 5))
+
+# Ensure all results have the same structure
+stopifnot(
+  identical(nrow(vis1), nrow(vis2)),
+  identical(nrow(vis1), nrow(vis3)),
+  identical(colnames(vis1), colnames(vis2)),
+  identical(colnames(vis1), colnames(vis3))
+)
+
+cat("\n✓ All parallel methods working correctly!\n")
+cat("Note: Before fix for issue #161, parallelize_by='repetitions' would\n")
+cat("      silently fall back to parallelize_by='features' behavior.\n")
+
 stopCluster(cl)

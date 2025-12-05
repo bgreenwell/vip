@@ -204,3 +204,69 @@ expect_error(  # need to set `smalle_is_better` for non built-in metrics
   vi(rfo_t3_prob, method = "permute", target = "survived", metric = brier,
      pred_wrapper = pfun_prob, nsim = 10)
 )
+
+
+################################################################################
+#
+# Parallel processing tests
+#
+################################################################################
+
+# Test parallel processing with features (default behavior)
+set.seed(1234)
+vis_parallel_features <- vi_permute(
+  object = rfo_f1,
+  target = "y",
+  metric = "rmse",
+  pred_wrapper = pfun,
+  nsim = 5,
+  parallel = TRUE,
+  parallelize_by = "features"
+)
+expectations_f1(vis_parallel_features)
+
+# Test parallel processing with repetitions 
+set.seed(1234)
+vis_parallel_reps <- vi_permute(
+  object = rfo_f1,
+  target = "y", 
+  metric = "rmse",
+  pred_wrapper = pfun,
+  nsim = 5,
+  parallel = TRUE,
+  parallelize_by = "repetitions"
+)
+expectations_f1(vis_parallel_reps)
+
+# Test that results are similar between parallel methods (should be identical with same seed)
+expect_equal(vis_parallel_features, vis_parallel_reps, tolerance = 1e-6)
+
+# Test warning when trying to parallelize by repetitions with nsim = 1
+expect_warning(
+  vi_permute(
+    object = rfo_f1,
+    target = "y",
+    metric = "rmse", 
+    pred_wrapper = pfun,
+    nsim = 1,
+    parallel = TRUE,
+    parallelize_by = "repetitions"
+  ),
+  "Parallelizing across repititions only works when `nsim > 1`"
+)
+
+# Test that non-parallel results match parallel results structure
+set.seed(1234)
+vis_sequential <- vi_permute(
+  object = rfo_f1,
+  target = "y",
+  metric = "rmse",
+  pred_wrapper = pfun,
+  nsim = 5,
+  parallel = FALSE
+)
+expectations_f1(vis_sequential)
+
+# Verify all results have same structure and variables
+expect_identical(vis_parallel_features$Variable, vis_sequential$Variable)
+expect_identical(vis_parallel_reps$Variable, vis_sequential$Variable)
