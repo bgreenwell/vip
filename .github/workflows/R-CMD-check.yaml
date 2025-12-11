@@ -14,6 +14,9 @@ jobs:
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
+    # Allow R-devel failures (bleeding edge, dependencies may break)
+    continue-on-error: ${{ matrix.config.r == 'devel' }}
+
     strategy:
       fail-fast: false
       matrix:
