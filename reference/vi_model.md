@@ -165,12 +165,12 @@ American Statistician, 48:3, 209-213, DOI:
 - lambda:
 
   Numeric value for the penalty parameter of a
-  [glmnet](https://rdrr.io/pkg/glmnet/man/glmnet.html) model (this is
-  equivalent to the `s` argument in
-  [coef.glmnet](https://rdrr.io/pkg/glmnet/man/predict.glmnet.html)).
+  [glmnet](https://glmnet.stanford.edu/reference/glmnet.html) model
+  (this is equivalent to the `s` argument in
+  [coef.glmnet](https://glmnet.stanford.edu/reference/predict.glmnet.html)).
   See the section on
-  [glmnet](https://rdrr.io/pkg/glmnet/man/glmnet.html) in the details
-  below.
+  [glmnet](https://glmnet.stanford.edu/reference/glmnet.html) in the
+  details below.
 
 - ncomp:
 
@@ -232,23 +232,23 @@ class of `object`:
   [summary.cubist](http://topepo.github.io/Cubist/reference/summary.cubist.md)
   and [varImp](https://rdrr.io/pkg/caret/man/varImp.html) for details.
 
-- [glmnet](https://rdrr.io/pkg/glmnet/man/glmnet.html) - Similar to
-  (generalized) linear models, the absolute value of the coefficients
+- [glmnet](https://glmnet.stanford.edu/reference/glmnet.html) - Similar
+  to (generalized) linear models, the absolute value of the coefficients
   are returned for a specific model. It is important that the features
   (and hence, the estimated coefficients) be standardized prior to
   fitting the model. You can specify which coefficients to return by
   passing the specific value of the penalty parameter via the `lambda`
   argument (this is equivalent to the `s` argument in
-  [coef.glmnet](https://rdrr.io/pkg/glmnet/man/predict.glmnet.html)). By
-  default, `lambda = NULL` and the coefficients corresponding to the
+  [coef.glmnet](https://glmnet.stanford.edu/reference/predict.glmnet.html)).
+  By default, `lambda = NULL` and the coefficients corresponding to the
   final penalty value in the sequence are returned; in other words, you
   should ALWAYS SPECIFY `lambda`! For
-  [cv.glmnet](https://rdrr.io/pkg/glmnet/man/cv.glmnet.html) objects,
-  the largest value of lambda such that the error is within one standard
-  error of the minimum is used by default. For a multinomial response,
-  the coefficients corresponding to the first class are used; that is,
-  the first component of
-  [coef.glmnet](https://rdrr.io/pkg/glmnet/man/predict.glmnet.html).
+  [cv.glmnet](https://glmnet.stanford.edu/reference/cv.glmnet.html)
+  objects, the largest value of lambda such that the error is within one
+  standard error of the minimum is used by default. For a multinomial
+  response, the coefficients corresponding to the first class are used;
+  that is, the first component of
+  [coef.glmnet](https://glmnet.stanford.edu/reference/predict.glmnet.html).
 
 - [cforest](https://rdrr.io/pkg/partykit/man/cforest.html) - Variable
   importance is measured in a way similar to those computed by
