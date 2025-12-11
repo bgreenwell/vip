@@ -1,12 +1,11 @@
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) {
+  exit_file("Skip on CRAN")
+}
+
 # Exits
 if (!requireNamespace("ranger", quietly = TRUE)) {
   exit_file("Package 'ranger' missing")
 }
-
-# # Load required packages
-# suppressMessages({
-#   library(ranger)
-# })
 
 # Generate Friedman benchmark data
 friedman1 <- gen_friedman(seed = 101)

@@ -1,3 +1,7 @@
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) {
+  exit_file("Skip on CRAN")
+}
+
 # Exits
 if (!requireNamespace("earth", quietly = TRUE)) {
   exit_file("Package 'earth' missing")

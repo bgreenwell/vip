@@ -1,3 +1,7 @@
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) {
+  exit_file("Skip on CRAN")
+}
+
 # Exits
 if (!requireNamespace("caret", quietly = TRUE)) {
   exit_file("Package 'caret' missing")
@@ -5,12 +9,6 @@ if (!requireNamespace("caret", quietly = TRUE)) {
 if (!requireNamespace("Cubist", quietly = TRUE)) {
   exit_file("Package 'Cubist' missing")
 }
-
-# # Load required packages
-# suppressMessages({
-#   library(caret)
-#   library(Cubist)
-# })
 
 # Generate Friedman benchmark data
 friedman1 <- gen_friedman(seed = 101)

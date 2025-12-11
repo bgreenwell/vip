@@ -1,12 +1,10 @@
+# Skip on CRAN releases FIRST (Bioconductor dependency complexity)
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) exit_file("Skip on CRAN")
+
 # Exits
 if (!requireNamespace("mixOmics", quietly = TRUE)) {
   exit_file("Bioconductor package 'mixOmics' missing")
 }
-
-# # Load required packages
-# suppressMessages({
-#   library(mixOmics)
-# })
 
 # Generate Friedman benchmark data
 friedman1 <- gen_friedman(seed = 101)

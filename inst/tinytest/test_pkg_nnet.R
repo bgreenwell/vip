@@ -1,3 +1,7 @@
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) {
+  exit_file("Skip on CRAN")
+}
+
 # Exits
 if (!requireNamespace("nnet", quietly = TRUE)) {
   exit_file("Package 'nnet' missing")
@@ -5,12 +9,6 @@ if (!requireNamespace("nnet", quietly = TRUE)) {
 if (!requireNamespace("NeuralNetTools", quietly = TRUE)) {
   exit_file("Package 'NeuralNetTools' missing")
 }
-
-# # Load required packages
-# suppressMessages({
-#   library(nnet)
-#   library(NeuralNetTools)
-# })
 
 # Generate Friedman benchmark data
 friedman1 <- gen_friedman(seed = 101)

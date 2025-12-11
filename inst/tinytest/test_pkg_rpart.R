@@ -1,12 +1,11 @@
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) {
+  exit_file("Skip on CRAN")
+}
+
 # Exits
 if (!requireNamespace("rpart", quietly = TRUE)) {
   exit_file("Package 'rpart' missing")
 }
-
-# # Load required packages
-# suppressMessages({
-#   library(rpart)
-# })
 
 # Generate Friedman benchmark data
 friedman1 <- gen_friedman(seed = 101)

@@ -1,12 +1,11 @@
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) {
+  exit_file("Skip on CRAN")
+}
+
 # Exits
 if (!requireNamespace("C50", quietly = TRUE)) {
   exit_file("Package 'C50' missing")
 }
-
-# # Load required packages
-# suppressMessages({
-#   library(C50)
-# })
 
 # Generate Friedman benchmark data
 friedman2 <- gen_friedman(seed = 101, n_bins = 2)

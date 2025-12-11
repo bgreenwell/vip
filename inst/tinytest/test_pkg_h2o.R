@@ -1,9 +1,9 @@
+# Skip on CRAN releases FIRST to avoid h2o initialization issues
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) exit_file("Skip on CRAN")
+
 # Exits
 if (!requireNamespace("h2o", quietly = TRUE)) {
   exit_file("Package 'h2o' missing")
-}
-if (length(unclass(packageVersion("vip"))[[1L]]) %in% c(3, 4)) {
-  exit_file("Skip h2o tests for CRAN releases")
 }
 
 # Load required packages

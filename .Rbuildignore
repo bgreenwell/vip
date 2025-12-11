@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
+^\.planning$
 ^_pkgdown\.yml$
 ^codecov\.yml$
 ^CLAUDE\.md$

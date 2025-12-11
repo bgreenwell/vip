@@ -318,7 +318,7 @@ vi_permute.default <- function(
   #        "Please install it.", call. = FALSE)
   # }
 
-  # FIXEME: Is there a better way to fix this?
+  # FIXME: Is there a better way to fix this?
   #
   # ❯ checking R code for possible problems ... NOTE
   # vi_permute.default: no visible binding for global variable ‘j’
@@ -326,10 +326,6 @@ vi_permute.default <- function(
   #   j
   i <- j <- NULL
 
-  # # Try to extract feature names if not supplied
-  # if (is.null(feature_names)) {
-  #   feature_names <- get_feature_names(object)
-  # }
 
   # Try to extract training data if not supplied
   if (is.null(train)) {
@@ -439,16 +435,6 @@ vi_permute.default <- function(
       }
       ys_metric[["metric_fun"]]
     }
-
-    # FIXME: How to handle this with new `yardstick` integration?
-    # # Determine reference class (binary classification only)
-    # if (is.null(reference_class) && metric %in% c("auc", "logloss")) {
-    #   stop("Please specify the reference class via the `reference_class` ",
-    #        "argument when using \"auc\" or \"logloss\".")
-    # }
-    # if (!is.null(reference_class) && metric %in% c("auc", "logloss")) {
-    #   train_y <- ifelse(train_y == reference_class, yes = 1, no = 0)
-    # }
 
   }
 

@@ -11,6 +11,9 @@ pfun_prob <- function(object, newdata) {  # probability estimation
   predict(object, data = newdata)$predictions[, "yes"]  # P(survived|x)
 }
 
+# Load package data
+data("titanic_mice")
+
 # Read in data sets
 f1 <-  gen_friedman(seed = 101)  # regression
 t3 <- titanic_mice[[1L]]  # classification

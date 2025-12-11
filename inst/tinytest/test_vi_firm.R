@@ -4,6 +4,9 @@ exit_if_not(
   requireNamespace("ranger", quietly = TRUE)
 )
 
+# Load package data
+data("titanic_mice")
+
 # Use one of the available (imputed) versions of the Titanic data
 titanic <- titanic_mice[[1L]]
 

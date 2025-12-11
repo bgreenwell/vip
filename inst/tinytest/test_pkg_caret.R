@@ -1,12 +1,12 @@
+# Skip on CRAN releases FIRST (large dependency tree prone to version conflicts)
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) {
+  exit_file("Skip on CRAN")
+}
+
 # Exits
 if (!requireNamespace("caret", quietly = TRUE)) {
   exit_file("Package 'caret' missing")
 }
-
-# # Load required packages
-# suppressMessages({
-#   library(caret)
-# })
 
 # Generate Friedman benchmark data
 friedman1 <- gen_friedman(seed = 101)

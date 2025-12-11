@@ -1,12 +1,13 @@
+# Skip on CRAN releases FIRST (platform-specific compilation issues)
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) exit_file("Skip on CRAN")
+
 # Exits
 if (!requireNamespace("lightgbm", quietly = TRUE)) {
   exit_file("Package 'lightgbm' missing")
 }
 
-# # Load required packages
-# suppressMessages({
-#   library(lightgbm)
-# })
+# Load package data
+data("titanic_mice")
 
 # Basic example using imputed titanic data set
 t3 <- titanic_mice[[1L]]

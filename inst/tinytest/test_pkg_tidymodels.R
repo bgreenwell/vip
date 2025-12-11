@@ -1,3 +1,6 @@
+# Skip on CRAN releases FIRST (meta-package with 80+ dependency tree)
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) exit_file("Skip on CRAN")
+
 # Exits
 if (!requireNamespace("ranger", quietly = TRUE)) {
   exit_file("Package 'ranger' missing")
@@ -6,11 +9,6 @@ if (!requireNamespace("tidymodels", quietly = TRUE)) {
   exit_file("Package 'tidymodels' missing")
 }
 
-# Load required packages
-#suppressMessages({
-#  library(ranger)
-#  library(tidymodels)
-#})
 
 
 # FIXME: Switch to data set where we know the actual ranking of the features in

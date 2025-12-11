@@ -1,3 +1,6 @@
+# Skip on CRAN releases FIRST to avoid loading mlr3 namespace (conflicts with mlr)
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) exit_file("Skip on CRAN")
+
 # Exits
 if (!requireNamespace("mlr3", quietly = TRUE)) {
   exit_file("Package 'mlr3' missing")
@@ -8,13 +11,6 @@ if (!requireNamespace("mlr3learners", quietly = TRUE)) {
 if (!requireNamespace("ranger", quietly = TRUE)) {
   exit_file("Package 'ranger' missing")
 }
-
-# Load required packages
-#suppressMessages({
-#  library(mlr3)
-#  library(mlr3learners)
-#  library(ranger)
-#})
 
 # Generate Friedman benchmark data
 friedman1 <- gen_friedman(seed = 101)

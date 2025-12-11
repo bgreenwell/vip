@@ -1,3 +1,7 @@
+if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) {
+  exit_file("Skip on CRAN")
+}
+
 # Exits
 if (!requireNamespace("party", quietly = TRUE)) {
   exit_file("Package 'party' missing")

@@ -319,12 +319,6 @@ vi_model.default <- function(object, ...) {
 #' @export
 vi_model.C5.0 <- function(object, type = c("usage", "splits"), ...) {
 
-  # # Check for dependency
-  # if (!requireNamespace("C50", quietly = TRUE)) {
-  #   stop("Package \"C50\" needed for this function to work. Please ",
-  #        "install it.", call. = FALSE)
-  # }
-
   # Determine which type of variable importance to compute
   type <- match.arg(type)
 
@@ -353,12 +347,6 @@ vi_model.C5.0 <- function(object, type = c("usage", "splits"), ...) {
 #'
 #' @export
 vi_model.train <- function(object, ...) {
-
-  # # Check for dependency
-  # if (!requireNamespace("caret", quietly = TRUE)) {
-  #   stop("Package \"caret\" needed for this function to work. Please ",
-  #        "install it.", call. = FALSE)
-  # }
 
   # Construct model-specific variable importance scores
   vis <- caret::varImp(object, ...)
@@ -421,12 +409,6 @@ vi_model.cubist <- function(object, ...) {
 #' @export
 vi_model.earth <- function(object, type = c("nsubsets", "rss", "gcv"), ...) {
 
-  # # Check for dependency
-  # if (!requireNamespace("earth", quietly = TRUE)) {
-  #   stop("Package \"earth\" needed for this function to work. Please ",
-  #        "install it.", call. = FALSE)
-  # }
-
   # Determine which type of variable importance to compute
   type <- match.arg(type)
 
@@ -456,7 +438,7 @@ vi_model.earth <- function(object, type = c("nsubsets", "rss", "gcv"), ...) {
 #'
 #' @export
 vi_model.gbm <- function(object, type = c("relative.influence", "permutation"),
-                         ...) {
+  ...) {
 
   # # Check for dependency
   # if (!requireNamespace("gbm", quietly = TRUE)) {
@@ -500,7 +482,6 @@ vi_model.gbm <- function(object, type = c("relative.influence", "permutation"),
 vi_model.glmnet <- function(object, lambda = NULL, ...) {
 
   # Extract coefficients
-  #s <- list(...)$s
   if (is.null(lambda)) {
     lambda <- min(object$lambda)
   }
@@ -677,9 +658,6 @@ vi_model.lgb.Booster <- function(object, type = c("gain", "cover", "frequency"),
   # Construct model-specific variable importance scores
   imp <- lightgbm::lgb.importance(model = object, ...)
   names(imp) <- tolower(names(imp))
-  # if ("weight" %in% names(imp)) {
-  #   type <- "weight"  # gblinear
-  # }
   vis <- tibble::as_tibble(imp)[, c("feature", type)]
   tib <- tibble::tibble(
     "Variable" = vis$feature,
@@ -1007,7 +985,6 @@ vi_model.mvr <- function(object, ...) {
 #'
 #' @export
 vi_model.mixo_pls <- function(object, ncomp = NULL, ...) {
-
   # Check for dependency
   if (!requireNamespace("mixOmics", quietly = TRUE)) {
     stop("Bioconductor package \"mixOmics\" needed for this function to work. ",
