@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">vip</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -131,7 +131,7 @@
 <span></span>
 <span><span class="co"># Fit a GBM</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">102</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="va">bst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
+<span><span class="va">bst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.matrix.html" class="external-link">data.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">trn</span>, select <span class="op">=</span> <span class="op">-</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  label <span class="op">=</span> <span class="va">trn</span><span class="op">$</span><span class="va">y</span>,</span>
 <span>  objective <span class="op">=</span> <span class="st">"reg:squarederror"</span>,</span>
@@ -660,7 +660,7 @@
 <span></span>
 <span><span class="co"># Fit an XGBoost model; hyperparameters were tuned using 5-fold CV</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">859</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="va">bst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span><span class="va">X</span>, label <span class="op">=</span> <span class="va">trn</span><span class="op">$</span><span class="va">y</span>, nrounds <span class="op">=</span> <span class="fl">338</span>, max_depth <span class="op">=</span> <span class="fl">3</span>, eta <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span><span class="va">bst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span><span class="va">X</span>, label <span class="op">=</span> <span class="va">trn</span><span class="op">$</span><span class="va">y</span>, nrounds <span class="op">=</span> <span class="fl">338</span>, max_depth <span class="op">=</span> <span class="fl">3</span>, eta <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>               verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Construct VIP (Figure 17)</span></span>
@@ -788,7 +788,7 @@ Goldstein, Alex, Adam Kapelner, Justin Bleich, and Emil Pitkin. 2015. <span>“P
 Greenwell, Brandon. 2019. <em>Fastshap: Fast Approximate Shapley Values</em>. <a href="https://github.com/bgreenwell/fastshap" class="external-link">https://github.com/bgreenwell/fastshap</a>.
 </div>
 <div id="ref-pdp2017" class="csl-entry">
-Greenwell, Brandon M. 2017. <span>“Pdp: An r Package for Constructing Partial Dependence Plots.”</span> <em>The R Journal</em> 9 (1): 421–36. <a href="https://journal.r-project.org/archive/2017/RJ-2017-016/index.html" class="external-link">https://journal.r-project.org/archive/2017/RJ-2017-016/index.html</a>.
+Greenwell, Brandon M. 2017. <span>“Pdp: An r Package for Constructing Partial Dependence Plots.”</span> <em>The R Journal</em> 9 (1): 421–36. <a href="https://journal.r-project.org/articles/RJ-2017-016/" class="external-link">https://journal.r-project.org/articles/RJ-2017-016/</a>.
 </div>
 <div id="ref-RJ-2020-013" class="csl-entry">
 Greenwell, Brandon M., and Bradley C. Boehmke. 2020. <span>“<span class="nocase">Variable Importance Plots—An Introduction to the vip Package</span>.”</span> <em><span>The R Journal</span></em> 12 (1): 343–66. <a href="https://doi.org/10.32614/RJ-2020-013" class="external-link">https://doi.org/10.32614/RJ-2020-013</a>.
@@ -893,7 +893,7 @@ Scholbeck, Christian A., Christoph Molnar, Christian Heumann, Bernd Bischl, and 
 Strobl, Carolin, Anne-Laure Boulesteix, Thomas Kneib, Thomas Augustin, and Achim Zeileis. 2008. <span>“Conditional Variable Importance for Random Forests.”</span> <em>BMC Bioinformatics</em> 9 (1): 307. <a href="https://doi.org/10.1186/1471-2105-9-307" class="external-link">https://doi.org/10.1186/1471-2105-9-307</a>.
 </div>
 <div id="ref-party2007a" class="csl-entry">
-Strobl, Carolin, Anne-Laure Boulesteix, Achim Zeileis, and Torsten Hothorn. 2007. <span>“Bias in Random Forest Variable Importance Measures: Illustrations, Sources and a Solution.”</span> <em>BMC Bioinformatics</em> 8 (25). <a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-8-25" class="external-link">https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-8-25</a>.
+Strobl, Carolin, Anne-Laure Boulesteix, Achim Zeileis, and Torsten Hothorn. 2007. <span>“Bias in Random Forest Variable Importance Measures: Illustrations, Sources and a Solution.”</span> <em>BMC Bioinformatics</em> 8 (25). <a href="https://link.springer.com/article/10.1186/1471-2105-8-25" class="external-link">https://link.springer.com/article/10.1186/1471-2105-8-25</a>.
 </div>
 <div id="ref-strumbelj-2014-explaining" class="csl-entry">
 Štrumbelj, Erik, and Igor Kononenko. 2014. <span>“Explaining Prediction Models and Individual Predictions with Feature Contributions.”</span> <em>Knowledge and Information Systems</em> 31 (3): 647–65. <a href="https://doi.org/10.1007/s10115-013-0679-x" class="external-link">https://doi.org/10.1007/s10115-013-0679-x</a>.
@@ -924,7 +924,7 @@ Zien, Alexander, Nicole Kraemer, Soeren Sonnenburg, and Gunnar Raetsch. 2009. <s
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

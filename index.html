@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">vip</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,39 +52,30 @@
 </h1></div>
 <div align="center">
 <p><img src="reference/figures/logo-vip.png" width="200" height="230"></p>
-<p><strong>🔍 Make your ML models more interpretable with beautiful variable importance plots</strong></p>
+<p><strong>Make your ML models more interpretable with beautiful variable importance plots</strong></p>
 <p><a href="https://cran.r-project.org/package=vip" class="external-link"><img src="https://www.r-pkg.org/badges/version/vip" alt="CRAN Status"></a> <a href="https://github.com/koalaverse/vip/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/koalaverse/vip/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://app.codecov.io/github/koalaverse/vip?branch=main" class="external-link"><img src="https://codecov.io/gh/koalaverse/vip/graph/badge.svg" alt="Codecov"></a> <a href="https://cran.r-project.org/package=vip/" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/vip" alt="CRAN Downloads"></a> <a href="https://doi.org/10.32614/RJ-2020-013" class="external-link"><img src="https://img.shields.io/badge/The%20R%20Journal-10.32614%2FRJ--2020--013-brightgreen" alt="R Journal"></a> <a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></p>
 </div>
 <hr>
 <div class="section level2">
-<h2 id="id_-what-is-vip">🚀 What is vip?<a class="anchor" aria-label="anchor" href="#id_-what-is-vip"></a>
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p><strong>vip</strong> provides a unified framework for constructing <strong>variable importance plots</strong> from virtually any machine learning model in R. Stop juggling different <code><a href="http://imbs-hl.github.io/ranger/reference/importance.ranger.html" class="external-link">importance()</a></code> functions across packages – <code>vip</code> gives you <strong>one consistent interface</strong> for interpretable ML.</p>
+<p><strong>vip</strong> provides a unified framework for constructing variable importance plots from virtually any machine learning model in R. Instead of juggling different <code><a href="http://imbs-hl.github.io/ranger/reference/importance.ranger.html" class="external-link">importance()</a></code> functions across packages, vip gives you one consistent interface for interpretable ML.</p>
 <div class="section level3">
-<h3 id="id_-key-features">✨ Key features<a class="anchor" aria-label="anchor" href="#id_-key-features"></a>
+<h3 id="key-features">Key features<a class="anchor" aria-label="anchor" href="#key-features"></a>
 </h3>
 <ul>
-<li>
-<strong>Universal interface</strong>: Works with 40+ model types from different packages</li>
-<li>
-<strong>Multiple methods</strong>: Model-specific, permutation, SHAP, and variance-based importance</li>
-<li>
-<strong>Beautiful plots</strong>: Publication-ready visualizations with ggplot2</li>
-<li>
-<strong>Efficient algorithms</strong>: Optimized with parallel processing support</li>
-<li>
-<strong>Extensible design</strong>: Easy to add support for new model types</li>
-<li>
-<strong>Well-documented</strong>: Comprehensive guides and academic backing</li>
+<li>Universal interface that works with 40+ model types from different packages</li>
+<li>Multiple methods: model-specific, permutation, SHAP, and variance-based importance</li>
+<li>Publication-ready visualizations with ggplot2</li>
+<li>Optimized algorithms with parallel processing support</li>
+<li>Easy to add support for new model types</li>
+<li>Comprehensive guides and academic backing</li>
 </ul>
 </div>
 </div>
 <div class="section level2">
-<h2 id="id_️-quick-start">🛠️ Quick start<a class="anchor" aria-label="anchor" href="#id_%EF%B8%8F-quick-start"></a>
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="section level3">
-<h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install from CRAN (stable)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"vip"</span><span class="op">)</span></span>
@@ -93,9 +84,9 @@
 <span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"koalaverse/vip"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="id_30-second-example">30-second example<a class="anchor" aria-label="anchor" href="#id_30-second-example"></a>
-</h3>
+<div class="section level2">
+<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/koalaverse/vip/" class="external-link">vip</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.stat.berkeley.edu/~breiman/RandomForests/" class="external-link">randomForest</a></span><span class="op">)</span></span>
@@ -117,9 +108,8 @@
 <span><span class="co"># Create a beautiful plot</span></span>
 <span><span class="fu"><a href="reference/vip.html">vip</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></code></pre></div>
 </div>
-</div>
 <div class="section level2">
-<h2 id="id_-supported-methods">🎯 Supported methods<a class="anchor" aria-label="anchor" href="#id_-supported-methods"></a>
+<h2 id="supported-methods">Supported methods<a class="anchor" aria-label="anchor" href="#supported-methods"></a>
 </h2>
 <table class="table">
 <colgroup>
@@ -163,7 +153,7 @@
 </table>
 </div>
 <div class="section level2">
-<h2 id="id_-supported-models-40">🔧 Supported models (40+)<a class="anchor" aria-label="anchor" href="#id_-supported-models-40"></a>
+<h2 id="supported-models">Supported models<a class="anchor" aria-label="anchor" href="#supported-models"></a>
 </h2>
 <p><strong>Tree-based models</strong> - <a href="https://cran.r-project.org/package=randomForest" class="external-link">randomForest</a> • <a href="https://cran.r-project.org/package=ranger" class="external-link">ranger</a> • <a href="https://cran.r-project.org/package=xgboost" class="external-link">xgboost</a> • <a href="https://cran.r-project.org/package=lightgbm" class="external-link">lightgbm</a> • <a href="https://cran.r-project.org/package=gbm" class="external-link">gbm</a> • <a href="https://cran.r-project.org/package=C50" class="external-link">C50</a> • <a href="https://cran.r-project.org/package=Cubist" class="external-link">Cubist</a> • <a href="https://cran.r-project.org/package=rpart" class="external-link">rpart</a> • <a href="https://cran.r-project.org/package=party" class="external-link">party</a> • <a href="https://cran.r-project.org/package=partykit" class="external-link">partykit</a></p>
 <p><strong>Linear models</strong> - <a href="https://cran.r-project.org/package=glmnet" class="external-link">glmnet</a> • <a href="https://cran.r-project.org/package=earth" class="external-link">earth</a> (MARS) • Base R (lm, glm)</p>
@@ -172,7 +162,7 @@
 <p><strong>Specialized models</strong> - <a href="https://cran.r-project.org/package=pls" class="external-link">pls</a> • <a href="https://bioconductor.org/packages/mixOmics/" class="external-link">mixOmics</a> (Bioconductor) • And many more…</p>
 </div>
 <div class="section level2">
-<h2 id="id_️-advanced-examples">🏃‍♂️ Advanced examples<a class="anchor" aria-label="anchor" href="#id_%EF%B8%8F-advanced-examples"></a>
+<h2 id="advanced-examples">Advanced examples<a class="anchor" aria-label="anchor" href="#advanced-examples"></a>
 </h2>
 <div class="section level3">
 <h3 id="permutation-importance-with-custom-metrics">Permutation importance with custom metrics<a class="anchor" aria-label="anchor" href="#permutation-importance-with-custom-metrics"></a>
@@ -211,7 +201,7 @@
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span></span>
 <span></span>
 <span><span class="co"># Fit XGBoost model</span></span>
-<span><span class="va">xgb_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">X</span>, label <span class="op">=</span> <span class="va">y</span>, nrounds <span class="op">=</span> <span class="fl">100</span>, verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">xgb_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">X</span>, label <span class="op">=</span> <span class="va">y</span>, nrounds <span class="op">=</span> <span class="fl">100</span>, verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># SHAP-based importance</span></span>
 <span><span class="va">vi_shap</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/vi.html">vi</a></span><span class="op">(</span></span>
@@ -228,7 +218,7 @@
 </div>
 </div>
 <div class="section level2">
-<h2 id="id_-contributing-and-development">🤝 Contributing and development<a class="anchor" aria-label="anchor" href="#id_-contributing-and-development"></a>
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
 <p>We welcome contributions! Here’s how to get involved:</p>
 <div class="section level3">
@@ -238,8 +228,7 @@
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/koalaverse/vip.git</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="bu">cd</span> vip</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co"># Open in RStudio or your favorite editor</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co"># The project includes a comprehensive CLAUDE.md development guide</span></span></code></pre></div>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co"># Open in RStudio or your favorite editor</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="testing-framework">Testing framework<a class="anchor" aria-label="anchor" href="#testing-framework"></a>
@@ -263,7 +252,7 @@
 <strong>Create branch</strong>: <code>git checkout -b feature/awesome-feature</code>
 </li>
 <li>
-<strong>Write tests</strong>: Follow TDD principles (see <code>CLAUDE.md</code>)</li>
+<strong>Write tests</strong>: Follow TDD principles</li>
 <li>
 <strong>Run checks</strong>: <code>R CMD check</code> and tests</li>
 <li>
@@ -286,53 +275,18 @@
 <span>    Importance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">importance_scores</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>See <code>CLAUDE.md</code> for detailed instructions!</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="id_-learning-resources">📚 Learning resources<a class="anchor" aria-label="anchor" href="#id_-learning-resources"></a>
+<h2 id="getting-help">Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h2>
 <ul>
-<li>
-<strong><a href="https://koalaverse.github.io/vip/">Package website</a></strong> - Comprehensive documentation</li>
-<li>
-<strong><a href="https://doi.org/10.32614/RJ-2020-013" class="external-link">R Journal paper</a></strong> - Academic foundation</li>
-<li>
-<strong><a href="https://christophm.github.io/interpretable-ml-book/" class="external-link">IML book</a></strong> - Theory background</li>
-<li>
-<strong><a href="CLAUDE.html">Development guide</a></strong> - Contributing guidelines</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="id_-whats-new-in-v041">✨ What’s new in v0.4.1<a class="anchor" aria-label="anchor" href="#id_-whats-new-in-v041"></a>
-</h2>
-<ul>
-<li>✅ <strong>ggplot2 S7 compatibility</strong> - Future-proof plotting</li>
-<li>
-<strong>lightgbm support</strong> - Popular gradient boosting</li>
-<li>
-<strong>Enhanced yardstick integration</strong> - Better metrics</li>
-<li>
-<strong>Improved documentation</strong> - Clearer examples</li>
-</ul>
-<p>See <a href="NEWS.html">NEWS.md</a> for complete version history and migration notes.</p>
-</div>
-<div class="section level2">
-<h2 id="id_-getting-help">🆘 Getting help<a class="anchor" aria-label="anchor" href="#id_-getting-help"></a>
-</h2>
-<ul>
-<li>
-<strong>Bug reports</strong>: <a href="https://github.com/koalaverse/vip/issues" class="external-link">GitHub Issues</a>
+<li>Bug reports: <a href="https://github.com/koalaverse/vip/issues" class="external-link">GitHub Issues</a>
 </li>
-<li>
-<strong>Feature requests</strong>: <a href="https://github.com/koalaverse/vip/discussions" class="external-link">GitHub Discussions</a>
-</li>
-<li>
-<strong>Questions</strong>: <a href="https://stackoverflow.com/questions/tagged/vip" class="external-link">Stack Overflow</a> (tag: <code>vip</code>)</li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="id_-citation">📄 Citation<a class="anchor" aria-label="anchor" href="#id_-citation"></a>
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>If you use vip in your research, please cite:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="va">@article</span>{<span class="ot">greenwell2020variable</span>,</span>
@@ -347,13 +301,12 @@
 <span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="id_-license">📜 License<a class="anchor" aria-label="anchor" href="#id_-license"></a>
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
 <p>GPL (&gt;= 2) © <a href="https://github.com/bgreenwell" class="external-link">Brandon M. Greenwell</a>, <a href="https://github.com/bradleyboehmke" class="external-link">Brad Boehmke</a></p>
 <hr>
 <div align="center">
-<p><strong>⭐ Star us on GitHub if vip helps make your models more interpretable! ⭐</strong></p>
-<p><em>Built with ❤️ by the <a href="https://github.com/koalaverse" class="external-link">koalaverse</a> team</em></p>
+<p><em>Built by the <a href="https://github.com/koalaverse" class="external-link">koalaverse</a> team</em></p>
 </div>
 </div>
 </div>
@@ -400,7 +353,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

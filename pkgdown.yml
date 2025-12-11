@@ -1,9 +1,9 @@
 pandoc: 3.1.11
-pkgdown: 2.1.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   vip: vip.html
-last_built: 2025-09-05T20:58Z
+last_built: 2025-12-11T20:50Z
 urls:
   reference: https://koalaverse.github.io/vip/reference
   article: https://koalaverse.github.io/vip/articles

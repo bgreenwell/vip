@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">vip</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,62 @@
       <small>Source: <a href="https://github.com/koalaverse/vip/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.5" id="vip-045">vip 0.4.5<a class="anchor" aria-label="anchor" href="#vip-045"></a></h2>
+<div class="section level3">
+<h3 id="fixed-0-4-5">Fixed<a class="anchor" aria-label="anchor" href="#fixed-0-4-5"></a></h3>
+<ul><li>Fixed CRAN check failures on macOS (M1/ARM64, Intel) and Linux platforms by implementing selective test skipping for all test_pkg_* files with platform-specific or large dependency trees. All 23 package-specific test suites now skip on CRAN via <code>NOT_CRAN</code> environment variable, eliminating failures from external dependencies while maintaining comprehensive testing in CI/CD.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changed-0-4-5">Changed<a class="anchor" aria-label="anchor" href="#changed-0-4-5"></a></h3>
+<ul><li>
+<p>Expanded GitHub Actions CI/CD to 9 platform configurations covering all 13 CRAN check flavors:</p>
+<ul><li>Windows (release, devel)</li>
+<li>macOS ARM64/M1 (release, devel)</li>
+<li>macOS Intel (release)</li>
+<li>Ubuntu/Debian (devel, release, oldrel-1, oldrel-2)</li>
+</ul></li>
+<li><p>Added <code>NOT_CRAN=true</code> environment variable to CI/CD workflows, enabling comprehensive testing of all ML package integrations (40+ model types) while ensuring reliable CRAN submissions.</p></li>
+<li><p>Cleaned up test files by removing commented-out <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code> statements from package-specific tests.</p></li>
+<li><p>Added <code>.github/CRAN_PLATFORM_COVERAGE.md</code> documenting the complete mapping between GitHub Actions configurations and CRAN check platforms.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.3" id="vip-043">vip 0.4.3<a class="anchor" aria-label="anchor" href="#vip-043"></a></h2>
+<div class="section level3">
+<h3 id="fixed-0-4-3">Fixed<a class="anchor" aria-label="anchor" href="#fixed-0-4-3"></a></h3>
+<ul><li><p>Fixed CRAN check failures by explicitly loading <code>titanic_mice</code> dataset in test files. Tests now use <code>data("titanic_mice")</code> before accessing the dataset to ensure availability across all platforms.</p></li>
+<li><p>Fixed ggplot class testing for ggplot2 S7 compatibility <a href="https://github.com/koalaverse/vip/issues/162" class="external-link">(</a><a href="https://github.com/koalaverse/vip/issues/162" class="external-link">#162</a>). Replaced hardcoded class checks with <code><a href="https://ggplot2.tidyverse.org/reference/is_tests.html" class="external-link">ggplot2::is_ggplot()</a></code> to ensure forward compatibility with ggplot2’s upcoming S7 transition.</p></li>
+<li><p>Fixed CRAN warnings by updating arXiv citation to DOI format and removing unnecessary <code>LazyData</code> field from DESCRIPTION.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="changed-0-4-3">Changed<a class="anchor" aria-label="anchor" href="#changed-0-4-3"></a></h3>
+<ul><li>Updated branch references from <code>master</code> to <code>main</code> throughout the package to align with modern git naming conventions <a href="https://github.com/koalaverse/vip/pull/164" class="external-link">(</a><a href="https://github.com/koalaverse/vip/issues/164" class="external-link">#164</a>).
+<ul><li>Updated GitHub Actions workflows to trigger on <code>main</code> branch</li>
+<li>Updated codecov badge link in README</li>
+<li>Fixed GitHub links in vignettes to point to <code>main</code> branch</li>
+</ul></li>
+<li>Refined README style and documentation:
+<ul><li>Converted all headings to sentence case for consistency</li>
+<li>Reduced emoji usage in content while keeping them in section headers</li>
+<li>Added canonical CRAN hyperlinks to all package references</li>
+<li>Improved overall clarity and professional appearance</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="added-0-4-3">Added<a class="anchor" aria-label="anchor" href="#added-0-4-3"></a></h3>
+<ul><li>Added comprehensive CLAUDE.md development guide with:
+<ul><li>Detailed TDD workflow and testing patterns</li>
+<li>Style guidelines emphasizing sentence case and minimal emoji usage</li>
+<li>ggplot2 S7 compatibility guidance</li>
+<li>R package best practices and quality assurance checklists</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="removed-0-4-3">Removed<a class="anchor" aria-label="anchor" href="#removed-0-4-3"></a></h3>
+<ul><li>Removed recognition section from README that contained inaccurate statistics.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.1" id="vip-041">vip 0.4.1<a class="anchor" aria-label="anchor" href="#vip-041"></a></h2><p class="text-muted">CRAN release: 2023-08-21</p>
 <div class="section level3">
@@ -90,7 +146,7 @@
 <h2 class="pkg-version" data-toc-text="0.3.1" id="vip-031">vip 0.3.1<a class="anchor" aria-label="anchor" href="#vip-031"></a></h2>
 <div class="section level3">
 <h3 id="miscellaneous-0-3-1">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-3-1"></a></h3>
-<ul><li><p>Change <a href="http://spark.rstudio.com/mlib/" class="external-link uri">http://spark.rstudio.com/mlib/</a> to <a href="https://spark.rstudio.com/mlib/" class="external-link uri">https://spark.rstudio.com/mlib/</a> in NEWS.md.</p></li>
+<ul><li><p>Change <a href="http://spark.rstudio.com/mlib/" class="external-link uri">http://spark.rstudio.com/mlib/</a> to <a href="https://spark.posit.co/mlib/" class="external-link uri">https://spark.posit.co/mlib/</a> in NEWS.md.</p></li>
 <li><p>Remove unnecessary codecov.yml file.</p></li>
 </ul></div>
 </div>
@@ -107,7 +163,7 @@
 <div class="section level3">
 <h3 id="miscellaneous-0-3-0">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-3-0"></a></h3>
 <ul><li><p>Switched from Travis-CI to GitHub Actions for continuous integration.</p></li>
-<li><p>Added a CITATION file and PDF-based vignette based off of the published article in <a href="https://journal.r-project.org/archive/2020/RJ-2020-013/index.html" class="external-link">The R Journal</a> <a href="https://github.com/koalaverse/vip/issues/109" class="external-link">(</a><a href="https://github.com/koalaverse/vip/issues/109" class="external-link">#109</a>).</p></li>
+<li><p>Added a CITATION file and PDF-based vignette based off of the published article in <a href="https://journal.r-project.org/articles/RJ-2020-013/index.html" class="external-link">The R Journal</a> <a href="https://github.com/koalaverse/vip/issues/109" class="external-link">(</a><a href="https://github.com/koalaverse/vip/issues/109" class="external-link">#109</a>).</p></li>
 <li><p>Switch from <code><a href="https://tibble.tidyverse.org/reference/deprecated.html" class="external-link">tibble::as.tibble()</a></code>—which was deprecated in <a href="https://github.com/tidyverse/tibble" class="external-link">tibble</a> 2.0.0—to <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">tibble::as_tibble()</a></code> in a few function calls <a href="https://github.com/koalaverse/vip/issues/101" class="external-link">(</a><a href="https://github.com/koalaverse/vip/issues/101" class="external-link">#101</a>).</p></li>
 </ul></div>
 </div>
@@ -211,7 +267,7 @@
 <li><p>New generic <code><a href="../reference/vi_permute.html">vi_permute()</a></code> for constructing permutation-based variable importance scores <a href="https://github.com/koalaverse/vip/issues/19" class="external-link">(</a><a href="https://github.com/koalaverse/vip/issues/19" class="external-link">#19</a>).</p></li>
 <li><p>Fixed bug and unnecessary error check in <code>vint()</code> <a href="https://github.com/koalaverse/vip/issues/38" class="external-link">(</a><a href="https://github.com/koalaverse/vip/issues/38" class="external-link">#38</a>).</p></li>
 <li><p>New vignette on using <code>vip</code> with unsupported models (using the Keras API to TensorFlow as an example).</p></li>
-<li><p>Added basic <a href="https://spark.rstudio.com/mlib/" class="external-link">sparklyr</a> support.</p></li>
+<li><p>Added basic <a href="https://spark.posit.co/mlib/" class="external-link">sparklyr</a> support.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="vip-010">vip 0.1.0<a class="anchor" aria-label="anchor" href="#vip-010"></a></h2><p class="text-muted">CRAN release: 2018-06-15</p>
@@ -239,7 +295,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
