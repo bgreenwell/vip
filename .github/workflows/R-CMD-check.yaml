@@ -25,12 +25,9 @@ jobs:
           - {os: windows-latest, r: 'release'}
           - {os: windows-latest, r: 'devel'}
 
-          # macOS ARM64 (M1/M2/M3)
+          # macOS ARM64 (M1/M2/M3) - CRAN primary macOS platform
           - {os: macos-latest,   r: 'release'}
           - {os: macos-latest,   r: 'devel'}
-
-          # macOS Intel (x86_64)
-          - {os: macos-13,       r: 'release'}
 
           # Ubuntu/Debian (matches CRAN Debian checks)
           - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
