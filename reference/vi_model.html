@@ -201,9 +201,9 @@ methods this argument applies to.</p></dd>
 
 <dt id="arg-lambda">lambda<a class="anchor" aria-label="anchor" href="#arg-lambda"></a></dt>
 <dd><p>Numeric value for the penalty parameter of a
-<a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a> model (this is equivalent to the <code>s</code>
-argument in <a href="https://glmnet.stanford.edu/reference/predict.glmnet.html" class="external-link">coef.glmnet</a>). See the section on
-<a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a> in the details below.</p></dd>
+<a href="https://rdrr.io/pkg/glmnet/man/glmnet.html" class="external-link">glmnet</a> model (this is equivalent to the <code>s</code>
+argument in <a href="https://rdrr.io/pkg/glmnet/man/predict.glmnet.html" class="external-link">coef.glmnet</a>). See the section on
+<a href="https://rdrr.io/pkg/glmnet/man/glmnet.html" class="external-link">glmnet</a> in the details below.</p></dd>
 
 
 <dt id="arg-ncomp">ncomp<a class="anchor" aria-label="anchor" href="#arg-ncomp"></a></dt>
@@ -251,19 +251,19 @@ to the terminal models shown in the output). The variable importance used
 here is a linear combination of the usage in the rule conditions and the
 model. See <a href="http://topepo.github.io/Cubist/reference/summary.cubist.html" class="external-link">summary.cubist</a> and
 <a href="https://rdrr.io/pkg/caret/man/varImp.html" class="external-link">varImp</a> for details.</p></li>
-<li><p><a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a> - Similar to (generalized) linear models,
+<li><p><a href="https://rdrr.io/pkg/glmnet/man/glmnet.html" class="external-link">glmnet</a> - Similar to (generalized) linear models,
 the absolute value of the coefficients are returned for a specific model.
 It is important that the features  (and hence, the estimated coefficients) be
 standardized prior to fitting the model. You can specify which coefficients
 to return by passing the specific value of the penalty parameter via the
 <code>lambda</code> argument (this is equivalent to the <code>s</code> argument in
-<a href="https://glmnet.stanford.edu/reference/predict.glmnet.html" class="external-link">coef.glmnet</a>). By default, <code>lambda = NULL</code> and the coefficients
+<a href="https://rdrr.io/pkg/glmnet/man/predict.glmnet.html" class="external-link">coef.glmnet</a>). By default, <code>lambda = NULL</code> and the coefficients
 corresponding to the final penalty value in the sequence are returned; in
-other words, you should ALWAYS SPECIFY <code>lambda</code>! For <a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a>
+other words, you should ALWAYS SPECIFY <code>lambda</code>! For <a href="https://rdrr.io/pkg/glmnet/man/cv.glmnet.html" class="external-link">cv.glmnet</a>
 objects, the largest value of lambda such that the error is within one standard
 error of the minimum is used by default. For a multinomial response, the
 coefficients corresponding to the first class are used; that is, the first
-component of <a href="https://glmnet.stanford.edu/reference/predict.glmnet.html" class="external-link">coef.glmnet</a>.</p></li>
+component of <a href="https://rdrr.io/pkg/glmnet/man/predict.glmnet.html" class="external-link">coef.glmnet</a>.</p></li>
 <li><p><a href="https://rdrr.io/pkg/partykit/man/cforest.html" class="external-link">cforest</a> - Variable importance is measured in a
 way similar to those computed by <a href="https://rdrr.io/pkg/randomForest/man/importance.html" class="external-link">importance</a>.
 Besides the standard version, a conditional version is available that
