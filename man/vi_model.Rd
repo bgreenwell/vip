@@ -352,7 +352,7 @@ with neither showing up as strongly as it should. See
 \item \link[caret:train]{caret} - Various model-specific and model-agnostic
 approaches that depend on the learning algorithm employed in the original
 call to \link[caret:train]{caret}. See \link[caret:varImp]{varImp} for details.
-\item \link[xgboost:xgb.train]{xgboost} - For linear models, the variable
+\item \link[xgboost:xgboost]{xgboost} - For linear models, the variable
 importance is the absolute magnitude of the estimated coefficients. For that
 reason, in order to obtain a meaningful ranking by importance for a linear
 model, the features need to be on the same scale (which you also would want
@@ -370,7 +370,7 @@ feature.
 the relative number of times each feature has been used throughout each
 tree in the ensemble.
 }
-\item \link[lightgbm:lightgbm]{lightgbm} - Same as for \link[xgboost:xgb.train]{xgboost}
+\item \link[lightgbm:lightgbm]{lightgbm} - Same as for \link[xgboost:xgboost]{xgboost}
 models, except \link[lightgbm:lgb.importance]{lgb.importance} (which this method
 calls internally) has an additional argument, \code{percentage}, that defaults to
 \code{TRUE}, resulting in the VI scores shown as a relative percentage; pass
