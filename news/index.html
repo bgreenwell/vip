@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">vip</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,16 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.4.5" id="vip-045">vip 0.4.5<a class="anchor" aria-label="anchor" href="#vip-045"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.4.6" id="vip-046">vip 0.4.6<a class="anchor" aria-label="anchor" href="#vip-046"></a></h2>
+<div class="section level3">
+<h3 id="fixed-0-4-6">Fixed<a class="anchor" aria-label="anchor" href="#fixed-0-4-6"></a></h3>
+<ul><li><p>Fixed CRAN check failures on r-devel (Linux/Fedora and macOS ARM64) in <code>test_vi_firm.R</code>. The test called <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger()</a></code> without the <code>ranger::</code> namespace prefix — <code><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace()</a></code> loads a namespace but does not attach it, so unqualified function calls fail. Changed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>.</p></li>
+<li><p>Fixed <code>test_vi_firm.R</code> to pass <code>train = titanic</code> explicitly to all <code><a href="../reference/vi_firm.html">vi_firm()</a></code> / <code><a href="../reference/vi.html">vi()</a></code> calls. The auto-extraction fallback in <code>get_training_data.default</code> is not implemented for ranger models.</p></li>
+<li><p>Narrowed two <code>expect_equal()</code> assertions in <code>test_vi_firm.R</code> to compare only <code>$Importance</code> values. The <code>prob = TRUE</code> shortcut and a custom <code>pfun</code> wrapper produce the same importance scores but different raw effect representations, so comparing full objects (including the <code>effects</code> attribute) was overly strict.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.5" id="vip-045">vip 0.4.5<a class="anchor" aria-label="anchor" href="#vip-045"></a></h2><p class="text-muted">CRAN release: 2025-12-12</p>
 <div class="section level3">
 <h3 id="fixed-0-4-5">Fixed<a class="anchor" aria-label="anchor" href="#fixed-0-4-5"></a></h3>
 <ul><li>Fixed CRAN check failures on macOS (M1/ARM64, Intel) and Linux platforms by implementing selective test skipping for all test_pkg_* files with platform-specific or large dependency trees. All 23 package-specific test suites now skip on CRAN via <code>NOT_CRAN</code> environment variable, eliminating failures from external dependencies while maintaining comprehensive testing in CI/CD.</li>
@@ -54,7 +63,7 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.4.3" id="vip-043">vip 0.4.3<a class="anchor" aria-label="anchor" href="#vip-043"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.4.3" id="vip-043">vip 0.4.3<a class="anchor" aria-label="anchor" href="#vip-043"></a></h2><p class="text-muted">CRAN release: 2025-12-10</p>
 <div class="section level3">
 <h3 id="fixed-0-4-3">Fixed<a class="anchor" aria-label="anchor" href="#fixed-0-4-3"></a></h3>
 <ul><li><p>Fixed CRAN check failures by explicitly loading <code>titanic_mice</code> dataset in test files. Tests now use <code>data("titanic_mice")</code> before accessing the dataset to ensure availability across all platforms.</p></li>

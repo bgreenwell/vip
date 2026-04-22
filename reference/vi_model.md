@@ -424,7 +424,7 @@ class of `object`:
   [caret](https://rdrr.io/pkg/caret/man/train.html). See
   [varImp](https://rdrr.io/pkg/caret/man/varImp.html) for details.
 
-- [xgboost](https://rdrr.io/pkg/xgboost/man/xgb.train.html) - For linear
+- [xgboost](https://rdrr.io/pkg/xgboost/man/xgboost.html) - For linear
   models, the variable importance is the absolute magnitude of the
   estimated coefficients. For that reason, in order to obtain a
   meaningful ranking by importance for a linear model, the features need
@@ -448,7 +448,7 @@ class of `object`:
     tree in the ensemble.
 
 - [lightgbm](https://rdrr.io/pkg/lightgbm/man/lightgbm.html) - Same as
-  for [xgboost](https://rdrr.io/pkg/xgboost/man/xgb.train.html) models,
+  for [xgboost](https://rdrr.io/pkg/xgboost/man/xgboost.html) models,
   except
   [lgb.importance](https://rdrr.io/pkg/lightgbm/man/lgb.importance.html)
   (which this method calls internally) has an additional argument,

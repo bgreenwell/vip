@@ -1,6 +1,33 @@
 # Changelog
 
+## vip 0.4.6
+
+### Fixed
+
+- Fixed CRAN check failures on r-devel (Linux/Fedora and macOS ARM64) in
+  `test_vi_firm.R`. The test called
+  [`ranger()`](http://imbs-hl.github.io/ranger/reference/ranger.md)
+  without the `ranger::` namespace prefix —
+  [`requireNamespace()`](https://rdrr.io/r/base/ns-load.html) loads a
+  namespace but does not attach it, so unqualified function calls fail.
+  Changed to
+  [`ranger::ranger()`](http://imbs-hl.github.io/ranger/reference/ranger.md).
+
+- Fixed `test_vi_firm.R` to pass `train = titanic` explicitly to all
+  [`vi_firm()`](https://koalaverse.github.io/vip/reference/vi_firm.md) /
+  [`vi()`](https://koalaverse.github.io/vip/reference/vi.md) calls. The
+  auto-extraction fallback in `get_training_data.default` is not
+  implemented for ranger models.
+
+- Narrowed two `expect_equal()` assertions in `test_vi_firm.R` to
+  compare only `$Importance` values. The `prob = TRUE` shortcut and a
+  custom `pfun` wrapper produce the same importance scores but different
+  raw effect representations, so comparing full objects (including the
+  `effects` attribute) was overly strict.
+
 ## vip 0.4.5
+
+CRAN release: 2025-12-12
 
 ### Fixed
 
@@ -34,6 +61,8 @@
   platforms.
 
 ## vip 0.4.3
+
+CRAN release: 2025-12-10
 
 ### Fixed
 
