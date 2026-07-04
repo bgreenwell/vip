@@ -4,6 +4,8 @@
 [![r-universe version](https://bgreenwell.r-universe.dev/badges/vip)](https://bgreenwell.r-universe.dev/vip)
 [![R-CMD-check](https://github.com/bgreenwell/vip/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bgreenwell/vip/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/bgreenwell/vip/branch/main/graph/badge.svg)](https://app.codecov.io/gh/bgreenwell/vip?branch=main)
+[![R Journal](https://img.shields.io/badge/The%20R%20Journal-10.32614%2FRJ--2020--013-brightgreen)](https://doi.org/10.32614/RJ-2020-013)
+
 <!-- badges: end -->
 
 Variable importance plots (VIPs) for R: quantify and visualize which features
