@@ -35,4 +35,4 @@ A data frame with 1309 observations on the following 6 variables:
 As mentioned in the column description, `age` contains 263 `NA`s (or
 missing values). For a complete version (or versions) of the data set,
 see
-[titanic_mice](https://koalaverse.github.io/vip/reference/titanic_mice.md).
+[titanic_mice](https://bgreenwell.github.io/vip/reference/titanic_mice.md).

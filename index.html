@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Variable Importance Plots • vip</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Variable Importance Plots">
 <meta name="description" content="A general framework for constructing variable importance plots from various types of machine learning models in R. Aside from some standard model- specific variable importance measures, this package also provides model- agnostic approaches that can be applied to any supervised learning algorithm. These include 1) an efficient permutation-based variable importance measure, 2) variable importance based on Shapley values (Strumbelj and Kononenko, 2014) &lt;doi:10.1007/s10115-013-0679-x&gt;, and 3) the variance-based approach described in Greenwell et al. (2018) &lt;doi:10.48550/arXiv.1805.04755&gt;. A variance-based method for quantifying the relative strength of interaction effects is also included (see the previous reference for details).">
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">vip</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,7 +39,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/koalaverse/vip/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/bgreenwell/vip/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -48,274 +48,88 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="vip-variable-importance-plots">vip: Variable Importance Plots<a class="anchor" aria-label="anchor" href="#vip-variable-importance-plots"></a>
+<div class="page-header"><h1 id="vip-">vip <img src="reference/figures/logo-vip.png" align="right" width="130" height="150"><a class="anchor" aria-label="anchor" href="#vip-"></a>
 </h1></div>
-<div align="center">
-<p><img src="reference/figures/logo-vip.png" width="200" height="230"></p>
-<p><strong>Make your ML models more interpretable with beautiful variable importance plots</strong></p>
-<p><a href="https://cran.r-project.org/package=vip" class="external-link"><img src="https://www.r-pkg.org/badges/version/vip" alt="CRAN Status"></a> <a href="https://github.com/koalaverse/vip/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/koalaverse/vip/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://app.codecov.io/github/koalaverse/vip?branch=main" class="external-link"><img src="https://codecov.io/gh/koalaverse/vip/graph/badge.svg" alt="Codecov"></a> <a href="https://cran.r-project.org/package=vip/" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/vip" alt="CRAN Downloads"></a> <a href="https://doi.org/10.32614/RJ-2020-013" class="external-link"><img src="https://img.shields.io/badge/The%20R%20Journal-10.32614%2FRJ--2020--013-brightgreen" alt="R Journal"></a> <a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></p>
-</div>
-<hr>
-<div class="section level2">
-<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
-</h2>
-<p><strong>vip</strong> provides a unified framework for constructing variable importance plots from virtually any machine learning model in R. Instead of juggling different <code><a href="http://imbs-hl.github.io/ranger/reference/importance.ranger.html" class="external-link">importance()</a></code> functions across packages, vip gives you one consistent interface for interpretable ML.</p>
-<div class="section level3">
-<h3 id="key-features">Key features<a class="anchor" aria-label="anchor" href="#key-features"></a>
-</h3>
+<!-- badges: start -->
+
+<!-- badges: end -->
+<p>Variable importance plots (VIPs) for R: quantify and visualize which features drive a fitted model’s predictions.</p>
 <ul>
-<li>Universal interface that works with 40+ model types from different packages</li>
-<li>Multiple methods: model-specific, permutation, SHAP, and variance-based importance</li>
-<li>Publication-ready visualizations with ggplot2</li>
-<li>Optimized algorithms with parallel processing support</li>
-<li>Easy to add support for new model types</li>
-<li>Comprehensive guides and academic backing</li>
+<li>
+<strong>One interface, many models</strong> — <code><a href="reference/vi.html">vi()</a></code> and <code><a href="reference/vip.html">vip()</a></code> work with dozens of model classes out of the box (randomForest, ranger, gbm, xgboost, lightgbm, glmnet, caret, tidymodels, mlr3, …)</li>
+<li>
+<strong>Model-specific and model-agnostic methods</strong> — native importance measures (<code>method = "model"</code>), permutation importance (<code>method = "permute"</code>), Shapley-based importance (<code>method = "shap"</code>), and variance-based importance (<code>method = "firm"</code>)</li>
+<li>
+<strong>Works with <em>any</em> model</strong> — the model-agnostic methods only require a user-supplied prediction wrapper</li>
+<li>
+<strong>Lightweight plotting</strong> via <a href="https://grantmcdermott.com/tinyplot/" class="external-link">tinyplot</a> (base R graphics)</li>
+<li>
+<strong>Minimal dependencies</strong> — imports only base R packages plus tinyplot (itself dependency-free)</li>
 </ul>
-</div>
-</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p><strong>vip</strong> is no longer available on CRAN due to CRAN’s stringent and ever-changing policies. It is now hosted on <a href="https://bgreenwell.r-universe.dev/vip" class="external-link">r-universe</a>, which provides a reliable alternative for distributing R packages.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Install from CRAN (stable)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"vip"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Latest stable release (recommended)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"vip"</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://bgreenwell.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Install development version (latest features)</span></span>
-<span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"koalaverse/vip"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Or with pak</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"bgreenwell/vip@main"</span><span class="op">)</span>  <span class="co"># latest stable release</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"bgreenwell/vip"</span><span class="op">)</span>       <span class="co"># development version (devel branch)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/koalaverse/vip/" class="external-link">vip</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.stat.berkeley.edu/~breiman/RandomForests/" class="external-link">randomForest</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bgreenwell/vip" class="external-link">vip</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Fit a model</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/randomForest/man/randomForest.html" class="external-link">randomForest</a></span><span class="op">(</span><span class="va">Species</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">iris</span><span class="op">)</span></span>
+<span><span class="co"># Simulate Friedman 1 benchmark data; only x1-x5 are important!</span></span>
+<span><span class="va">trn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gen_friedman.html">gen_friedman</a></span><span class="op">(</span><span class="fl">500</span>, seed <span class="op">=</span> <span class="fl">101</span><span class="op">)</span>  <span class="co"># ?vip::gen_friedman</span></span>
 <span></span>
-<span><span class="co"># Get importance scores</span></span>
-<span><span class="va">vi_scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/vi.html">vi</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">vi_scores</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 4 × 2</span></span>
-<span><span class="co">#&gt;   Variable     Importance</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;             &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 Petal.Length      32.4 </span></span>
-<span><span class="co">#&gt; 2 Petal.Width       31.3 </span></span>
-<span><span class="co">#&gt; 3 Sepal.Length       9.51</span></span>
-<span><span class="co">#&gt; 4 Sepal.Width        6.75</span></span>
+<span><span class="co"># Model-specific importance from a random forest</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://imbs-hl.github.io/ranger/" class="external-link">ranger</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">101</span><span class="op">)</span></span>
+<span><span class="va">rfo</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">trn</span>, importance <span class="op">=</span> <span class="st">"impurity"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/vi.html">vi</a></span><span class="op">(</span><span class="va">rfo</span><span class="op">)</span>    <span class="co"># data frame of variable importance scores</span></span>
+<span><span class="fu"><a href="reference/vip.html">vip</a></span><span class="op">(</span><span class="va">rfo</span><span class="op">)</span>   <span class="co"># variable importance plot</span></span>
 <span></span>
-<span><span class="co"># Create a beautiful plot</span></span>
-<span><span class="fu"><a href="reference/vip.html">vip</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Permutation importance works for ANY model; just supply a prediction wrapper</span></span>
+<span><span class="va">pfun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">object</span>, <span class="va">newdata</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">object</span>, data <span class="op">=</span> <span class="va">newdata</span><span class="op">)</span><span class="op">$</span><span class="va">predictions</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">102</span><span class="op">)</span></span>
+<span><span class="va">vis</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/vi.html">vi</a></span><span class="op">(</span><span class="va">rfo</span>, method <span class="op">=</span> <span class="st">"permute"</span>, train <span class="op">=</span> <span class="va">trn</span>, target <span class="op">=</span> <span class="st">"y"</span>, metric <span class="op">=</span> <span class="st">"rmse"</span>,</span>
+<span>          pred_wrapper <span class="op">=</span> <span class="va">pfun</span>, nsim <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># "vi" objects have a plot() method; additional arguments are passed on to</span></span>
+<span><span class="co"># tinyplot::tinyplot()</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vis</span>, type <span class="op">=</span> <span class="st">"boxplot"</span>, all_permutations <span class="op">=</span> <span class="cn">TRUE</span>, jitter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>     fill <span class="op">=</span> <span class="st">"grey90"</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="reference/vi.html">vi()</a></code> returns a tidy data frame of importance scores, so results are easy to post-process or plot with any graphics package.</p>
 </div>
 <div class="section level2">
-<h2 id="supported-methods">Supported methods<a class="anchor" aria-label="anchor" href="#supported-methods"></a>
-</h2>
-<table class="table">
-<colgroup>
-<col width="19%">
-<col width="31%">
-<col width="24%">
-<col width="24%">
-</colgroup>
-<thead><tr class="header">
-<th>Method</th>
-<th>Description</th>
-<th>Use case</th>
-<th>Function</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><strong>Model-specific</strong></td>
-<td>Extract built-in importance</td>
-<td>Fast, model-native</td>
-<td><code>vi(model, method = "model")</code></td>
-</tr>
-<tr class="even">
-<td><strong>Permutation</strong></td>
-<td>Shuffle features, measure impact</td>
-<td>Model-agnostic, robust</td>
-<td><code>vi(model, method = "permute")</code></td>
-</tr>
-<tr class="odd">
-<td><strong>Shapley values</strong></td>
-<td>Game theory attribution</td>
-<td>Detailed explanations</td>
-<td><code>vi(model, method = "shap")</code></td>
-</tr>
-<tr class="even">
-<td><strong>Variance-based</strong></td>
-<td>FIRM approach</td>
-<td>Feature ranking</td>
-<td><code>vi(model, method = "firm")</code></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section level2">
-<h2 id="supported-models">Supported models<a class="anchor" aria-label="anchor" href="#supported-models"></a>
-</h2>
-<p><strong>Tree-based models</strong> - <a href="https://cran.r-project.org/package=randomForest" class="external-link">randomForest</a> • <a href="https://cran.r-project.org/package=ranger" class="external-link">ranger</a> • <a href="https://cran.r-project.org/package=xgboost" class="external-link">xgboost</a> • <a href="https://cran.r-project.org/package=lightgbm" class="external-link">lightgbm</a> • <a href="https://cran.r-project.org/package=gbm" class="external-link">gbm</a> • <a href="https://cran.r-project.org/package=C50" class="external-link">C50</a> • <a href="https://cran.r-project.org/package=Cubist" class="external-link">Cubist</a> • <a href="https://cran.r-project.org/package=rpart" class="external-link">rpart</a> • <a href="https://cran.r-project.org/package=party" class="external-link">party</a> • <a href="https://cran.r-project.org/package=partykit" class="external-link">partykit</a></p>
-<p><strong>Linear models</strong> - <a href="https://cran.r-project.org/package=glmnet" class="external-link">glmnet</a> • <a href="https://cran.r-project.org/package=earth" class="external-link">earth</a> (MARS) • Base R (lm, glm)</p>
-<p><strong>Neural networks</strong> - <a href="https://cran.r-project.org/package=nnet" class="external-link">nnet</a> • <a href="https://cran.r-project.org/package=neuralnet" class="external-link">neuralnet</a> • <a href="https://cran.r-project.org/package=h2o" class="external-link">h2o</a> • <a href="https://cran.r-project.org/package=RSNNS" class="external-link">RSNNS</a></p>
-<p><strong>Meta-frameworks</strong> - <a href="https://cran.r-project.org/package=caret" class="external-link">caret</a> • <a href="https://cran.r-project.org/package=tidymodels" class="external-link">tidymodels</a> • <a href="https://cran.r-project.org/package=parsnip" class="external-link">parsnip</a> • <a href="https://cran.r-project.org/package=workflows" class="external-link">workflows</a> • <a href="https://cran.r-project.org/package=mlr" class="external-link">mlr</a> • <a href="https://cran.r-project.org/package=mlr3" class="external-link">mlr3</a> • <a href="https://cran.r-project.org/package=sparklyr" class="external-link">sparklyr</a></p>
-<p><strong>Specialized models</strong> - <a href="https://cran.r-project.org/package=pls" class="external-link">pls</a> • <a href="https://bioconductor.org/packages/mixOmics/" class="external-link">mixOmics</a> (Bioconductor) • And many more…</p>
-</div>
-<div class="section level2">
-<h2 id="advanced-examples">Advanced examples<a class="anchor" aria-label="anchor" href="#advanced-examples"></a>
-</h2>
-<div class="section level3">
-<h3 id="permutation-importance-with-custom-metrics">Permutation importance with custom metrics<a class="anchor" aria-label="anchor" href="#permutation-importance-with-custom-metrics"></a>
-</h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://imbs-hl.github.io/ranger/" class="external-link">ranger</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Fit model</span></span>
-<span><span class="va">rf_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">mtcars</span>, importance <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Permutation importance with custom metric</span></span>
-<span><span class="va">vi_perm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/vi.html">vi</a></span><span class="op">(</span></span>
-<span>  <span class="va">rf_model</span>, </span>
-<span>  method <span class="op">=</span> <span class="st">"permute"</span>,</span>
-<span>  train <span class="op">=</span> <span class="va">mtcars</span>,</span>
-<span>  target <span class="op">=</span> <span class="st">"mpg"</span>,</span>
-<span>  metric <span class="op">=</span> <span class="st">"rmse"</span>,</span>
-<span>  nsim <span class="op">=</span> <span class="fl">50</span>,        <span class="co"># 50 permutations for stability</span></span>
-<span>  parallel <span class="op">=</span> <span class="cn">TRUE</span>   <span class="co"># Speed up with parallel processing</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Create enhanced plot</span></span>
-<span><span class="fu"><a href="reference/vip.html">vip</a></span><span class="op">(</span><span class="va">vi_perm</span>, num_features <span class="op">=</span> <span class="fl">10</span>, geom <span class="op">=</span> <span class="st">"point"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Permutation-based Variable Importance"</span>,</span>
-<span>       subtitle <span class="op">=</span> <span class="st">"RMSE metric, 50 permutations"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="shap-values-for-detailed-attribution">SHAP values for detailed attribution<a class="anchor" aria-label="anchor" href="#shap-values-for-detailed-attribution"></a>
-</h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Prepare data</span></span>
-<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.matrix.html" class="external-link">data.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">mtcars</span>, select <span class="op">=</span> <span class="op">-</span><span class="va">mpg</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span></span>
-<span></span>
-<span><span class="co"># Fit XGBoost model</span></span>
-<span><span class="va">xgb_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">X</span>, label <span class="op">=</span> <span class="va">y</span>, nrounds <span class="op">=</span> <span class="fl">100</span>, verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># SHAP-based importance</span></span>
-<span><span class="va">vi_shap</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/vi.html">vi</a></span><span class="op">(</span></span>
-<span>  <span class="va">xgb_model</span>, </span>
-<span>  method <span class="op">=</span> <span class="st">"shap"</span>,</span>
-<span>  train <span class="op">=</span> <span class="va">X</span>,</span>
-<span>  nsim <span class="op">=</span> <span class="fl">30</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Beautiful SHAP plot</span></span>
-<span><span class="fu"><a href="reference/vip.html">vip</a></span><span class="op">(</span><span class="va">vi_shap</span>, geom <span class="op">=</span> <span class="st">"col"</span>, aesthetics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"steelblue"</span>, alpha <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"SHAP-based Variable Importance"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme_light</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
-</h2>
-<p>We welcome contributions! Here’s how to get involved:</p>
-<div class="section level3">
-<h3 id="development-setup">Development setup<a class="anchor" aria-label="anchor" href="#development-setup"></a>
-</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Clone the repo</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/koalaverse/vip.git</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="bu">cd</span> vip</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co"># Open in RStudio or your favorite editor</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="testing-framework">Testing framework<a class="anchor" aria-label="anchor" href="#testing-framework"></a>
-</h3>
-<p>We use <a href="https://cran.r-project.org/package=tinytest" class="external-link">tinytest</a> for lightweight, reliable testing:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Run all tests</span></span>
-<span><span class="fu">tinytest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytest/man/test_package.html" class="external-link">test_package</a></span><span class="op">(</span><span class="st">"vip"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Test specific functionality</span></span>
-<span><span class="fu">tinytest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytest/man/run_test_file.html" class="external-link">run_test_file</a></span><span class="op">(</span><span class="st">"inst/tinytest/test_vip.R"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="development-workflow">Development workflow<a class="anchor" aria-label="anchor" href="#development-workflow"></a>
-</h3>
-<ol style="list-style-type: decimal">
-<li>
-<strong>Check issues</strong>: Look for <a href="https://github.com/koalaverse/vip/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22" class="external-link">good first issues</a>
-</li>
-<li>
-<strong>Create branch</strong>: <code>git checkout -b feature/awesome-feature</code>
-</li>
-<li>
-<strong>Write tests</strong>: Follow TDD principles</li>
-<li>
-<strong>Run checks</strong>: <code>R CMD check</code> and tests</li>
-<li>
-<strong>Submit PR</strong>: With clear description</li>
-</ol>
-</div>
-<div class="section level3">
-<h3 id="adding-model-support">Adding model support<a class="anchor" aria-label="anchor" href="#adding-model-support"></a>
-</h3>
-<p>Adding support for new models is straightforward:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Add S3 method to R/vi_model.R</span></span>
-<span><span class="va">vi_model.your_model_class</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">object</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># Extract importance from your model</span></span>
-<span>  <span class="va">importance_scores</span> <span class="op">&lt;-</span> <span class="fu">your_model_importance_function</span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="co"># Return as tibble</span></span>
-<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>    Variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">importance_scores</span><span class="op">)</span>,</span>
-<span>    Importance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">importance_scores</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="getting-help">Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
+<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
 </h2>
 <ul>
-<li>Bug reports: <a href="https://github.com/koalaverse/vip/issues" class="external-link">GitHub Issues</a>
+<li>
+<a href="https://bgreenwell.github.io/vip/">Package website</a> — function reference and the <a href="https://bgreenwell.github.io/vip/articles/vip.html">introductory vignette</a>
+</li>
+<li>Greenwell, B. M., and Boehmke, B. C. (2020). “Variable Importance Plots—An Introduction to the vip Package.” <em>The R Journal</em>, 12(1), 343–366. <a href="https://doi.org/10.32614/RJ-2020-013" class="external-link">doi:10.32614/RJ-2020-013</a> (<code>citation("vip")</code>)</li>
+<li>For visualizing feature <em>effects</em> (which pair naturally with variable importance), see <a href="https://bgreenwell.github.io/pdp/" class="external-link">pdp</a>
 </li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+<h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
 </h2>
-<p>If you use vip in your research, please cite:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="va">@article</span>{<span class="ot">greenwell2020variable</span>,</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="dt">title</span>={Variable Importance Plots—An Introduction to the vip Package},</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="dt">author</span>={Greenwell, Brandon M and Boehmke, Bradley C},</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="dt">journal</span>={The R Journal},</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="dt">volume</span>={12},</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="dt">number</span>={1},</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="dt">pages</span>={343--366},</span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="dt">year</span>={2020},</span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  <span class="dt">doi</span>={10.32614/RJ-2020-013}</span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>}</span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
-</h2>
-<p>GPL (&gt;= 2) © <a href="https://github.com/bgreenwell" class="external-link">Brandon M. Greenwell</a>, <a href="https://github.com/bradleyboehmke" class="external-link">Brad Boehmke</a></p>
-<hr>
-<div align="center">
-<p><em>Built by the <a href="https://github.com/koalaverse" class="external-link">koalaverse</a> team</em></p>
-</div>
+<p>Development happens on the <a href="https://github.com/bgreenwell/vip/tree/devel" class="external-link"><code>devel</code></a> branch (the repository default); <code>main</code> holds stable releases, which is what r-universe builds and the website documents. Please open pull requests against <code>devel</code> and report bugs via the <a href="https://github.com/bgreenwell/vip/issues" class="external-link">issue tracker</a>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
 <li><a href="https://cloud.r-project.org/package=vip" class="external-link">View on CRAN</a></li>
-<li><a href="https://github.com/koalaverse/vip/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/koalaverse/vip/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/bgreenwell/vip/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/bgreenwell/vip/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -342,7 +156,15 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://bgreenwell.r-universe.dev/vip" class="external-link"><img src="https://bgreenwell.r-universe.dev/badges/vip" alt="r-universe version"></a></li>
+<li><a href="https://github.com/bgreenwell/vip/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/bgreenwell/vip/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/bgreenwell/vip?branch=main" class="external-link"><img src="https://codecov.io/gh/bgreenwell/vip/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://doi.org/10.32614/RJ-2020-013" class="external-link"><img src="https://img.shields.io/badge/The%20R%20Journal-10.32614%2FRJ--2020--013-brightgreen" alt="R Journal"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>

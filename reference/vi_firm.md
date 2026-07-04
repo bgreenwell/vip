@@ -43,7 +43,7 @@ vi_firm(
 
   Character string giving the names of the predictor variables (i.e.,
   features) of interest. If `NULL` (the default) then the internal
-  [`get_feature_names()`](https://koalaverse.github.io/vip/reference/get_feature_names.md)
+  [`get_feature_names()`](https://bgreenwell.github.io/vip/reference/get_feature_names.md)
   function will be called to try and extract them automatically. It is
   good practice to always specify this argument.
 
@@ -72,9 +72,10 @@ vi_firm(
 
 ## Value
 
-A tidy data frame (i.e., a
-[tibble](https://tibble.tidyverse.org/reference/tibble.html) object)
-with two columns:
+A tidy data frame (specifically, a data frame inheriting from class
+`"vi"`; use
+[`tibble::as_tibble()`](https://tibble.tidyverse.org/reference/as_tibble.html)
+if you prefer a tibble) with two columns:
 
 - `Variable` - the corresponding feature name;
 
@@ -86,7 +87,7 @@ with two columns:
 This approach is based on quantifying the relative "flatness" of the
 effect of each feature and assumes the user has some familiarity with
 the [`pdp::partial()`](https://rdrr.io/pkg/pdp/man/partial.html)
-function. The Feature effects can be assessed using *partial dependence*
+function. Feature effects can be assessed using *partial dependence*
 (PD) plots (Friedman, 2001) or *individual conditional expectation*
 (ICE) plots (Goldstein et al., 2014). These methods are model-agnostic
 and can be applied to any supervised learning algorithm. By default,
@@ -141,7 +142,7 @@ mtcars.ppr <- ppr(mpg ~ ., data = mtcars, nterms = 1)
 # the training data or a prediction wrapper, but it's good practice.
 vi_firm(mtcars.ppr, train = mtcars)
 
-# For unsopported models, need to define a prediction wrapper; this approach
+# For unsupported models, need to define a prediction wrapper; this approach
 # will work for ANY model (supported or unsupported, so better to just always
 # define it pass it)
 pfun <- function(object, newdata) {

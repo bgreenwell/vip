@@ -74,7 +74,7 @@ vi_permute(
   function, then it requires two arguments, `actual` and `predicted`,
   and should return a single, numeric value. Ideally, this should be the
   same metric that was used to train `object`. See
-  [`list_metrics()`](https://koalaverse.github.io/vip/reference/list_metrics.md)
+  [`list_metrics()`](https://bgreenwell.github.io/vip/reference/list_metrics.md)
   for a list of built-in metrics.
 
 - smaller_is_better:
@@ -108,18 +108,23 @@ vi_permute(
   Integer specifying the size of the random sample to use for each Monte
   Carlo repetition. Default is `NULL` (i.e., use all of the available
   training data). Cannot be specified with `sample_frac`. Can be used to
-  reduce computation time with large data sets.
+  reduce computation time with large data sets. A single subsample is
+  drawn per repetition and the baseline performance is recomputed on
+  that subsample, so all features within a repetition are compared on
+  the same rows.
 
 - sample_frac:
 
   Proportion specifying the size of the random sample to use for each
   Monte Carlo repetition. Default is `NULL` (i.e., use all of the
   available training data). Cannot be specified with `sample_size`. Can
-  be used to reduce computation time with large data sets.
+  be used to reduce computation time with large data sets. See
+  `sample_size` for details on how the subsampling is carried out.
 
 - reference_class:
 
-  Deprecated, use `event_level` instead.
+  Deprecated, use `event_level` instead; a warning is issued (and the
+  argument otherwise ignored) if supplied.
 
 - event_level:
 
@@ -159,13 +164,14 @@ vi_permute(
   Logical indicating whether or not to run `vi_permute()` in parallel
   (using a backend provided by the
   [foreach](https://rdrr.io/pkg/foreach/man/foreach.html) package).
-  Default is `FALSE`. If `TRUE`, a
+  Default is `FALSE`. If `TRUE`, the **foreach** package must be
+  installed and a
   [foreach](https://rdrr.io/pkg/foreach/man/foreach.html)-compatible
-  backend must be provided by must be provided. Note that
-  [`set.seed()`](https://rdrr.io/r/base/Random.html) will not not work
-  with [foreach](https://rdrr.io/pkg/foreach/man/foreach.html)'s
-  parellelized for loops; for a workaround, see [this
-  solution](https://github.com/koalaverse/vip/issues/145).
+  backend must be registered. Note that
+  [`set.seed()`](https://rdrr.io/r/base/Random.html) will not work with
+  [foreach](https://rdrr.io/pkg/foreach/man/foreach.html)'s parallelized
+  for loops; for a workaround, see [this
+  solution](https://github.com/bgreenwell/vip/issues/145).
 
 - parallelize_by:
 
@@ -176,9 +182,10 @@ vi_permute(
 
 ## Value
 
-A tidy data frame (i.e., a
-[tibble](https://tibble.tidyverse.org/reference/tibble.html) object)
-with two columns:
+A tidy data frame (specifically, a data frame inheriting from class
+`"vi"`; use
+[`tibble::as_tibble()`](https://tibble.tidyverse.org/reference/as_tibble.html)
+if you prefer a tibble) with two columns:
 
 - `Variable` - the corresponding feature name;
 

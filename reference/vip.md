@@ -1,6 +1,15 @@
 # Variable importance plots
 
-Plot variable importance scores for the predictors in a model.
+Compute variable importance scores for the predictors in a model and
+plot them in a single call; a convenience wrapper around
+[vi](https://bgreenwell.github.io/vip/reference/vi.md) and
+[plot.vi](https://bgreenwell.github.io/vip/reference/plot.vi.md). If you
+already have a [vi](https://bgreenwell.github.io/vip/reference/vi.md)
+object, using [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
+directly is more flexible (its `...` are passed on to
+[tinyplot](https://grantmcdermott.com/tinyplot/man/tinyplot.html),
+whereas `vip()`'s `...` are reserved for
+[vi](https://bgreenwell.github.io/vip/reference/vi.md)).
 
 ## Usage
 
@@ -11,9 +20,10 @@ vip(object, ...)
 vip(
   object,
   num_features = 10L,
-  geom = c("col", "point", "boxplot", "violin"),
+  geom = c("bar", "point", "boxplot", "violin", "col"),
   mapping = NULL,
-  aesthetics = list(),
+  aesthetics = NULL,
+  plot_args = list(),
   horizontal = TRUE,
   all_permutations = FALSE,
   jitter = FALSE,
@@ -40,13 +50,13 @@ vip(object, ...)
 
   A fitted model (e.g., of class
   [randomForest](https://rdrr.io/pkg/randomForest/man/randomForest.html)
-  object) or a [vi](https://koalaverse.github.io/vip/reference/vi.md)
+  object) or a [vi](https://bgreenwell.github.io/vip/reference/vi.md)
   object.
 
 - ...:
 
   Additional optional arguments to be passed on to
-  [vi](https://koalaverse.github.io/vip/reference/vi.md).
+  [vi](https://bgreenwell.github.io/vip/reference/vi.md).
 
 - num_features:
 
@@ -55,45 +65,37 @@ vip(object, ...)
 
 - geom:
 
-  Character string specifying which type of plot to construct. The
-  currently available options are described below.
-
-  - `geom = "col"` uses
-    [geom_col](https://ggplot2.tidyverse.org/reference/geom_bar.html) to
-    construct a bar chart of the variable importance scores.
-
-  - `geom = "point"` uses
-    [geom_point](https://ggplot2.tidyverse.org/reference/geom_point.html)
-    to construct a Cleveland dot plot of the variable importance scores.
-
-  - `geom = "boxplot"` uses
-    [geom_boxplot](https://ggplot2.tidyverse.org/reference/geom_boxplot.html)
-    to construct a boxplot plot of the variable importance scores. This
-    option can only for the permutation-based importance method with
-    `nsim > 1` and `keep = TRUE`; see
-    [vi_permute](https://koalaverse.github.io/vip/reference/vi_permute.md)
-    for details.
-
-  - `geom = "violin"` uses
-    [geom_violin](https://ggplot2.tidyverse.org/reference/geom_violin.html)
-    to construct a violin plot of the variable importance scores. This
-    option can only for the permutation-based importance method with
-    `nsim > 1` and `keep = TRUE`; see
-    [vi_permute](https://koalaverse.github.io/vip/reference/vi_permute.md)
-    for details.
+  Character string specifying which type of plot to construct; one of
+  `"bar"` (the default), `"point"`, `"boxplot"`, or `"violin"`. See
+  [plot.vi](https://bgreenwell.github.io/vip/reference/plot.vi.md) for a
+  description of each. (The value `"col"` is accepted as a legacy alias
+  for `"bar"`.)
 
 - mapping:
 
-  Set of aesthetic mappings created by
-  [aes](https://ggplot2.tidyverse.org/reference/aes.html)-related
-  functions and/or tidy eval helpers. See example usage below.
+  Deprecated and ignored (with a warning); as of vip 0.5.0, plots are
+  drawn with
+  [tinyplot](https://grantmcdermott.com/tinyplot/man/tinyplot.html)
+  (base R graphics) instead of ggplot2, so ggplot2 aesthetic mappings no
+  longer apply. Use the `plot_args` argument to set fixed graphical
+  parameters instead.
 
 - aesthetics:
 
-  List specifying additional arguments passed on to
-  [layer](https://ggplot2.tidyverse.org/reference/layer.html). These are
-  often aesthetics, used to set an aesthetic to a fixed value,
-  like`colour = "red"` or `size = 3`. See example usage below.
+  Deprecated; use `plot_args` instead. If supplied (with a warning), it
+  is used in place of an empty `plot_args`.
+
+- plot_args:
+
+  Named list of additional graphical parameters passed on to
+  [tinyplot](https://grantmcdermott.com/tinyplot/man/tinyplot.html)
+  (e.g., `col`, `fill`, `pch`, `cex`, or `lwd`), used to set an
+  aesthetic to a fixed value, like
+  `plot_args = list(fill = "forestgreen")`. Only needed because
+  `vip()`'s `...` are reserved for
+  [vi](https://bgreenwell.github.io/vip/reference/vi.md); with
+  [plot.vi](https://bgreenwell.github.io/vip/reference/plot.vi.md) you
+  can pass these directly (e.g., `plot(vi_obj, fill = "forestgreen")`).
 
 - horizontal:
 
@@ -117,6 +119,12 @@ vip(object, ...)
   Logical indicating whether or not to include the type of variable
   importance computed in the axis label. Default is `FALSE`.
 
+## Value
+
+Draws a plot as a side effect and invisibly returns the underlying
+[vi](https://bgreenwell.github.io/vip/reference/vi.md) object (a data
+frame of variable importance scores).
+
 ## Examples
 
 ``` r
@@ -137,21 +145,17 @@ vip(model, method = "permute", train = mtcars, target = "mpg", nsim = 10,
     metric = "rmse", pred_wrapper = pfun)
 
 
-# Better yet, store the variable importance scores and then plot
+# Better yet, store the variable importance scores and then plot; `plot()`
+# passes its `...` directly to `tinyplot::tinyplot()`
 set.seed(825)  # for reproducibility
 vis <- vi(model, method = "permute", train = mtcars, target = "mpg",
           nsim = 10, metric = "rmse", pred_wrapper = pfun)
-vip(vis, geom = "point", horiz = FALSE)
-
-vip(vis, geom = "point", horiz = FALSE, aesthetics = list(size = 3))
+plot(vis, type = "point", horizontal = FALSE, col = "forestgreen", cex = 2)
 
 
-# Plot unaggregated permutation scores (boxplot colored by feature)
-library(ggplot2)  # for `aes()`-related functions and tidy eval helpers
-vip(vis, geom = "boxplot", all_permutations = TRUE, jitter = TRUE,
-    #mapping = aes_string(fill = "Variable"),   # for ggplot2 (< 3.0.0)
-    mapping = aes(fill = .data[["Variable"]]),  # for ggplot2 (>= 3.0.0)
-    aesthetics = list(color = "grey35", size = 0.8))
+# Plot unaggregated permutation scores (boxplot plus raw jittered scores)
+plot(vis, type = "boxplot", all_permutations = TRUE, jitter = TRUE,
+     fill = "grey90")
 
 
 #
@@ -188,6 +192,6 @@ pfun <- function(object, newdata) {
 # in the final tree have non-zero importance)
 set.seed(1046)  # for reproducibility
 vip(tree2, method = "permute", nsim = 10, target = "Class",
-    metric = "logloss", pred_wrapper = pfun, reference_class = "malignant")
+    metric = "logloss", pred_wrapper = pfun)
 } # }
 ```

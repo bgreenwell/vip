@@ -32,10 +32,10 @@ vi(
 - ...:
 
   Additional optional arguments to be passed on to
-  [vi_model](https://koalaverse.github.io/vip/reference/vi_model.md),
-  [vi_firm](https://koalaverse.github.io/vip/reference/vi_firm.md),
-  [vi_permute](https://koalaverse.github.io/vip/reference/vi_permute.md),
-  or [vi_shap](https://koalaverse.github.io/vip/reference/vi_shap.md);
+  [vi_model](https://bgreenwell.github.io/vip/reference/vi_model.md),
+  [vi_firm](https://bgreenwell.github.io/vip/reference/vi_firm.md),
+  [vi_permute](https://bgreenwell.github.io/vip/reference/vi_permute.md),
+  or [vi_shap](https://bgreenwell.github.io/vip/reference/vi_shap.md);
   see their respective help pages for details.
 
 - method:
@@ -44,19 +44,19 @@ vi(
   compute. Current options are:
 
   - `"model"` (the default), for model-specific VI scores (see
-    [vi_model](https://koalaverse.github.io/vip/reference/vi_model.md)
+    [vi_model](https://bgreenwell.github.io/vip/reference/vi_model.md)
     for details).
 
   - `"firm"`, for variance-based VI scores (see
-    [vi_firm](https://koalaverse.github.io/vip/reference/vi_firm.md) for
+    [vi_firm](https://bgreenwell.github.io/vip/reference/vi_firm.md) for
     details).
 
   - `"permute"`, for permutation-based VI scores (see
-    [vi_permute](https://koalaverse.github.io/vip/reference/vi_permute.md)
+    [vi_permute](https://bgreenwell.github.io/vip/reference/vi_permute.md)
     for details).
 
   - `"shap"`, for Shapley-based VI scores (see
-    [vi_shap](https://koalaverse.github.io/vip/reference/vi_shap.md) for
+    [vi_shap](https://bgreenwell.github.io/vip/reference/vi_shap.md) for
     details).
 
 - feature_names:
@@ -95,15 +95,18 @@ vi(
 
 ## Value
 
-A tidy data frame (i.e., a
-[tibble](https://tibble.tidyverse.org/reference/tibble.html) object)
-with two columns:
+A tidy data frame (specifically, a data frame inheriting from class
+`"vi"`; use
+[`tibble::as_tibble()`](https://tibble.tidyverse.org/reference/as_tibble.html)
+if you prefer a tibble) with two columns:
 
 - `Variable` - the corresponding feature name;
 
-- `Importance` - the associated importance, computed as the average
-  change in performance after a random permutation (or permutations, if
-  `nsim > 1`) of the feature in question.
+- `Importance` - the associated importance, computed by the requested
+  `method` (e.g., the average change in performance after permutation
+  for `method = "permute"`, or a model-specific measure for
+  `method = "model"`); see the help page for the corresponding `vi_*()`
+  function for details.
 
 For
 [lm](https://rdrr.io/r/stats/lm.html)/[glm](https://rdrr.io/r/stats/glm.html)-like
@@ -137,23 +140,22 @@ pfun <- function(object, newdata) predict(object, newdata = newdata)
 set.seed(1434)  # for reproducibility
 (vis <- vi(mtcars.ppr, method = "permute", target = "mpg", nsim = 10,
            metric = "rmse", pred_wrapper = pfun, train = mtcars))
-#> # A tibble: 10 × 3
-#>    Variable Importance   StDev
-#>    <chr>         <dbl>   <dbl>
-#>  1 wt         3.17     0.374  
-#>  2 hp         2.18     0.462  
-#>  3 gear       0.755    0.367  
-#>  4 qsec       0.674    0.240  
-#>  5 cyl        0.462    0.158  
-#>  6 am         0.173    0.144  
-#>  7 vs         0.0999   0.0605 
-#>  8 drat       0.0265   0.0564 
-#>  9 carb       0.00898  0.00885
-#> 10 disp      -0.000824 0.00744
+#>    Variable    Importance       StDev
+#> 1        wt  3.1695514364 0.373882437
+#> 2        hp  2.1827729928 0.462192815
+#> 3      gear  0.7551181168 0.367247278
+#> 4      qsec  0.6742140316 0.239869036
+#> 5       cyl  0.4616533211 0.157650064
+#> 6        am  0.1728278221 0.144423078
+#> 7        vs  0.0998791565 0.060458355
+#> 8      drat  0.0264724266 0.056447801
+#> 9      carb  0.0089795328 0.008853503
+#> 10     disp -0.0008240667 0.007440299
 
-# Plot variable importance scores
-vip(vis, include_type = TRUE, all_permutations = TRUE,
-    geom = "point", aesthetics = list(color = "forestgreen", size = 3))
+# Plot variable importance scores (`plot()` passes its `...` on to
+# `tinyplot::tinyplot()`)
+plot(vis, type = "point", include_type = TRUE, all_permutations = TRUE,
+     col = "forestgreen", cex = 2)
 
 
 #

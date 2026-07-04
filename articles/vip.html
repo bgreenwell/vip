@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Variable Importance Plots—An Introduction to the vip Package • vip</title>
+<title>Variable importance plots: an introduction to vip • vip</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Variable Importance Plots—An Introduction to the vip Package">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Variable importance plots: an introduction to vip">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">vip</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/koalaverse/vip/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/bgreenwell/vip/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -46,873 +46,252 @@
 </nav><div class="container template-article">
 
 
+
+
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Variable Importance Plots—An Introduction to the vip Package</h1>
+      <h1>Variable importance plots: an introduction to vip</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/koalaverse/vip/blob/main/vignettes/vip.Rmd" class="external-link"><code>vignettes/vip.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/bgreenwell/vip/blob/main/vignettes/vip.Rmd" class="external-link"><code>vignettes/vip.Rmd</code></a></small>
       <div class="d-none name"><code>vip.Rmd</code></div>
     </div>
 
     
     
-<p>This vignette is essentially an up-to-date version of <span class="citation">B. M. Greenwell and Boehmke (<a href="#ref-RJ-2020-013">2020</a>)</span>. Please use that if you’d like to cite our work.</p>
-<div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
-</h2>
-<p>Too often machine learning (ML) models are summarized using a single metric (e.g., cross-validated accuracy) and then put into production. Although we often care about the predictions from these models, it is becoming routine (and good practice) to also better understand the predictions! Understanding how an ML model makes its predictions helps build trust in the model and is the fundamental idea of the emerging field of <em>interpretable machine learning</em> (IML).<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;Although “interpretability” is difficult to formally define in the context of ML, we follow &lt;span class="citation"&gt;Doshi-Velez and Kim (&lt;a href="#ref-doshivelez-2017-rigorous"&gt;2017&lt;/a&gt;)&lt;/span&gt; and describe “interpretable” as the “…ability to explain or to present in understandable terms to a human.”&lt;/p&gt;'><sup>1</sup></a> For an in-depth discussion on IML, see <span class="citation">Molnar (<a href="#ref-molnar-2019-iml">2019b</a>)</span>. In this paper, we focus on <em>global methods</em> for quantifying the importance<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;In this context “importance” can be defined in a number of different ways. In general, we can describe it as &lt;em&gt;the extent to which a feature has a “meaningful” impact on the predicted outcome&lt;/em&gt;. A more formal definition and treatment can be found in &lt;span class="citation"&gt;Laan (&lt;a href="#ref-laan-2006-statistical"&gt;2006&lt;/a&gt;)&lt;/span&gt;.&lt;/p&gt;'><sup>2</sup></a> of features in an ML model; that is, methods that help us understand the global contribution each feature has to a model’s predictions. Computing variable importance (VI) and communicating them through variable importance plots (VIPs) is a fundamental component of IML and is the main topic of this paper.</p>
-<p>While many of the procedures discussed in this paper apply to any model that makes predictions, it should be noted that these methods heavily depend on the accuracy and importance of the fitted model; hence, unimportant features may appear relatively important (albeit not predictive) in comparison to the other included features. For this reason, we stress the usefulness of understanding the scale on which VI scores are calculated and take that into account when assessing the importance of each feature and communicating the results to others. Also, we should point out that this work focuses mostly on <em>post-hoc interpretability</em> where a trained model is given and the goal is to understand what features are driving the model’s predictions. Consequently, our work focuses on functional understanding of the model in contrast to the lower-level mechanistic understanding <span class="citation">(<a href="#ref-montavon-2018-methods">Montavon, Samek, and Müller 2018</a>)</span>. That is, we seek to explain the relationship between the model’s prediction behavior and features without explaining the full internal representation of the model.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;We refer the reader to &lt;span class="citation"&gt;Poulin et al. (&lt;a href="#ref-poulin-2006-visual"&gt;2006&lt;/a&gt;)&lt;/span&gt;, &lt;span class="citation"&gt;Caruana et al. (&lt;a href="#ref-caruana-2015-intelligible"&gt;2015&lt;/a&gt;)&lt;/span&gt;, &lt;span class="citation"&gt;Bibal and Frénay (&lt;a href="#ref-bibal-2016-intterpretability"&gt;2016&lt;/a&gt;)&lt;/span&gt;, and &lt;span class="citation"&gt;Bau et al. (&lt;a href="#ref-bau-2017-network"&gt;2017&lt;/a&gt;)&lt;/span&gt;, for discussions around model structure interpretation.&lt;/p&gt;'><sup>3</sup></a></p>
-<!-- For this reason, we stress the usefulness of understanding the scale on which VI scores are calculated and take that into account when assessing the importance of each feature and communicating the results to others. -->
-<p>VI scores and VIPs can be constructed for general ML models using a number of available packages. The <a href="https://cran.r-project.org/package=iml" class="external-link">iml</a> package <span class="citation">(<a href="#ref-R-iml">Molnar 2019a</a>)</span> provides the <code>FeatureImp()</code> function which computes feature importance for general prediction models using the permutation approach (discussed later). It is written in <a href="https://cran.r-project.org/package=R6" class="external-link">R6</a> <span class="citation">(<a href="#ref-R-R6">Chang 2019</a>)</span> and allows the user to specify a generic loss function or select one from a pre-defined list (e.g., for mean squared error). It also allows the user to specify whether importance is measured as the difference or as the ratio of the original model error and the model error after permutation. The user can also specify the number of repetitions used when permuting each feature to help stabilize the variability in the procedure. The function can also be run in parallel using any parallel backend supported by the <a href="https://cran.r-project.org/package=foreach" class="external-link">foreach</a> package <span class="citation">(<a href="#ref-R-foreach">Revolution Analytics and Weston, n.d.</a>)</span>.</p>
-<p>The <a href="https://cran.r-project.org/package=ingredients" class="external-link">ingredients</a> package <span class="citation">(<a href="#ref-R-ingredients">Biecek, Baniecki, and Izdebski 2019</a>)</span> also provides permutation-based VI scores through the <code>feature_importance()</code> function. (Note that this function recently replaced the now deprecated <a href="https://cran.r-project.org/package=DALEX" class="external-link">DALEX</a> function <code>variable_importance()</code> <span class="citation">(<a href="#ref-R-DALEX">Biecek 2019</a>)</span>.) Similar to <code>iml::FeatureImp()</code>, this function allows the user to specify a loss function and how the importance scores are computed (e.g., using the difference or ratio). It also provides an option to sample the training data before shuffling the data to compute importance (the default is to use <code>n_sample = 1000</code>), which can help speed up computation.</p>
-<p>The <a href="https://cran.r-project.org/package=mmpf" class="external-link">mmpf</a> package <span class="citation">(<a href="#ref-R-mmpf">Jones 2018</a>)</span> also provides permutation-based VI scores via the <code>mmpf::permutationImportance()</code> function. Similar to the <a href="https://cran.r-project.org/package=iml" class="external-link">iml</a> and <a href="https://cran.r-project.org/package=ingredients" class="external-link">ingredients</a> implementation, this function is flexible enough to be applied to any class of ML models in R.</p>
-<p>The <a href="https://cran.r-project.org/package=varImp" class="external-link">varImp</a> package <span class="citation">(<a href="#ref-R-varImp">Probst 2019</a>)</span> extends the permutation-based method for RFs in package <a href="https://cran.r-project.org/package=party" class="external-link">party</a> <span class="citation">(<a href="#ref-R-party">Hothorn et al. 2019</a>)</span> to arbitrary measures from the <a href="https://cran.r-project.org/package=measures" class="external-link">measures</a> package <span class="citation">(<a href="#ref-R-measures">Probst 2018</a>)</span>. Additionally, the functions in <a href="https://cran.r-project.org/package=varImp" class="external-link">varImp</a> include the option of using the conditional approach described in <span class="citation">Strobl et al. (<a href="#ref-strobl-2019-conditional">2008</a>)</span> which is more reliable in the presence of correlated features. A number of other RF-specific VI packages exist on CRAN, including, but not limited to, <a href="https://cran.r-project.org/package=vita" class="external-link">vita</a> <span class="citation">(<a href="#ref-R-vita">Celik 2015</a>)</span>, <a href="https://cran.r-project.org/package=rfVarImpOOB" class="external-link">rfVarImpOOB</a> <span class="citation">(<a href="#ref-R-rfVarImpOOB">Loecher 2019</a>)</span>, <a href="https://cran.r-project.org/package=randomForestExplainer" class="external-link">randomForestExplainer</a> <span class="citation">(<a href="#ref-R-randomForestExplainer">Paluszynska, Biecek, and Jiang 2019</a>)</span>, and <a href="https://cran.r-project.org/package=tree.interpreter" class="external-link">tree.interpreter</a> <span class="citation">(<a href="#ref-R-tree.interpreter">Sun 2019</a>)</span>.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;These packages were discovered using &lt;a href="https://cran.r-project.org/package=pkgsearch" class="external-link"&gt;pkgsearch&lt;/a&gt;’s function &lt;span class="citation"&gt;(&lt;a href="#ref-R-pkgsearch"&gt;Csárdi and Salmon 2019&lt;/a&gt;)&lt;/span&gt; with the key phrases “variable importance” and “feature importance”.&lt;/p&gt;'><sup>4</sup></a>.</p>
-<p>The <a href="https://cran.r-project.org/package=caret" class="external-link">caret</a> package <span class="citation">(<a href="#ref-R-caret">Kuhn 2020</a>)</span> includes a general <code>varImp()</code> function for computing model-specific and <em>filter-based</em> VI scores. Filter-based approaches, which are described in <span class="citation">Kuhn and Johnson (<a href="#ref-applied-kuhn-2013">2013</a>)</span>, do not make use of the fitted model to measure VI. They also do not take into account the other predictors in the model. For regression problems, a popular filter-based approach to measuring the VI of a numeric predictor <span class="math inline">\(x\)</span> is to first fit a flexible nonparametric model between <span class="math inline">\(x\)</span> and the target <span class="math inline">\(Y\)</span>; for example, the locally-weighted polynomial regression (LOWESS) method developed by <span class="citation">Cleveland (<a href="#ref-robust-cleveland-1979">1979</a>)</span>. From this fit, a pseudo-<span class="math inline">\(R^2\)</span> measure can be obtained from the resulting residuals and used as a measure of VI. For categorical predictors, a different method based on standard statistical tests (e.g., <span class="math inline">\(t\)</span>-tests and ANOVAs) can be employed; see <span class="citation">Kuhn and Johnson (<a href="#ref-applied-kuhn-2013">2013</a>)</span> for details. For classification problems, an area under the ROC curve (AUC) statistic can be used to quantify predictor importance. The AUC statistic is computed by using the predictor <span class="math inline">\(x\)</span> as input to the ROC curve. If <span class="math inline">\(x\)</span> can reasonably separate the classes of <span class="math inline">\(Y\)</span>, that is a clear indicator that <span class="math inline">\(x\)</span> is an important predictor (in terms of class separation) and this is captured in the corresponding AUC statistic. For problems with more than two classes, extensions of the ROC curve or a one-vs-all approach can be used.</p>
-<p>If you use the <a href="https://cran.r-project.org/package=mlr" class="external-link">mlr</a> interface for fitting ML models <span class="citation">(<a href="#ref-R-mlr">Bischl et al. 2020</a>)</span>, then you can use the <code>getFeatureImportance()</code> function to extract model-specific VI scores from various tree-based models (e.g., RFs and GBMs). Unlike <a href="https://cran.r-project.org/package=caret" class="external-link">caret</a>, the model needs to be fit via the <a href="https://cran.r-project.org/package=mlr" class="external-link">mlr</a> interface; for instance, you cannot use <code>getFeatureImportance()</code> on a <a href="https://cran.r-project.org/package=ranger" class="external-link">ranger</a> <span class="citation">(<a href="#ref-R-ranger">Wright, Wager, and Probst 2020</a>)</span> model unless it was fit using <a href="https://cran.r-project.org/package=mlr" class="external-link">mlr</a>.</p>
-<p>While the <a href="https://cran.r-project.org/package=iml" class="external-link">iml</a> and <a href="https://cran.r-project.org/package=DALEX" class="external-link">DALEX</a> packages provide model-agnostic approaches to computing VI, <a href="https://cran.r-project.org/package=caret" class="external-link">caret</a>, and to some extent, <a href="https://cran.r-project.org/package=mlr" class="external-link">mlr</a>, provide model-specific approaches (e.g., using the absolute value of the <span class="math inline">\(t\)</span>-statistic for linear models) as well as less accurate filter-based approaches. Furthermore, each package has a completely different interface (e.g., <a href="https://cran.r-project.org/package=iml" class="external-link">iml</a> is written in R6). The <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> package <span class="citation">(<a href="#ref-R-vip">B. Greenwell, Boehmke, and Gray 2019</a>)</span> strives to provide a consistent interface to both model-specific and model-agnostic approaches to feature importance that is simple to use. The three most important functions exported by <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> are described below:</p>
+<p>Machine learning models are often summarized by a single accuracy
+metric and then put into production. Understanding <em>which</em>
+features actually drive a model’s predictions—variable importance
+(VI)—is a fundamental part of interpretable machine learning. The
+<strong>vip</strong> package provides a single, consistent interface for
+computing VI scores (<code><a href="../reference/vi.html">vi()</a></code>) and plotting them
+(<code><a href="../reference/vip.html">vip()</a></code>) across dozens of model types, using both
+<em>model-specific</em> and <em>model-agnostic</em> approaches. This
+vignette is a condensed, up-to-date tour; for the full methodology,
+please see (and cite) our article in <em>The R Journal</em> <span class="citation">(<a href="#ref-RJ-2020-013">Greenwell and Boehmke
+2020</a>)</span>.</p>
+<p><strong>vip</strong> supports four methods, selected via the
+<code>method</code> argument to <code><a href="../reference/vi.html">vi()</a></code>:</p>
 <ul>
-<li><p><code><a href="../reference/vi.html">vi()</a></code> computes VI scores using model-specific or model-agnostic approaches (the results are always returned as a tibble [<span class="citation">Müller and Wickham (<a href="#ref-R-tibble">2019</a>)</span>});</p></li>
-<li><p><code><a href="../reference/vip.html">vip()</a></code> constructs VIPs using model-specific or model-agnostic approaches with <a href="https://cran.r-project.org/package=ggplot2" class="external-link">ggplot2</a>-style graphics <span class="citation">(<a href="#ref-R-ggplot2">Wickham et al. 2019</a>)</span>;</p></li>
+<li>
+<code>method = "model"</code> (the default): model-specific VI
+scores, extracted from the fitted model itself (e.g., split-based
+importance in trees); see <code><a href="../reference/vi_model.html">?vi_model</a></code> for the full list of
+supported classes.</li>
+<li>
+<code>method = "permute"</code>: permutation importance <span class="citation">(<a href="#ref-random-breiman-2001">Breiman 2001</a>;
+<a href="#ref-fisher-model-2018">Fisher et al. 2018</a>)</span>, the
+drop in performance after shuffling each feature.</li>
+<li>
+<code>method = "firm"</code>: variance-based importance computed
+from feature effect plots <span class="citation">(<a href="#ref-greenwell-simple-2018">Greenwell et al.
+2018</a>)</span>.</li>
+<li>
+<code>method = "shap"</code>: mean absolute Shapley values <span class="citation">(<a href="#ref-strumbelj-2014-explaining">Štrumbelj and
+Kononenko 2014</a>)</span>, computed via the <a href="https://cran.r-project.org/package=fastshap" class="external-link">fastshap</a>
+package.</li>
 </ul>
-<p>Note that <code><a href="../reference/vi.html">vi()</a></code> is actually a wrapper around four workhorse functions, <code>{vi_model()</code>, <code><a href="../reference/vi_firm.html">vi_firm()</a></code>, <code><a href="../reference/vi_permute.html">vi_permute()</a></code>, and <code><a href="../reference/vi_shap.html">vi_shap()</a></code>, that compute various types of VI scores. The first computes model-specific VI scores, while the latter three produce model-agnostic ones. The workhorse function that actually gets called is controlled by the <code>method</code> argument in <code><a href="../reference/vi.html">vi()</a></code>; the default is <code>method = "model"</code> which corresponds to model-specific VI (see <code><a href="../reference/vi.html">?vip::vi</a></code> for details and links to further documentation).</p>
-<div class="section level3">
-<h3 id="constructing-vips-in-r">Constructing VIPs in R<a class="anchor" aria-label="anchor" href="#constructing-vips-in-r"></a>
-</h3>
-<p>We’ll illustrate major concepts using the Friedman 1 benchmark problem described in <span class="citation">Friedman (<a href="#ref-multivariate-friedman-1991">1991</a>)</span> and <span class="citation">Breiman (<a href="#ref-bagging-breiman-1996">1996</a>)</span>:</p>
-<p><span class="math display" id="eq:friedman">\[\begin{equation}
-  Y_i = 10 \sin\left(\pi X_{1i} X_{2i}\right) + 20 \left(X_{3i} - 0.5\right) ^ 2 + 10 X_{4i} + 5 X_{5i} + \epsilon_i, \quad i = 1, 2, \dots, n,
-\tag{1}
-\end{equation}\]</span></p>
-<p>where <span class="math inline">\(\epsilon_i \stackrel{iid}{\sim} N\left(0, \sigma^2\right)\)</span>. Data from this model can be generated using the <code><a href="../reference/gen_friedman.html">vip::gen_friedman()</a></code>. By default, the features consist of 10 independent variables uniformly distributed on the interval <span class="math inline">\(\left[0,1\right]\)</span>; however, only 5 out of these 10 are actually used in the true model. The code chunk below simulates 500 observations from the model in Equation <a href="#eq:friedman">(1)</a> with <span class="math inline">\(\sigma = 1\)</span>; see <code><a href="../reference/gen_friedman.html">?vip::gen_friedman</a></code> for details.</p>
+<div class="section level2">
+<h2 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a>
+</h2>
+<p>Throughout we simulate data from the Friedman 1 benchmark problem
+<span class="citation">(<a href="#ref-multivariate-friedman-1991">Friedman 1991</a>)</span>: ten
+uniform features, of which only <code>x1</code>–<code>x5</code> truly
+affect the response.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trn</span> <span class="op">&lt;-</span> <span class="fu">vip</span><span class="fu">::</span><span class="fu"><a href="../reference/gen_friedman.html">gen_friedman</a></span><span class="op">(</span><span class="fl">500</span>, sigma <span class="op">=</span> <span class="fl">1</span>, seed <span class="op">=</span> <span class="fl">101</span><span class="op">)</span>  <span class="co"># simulate training data</span></span>
-<span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span>  <span class="co"># inspect output</span></span></code></pre></div>
-<pre><code><span><span class="co">## # A tibble: 500 × 11</span></span>
-<span><span class="co">##        y     x1    x2    x3    x4     x5      x6    x7    x8    x9   x10</span></span>
-<span><span class="co">##    &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span><span class="co">##  1 14.9  0.372  0.406 0.102 0.322 0.693  0.758   0.518 0.530 0.878 0.763</span></span>
-<span><span class="co">##  2 15.3  0.0438 0.602 0.602 0.999 0.776  0.533   0.509 0.487 0.118 0.176</span></span>
-<span><span class="co">##  3 15.1  0.710  0.362 0.254 0.548 0.0180 0.765   0.715 0.844 0.334 0.118</span></span>
-<span><span class="co">##  4 10.7  0.658  0.291 0.542 0.327 0.230  0.301   0.177 0.346 0.474 0.283</span></span>
-<span><span class="co">##  5 17.6  0.250  0.794 0.383 0.947 0.462  0.00487 0.270 0.114 0.489 0.311</span></span>
-<span><span class="co">##  6 18.3  0.300  0.701 0.992 0.386 0.666  0.198   0.924 0.775 0.736 0.974</span></span>
-<span><span class="co">##  7 14.6  0.585  0.365 0.283 0.488 0.845  0.466   0.715 0.202 0.905 0.640</span></span>
-<span><span class="co">##  8 17.0  0.333  0.552 0.858 0.509 0.697  0.388   0.260 0.355 0.517 0.165</span></span>
-<span><span class="co">##  9  8.54 0.622  0.118 0.490 0.390 0.468  0.360   0.572 0.891 0.682 0.717</span></span>
-<span><span class="co">## 10 15.0  0.546  0.150 0.476 0.706 0.829  0.373   0.192 0.873 0.456 0.694</span></span>
-<span><span class="co">## # ℹ 490 more rows</span></span></code></pre>
-<p>From Equation <a href="#eq:friedman">(1)</a>, it should be clear that features <span class="math inline">\(X_1\)</span>–<span class="math inline">\(X_5\)</span> are the most important! (The others don’t influence <span class="math inline">\(Y\)</span> at all.) Also, based on the form of the model, we’d expect <span class="math inline">\(X_4\)</span> to be the most important feature, probably followed by <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> (both comparably important), with <span class="math inline">\(X_5\)</span> probably being less important. The influence of <span class="math inline">\(X_3\)</span> is harder to determine due to its quadratic nature, but it seems likely that this nonlinearity will suppress the variable’s influence over its observed range (i.e., 0–1).</p>
-</div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bgreenwell/vip" class="external-link">vip</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'vip'</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:utils':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     vi</span></span>
+<span></span>
+<span><span class="va">trn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gen_friedman.html">gen_friedman</a></span><span class="op">(</span><span class="fl">500</span>, seed <span class="op">=</span> <span class="fl">101</span><span class="op">)</span>  <span class="co"># see ?vip::gen_friedman</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          y         x1        x2        x3        x4         x5          x6</span></span>
+<span><span class="co">#&gt; 1 14.47244 0.37219838 0.4055438 0.1016229 0.3224803 0.69258669 0.757968756</span></span>
+<span><span class="co">#&gt; 2 14.94207 0.04382482 0.6022770 0.6022517 0.9986640 0.77643413 0.532993932</span></span>
+<span><span class="co">#&gt; 3 14.11543 0.70968402 0.3619997 0.2536424 0.5484119 0.01797597 0.764821812</span></span>
+<span><span class="co">#&gt; 4 10.17991 0.65769040 0.2912156 0.5419870 0.3274199 0.22965950 0.300911111</span></span>
+<span><span class="co">#&gt; 5 17.86439 0.24985572 0.7937777 0.3834077 0.9474794 0.46236212 0.004866698</span></span>
+<span><span class="co">#&gt; 6 18.19178 0.30005483 0.7013581 0.9919663 0.3864848 0.66623343 0.198093488</span></span>
+<span><span class="co">#&gt;          x7        x8        x9       x10</span></span>
+<span><span class="co">#&gt; 1 0.5178156 0.5303942 0.8778652 0.7627513</span></span>
+<span><span class="co">#&gt; 2 0.5094878 0.4874874 0.1176985 0.1755692</span></span>
+<span><span class="co">#&gt; 3 0.7150814 0.8444552 0.3343627 0.1183739</span></span>
+<span><span class="co">#&gt; 4 0.1767543 0.3457895 0.4744478 0.2830193</span></span>
+<span><span class="co">#&gt; 5 0.2695334 0.1141429 0.4886461 0.3106974</span></span>
+<span><span class="co">#&gt; 6 0.9235006 0.7748745 0.7356329 0.9738575</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="model-specific-vi">Model-specific VI<a class="anchor" aria-label="anchor" href="#model-specific-vi"></a>
+<h2 id="model-specific-importance">Model-specific importance<a class="anchor" aria-label="anchor" href="#model-specific-importance"></a>
 </h2>
-<p>Some machine learning algorithms have their own way of quantifying the importance of each feature, which we refer to as <em>model-specific VI</em>. We describe some of these in the subsections that follow. One particular issue with model-specific VI scores is that they are not necessarily comparable across different types of models. For example, directly comparing the impurity-based VI scores from tree-based models to the the absolute value of the <span class="math inline">\(t\)</span>-statistic in linear models.</p>
-<div class="section level3">
-<h3 id="decision-trees-and-tree-ensembles">Decision trees and tree ensembles<a class="anchor" aria-label="anchor" href="#decision-trees-and-tree-ensembles"></a>
-</h3>
-<p>Decision trees probably offer the most natural model-specific approach to quantifying the importance of each feature. In a binary decision tree, at each node <span class="math inline">\(t\)</span>, a single predictor is used to partition the data into two homogeneous groups. The chosen predictor is the one that maximizes some measure of improvement <span class="math inline">\(i^t\)</span>. The relative importance of predictor <span class="math inline">\(X\)</span> is the sum of the squared improvements over all internal nodes of the tree for which <span class="math inline">\(X\)</span> was chosen as the partitioning variable; see <span class="citation">Breiman, Friedman, and Charles J. Stone (<a href="#ref-classification-breiman-1984">1984</a>)</span> for details. This idea also extends to ensembles of decision trees, such as RFs and GBMs. In ensembles, the improvement score for each predictor is averaged across all the trees in the ensemble. Fortunately, due to the stabilizing effect of averaging, the improvement-based VI metric is often more reliable in large ensembles; see <span class="citation">Hastie, Tibshirani, and Friedman (<a href="#ref-hastie-elements-2009">2009, 368</a>)</span>.</p>
-<p>RFs offer an additional method for computing VI scores. The idea is to use the leftover <em>out-of-bag</em> (OOB) data to construct validation-set errors for each tree. Then, each predictor is randomly shuffled in the OOB data and the error is computed again. The idea is that if variable <span class="math inline">\(X\)</span> is important, then the validation error will go up when <span class="math inline">\(X\)</span> is perturbed in the OOB data. The difference in the two errors is recorded for the OOB data then averaged across all trees in the forest. Note that both methods for constructing VI scores can be unreliable in certain situations; for example, when the predictor variables vary in their scale of measurement or their number of categories [<span class="citation">Strobl et al. (<a href="#ref-party2007a">2007</a>)</span>, or when the predictors are highly correlated <span class="citation">(<a href="#ref-strobl-2019-conditional">Strobl et al. 2008</a>)</span>. The <a href="https://cran.r-project.org/package=varImp" class="external-link">varImp</a> package discussed earlier provides methods to address these concerns for random forests in package <a href="https://cran.r-project.org/package=party" class="external-link">party</a>, with similar functionality also built into the <a href="https://cran.r-project.org/package=partykit" class="external-link">partykit</a> package <span class="citation">(<a href="#ref-R-partykit">Hothorn and Zeileis 2019</a>)</span>. The <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> package also supports the conditional importance described in <span class="citation">(<a href="#ref-strobl-2019-conditional">Strobl et al. 2008</a>)</span> for both <a href="https://cran.r-project.org/package=party" class="external-link">party</a>- and <a href="https://cran.r-project.org/package=partykit" class="external-link">partykit</a>-based RFs; see <code><a href="../reference/vi_model.html">?vip::vi_model</a></code> for details. Later on, we’ll discuss a more general permutation method that can be applied to any supervised learning model.</p>
-<p>To illustrate, we fit a CART-like regression tree, RF, and GBM to the simulated training data. (<strong>Note:</strong> there are a number of different packages available for fitting these types of models, we just picked popular implementations for illustration.)</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Load required packages</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bethatkinson/rpart" class="external-link">rpart</a></span><span class="op">)</span>          <span class="co"># for fitting CART-like decision trees</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.stat.berkeley.edu/~breiman/RandomForests/" class="external-link">randomForest</a></span><span class="op">)</span>   <span class="co"># for fitting RFs</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span>        <span class="co"># for fitting GBMs</span></span>
+<p>When a model class provides its own importance measure,
+<code><a href="../reference/vi.html">vi()</a></code> extracts it directly. For example, decision trees
+measure importance through the goodness of split <span class="citation">(<a href="#ref-classification-breiman-1984">Breiman et
+al. 1984</a>)</span>:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bethatkinson/rpart" class="external-link">rpart</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Fit a single regression tree</span></span>
 <span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/rpart/man/rpart.html" class="external-link">rpart</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">trn</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Fit an RF</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">101</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="va">rfo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/randomForest/man/randomForest.html" class="external-link">randomForest</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">trn</span>, importance <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Fit a GBM</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">102</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="va">bst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.matrix.html" class="external-link">data.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">trn</span>, select <span class="op">=</span> <span class="op">-</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  label <span class="op">=</span> <span class="va">trn</span><span class="op">$</span><span class="va">y</span>,</span>
-<span>  objective <span class="op">=</span> <span class="st">"reg:squarederror"</span>,</span>
-<span>  nrounds <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  max_depth <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  eta <span class="op">=</span> <span class="fl">0.3</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="fl">0</span>  <span class="co"># suppress printing</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Each of the above packages include the ability to compute VI scores for all the features in the model; however, the implementation is rather package-specific, as shown in the code chunk below. The results are displayed in Figure <a href="#fig:vi-plots"><strong>??</strong></a> (the code to reproduce these plots has been omitted but can be made available upon request).</p>
+<span><span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span>  <span class="co"># a data frame of class "vi"</span></span>
+<span><span class="co">#&gt;    Variable Importance</span></span>
+<span><span class="co">#&gt; 1        x4  4339.3731</span></span>
+<span><span class="co">#&gt; 2        x2  2226.0447</span></span>
+<span><span class="co">#&gt; 3        x1  2180.1566</span></span>
+<span><span class="co">#&gt; 4        x5   919.1159</span></span>
+<span><span class="co">#&gt; 5        x3   580.9045</span></span>
+<span><span class="co">#&gt; 6        x9   471.2040</span></span>
+<span><span class="co">#&gt; 7        x6   442.5479</span></span>
+<span><span class="co">#&gt; 8       x10   342.8346</span></span>
+<span><span class="co">#&gt; 9        x7   244.3592</span></span>
+<span><span class="co">#&gt; 10       x8   172.1922</span></span></code></pre></div>
+<p><code>"vi"</code> objects have a <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method (drawing
+with lightweight base R graphics via the <a href="https://grantmcdermott.com/tinyplot/" class="external-link">tinyplot</a> package) that
+invisibly returns the plotted <code>"vi"</code> object;
+<code><a href="../reference/vip.html">vip()</a></code> is a convenience wrapper that computes the scores and
+plots them in one call:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span>  <span class="co"># equivalent to plot(vi(tree))</span></span></code></pre></div>
+<p><img src="vip_files/figure-html/model-specific-plot-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level2">
+<h2 id="permutation-importance">Permutation importance<a class="anchor" aria-label="anchor" href="#permutation-importance"></a>
+</h2>
+<p>Permutation importance works for <em>any</em> model. You supply the
+training data, the target, a performance <code>metric</code>, and a
+prediction wrapper (<code>pred_wrapper</code>) that tells
+<strong>vip</strong> how to generate predictions from your model:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Extract VI scores from each model</span></span>
-<span><span class="va">vi_tree</span> <span class="op">&lt;-</span> <span class="va">tree</span><span class="op">$</span><span class="va">variable.importance</span></span>
-<span><span class="va">vi_rfo</span> <span class="op">&lt;-</span> <span class="va">rfo</span><span class="op">$</span><span class="va">variable.importance</span>  <span class="co"># or use `randomForest::importance(rfo)`</span></span>
-<span><span class="va">vi_bst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.importance.html" class="external-link">xgb.importance</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">bst</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../reference/figures/vi-plots-1.png" alt="Model-specific VIPs for the three different tree-based models fit to the simulated Friedman data." width="100%"></p>
-<p>As we would expect, all three methods rank the variables <code>x1</code>–<code>x5</code> as more important than the others. While this is good news, it is unfortunate that we have to remember the different functions and ways of extracting and plotting VI scores from various model fitting functions. This is one place where <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> can help…one function to rule them all! Once <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> is loaded, we can use <code><a href="../reference/vi.html">vi()</a></code> to extract a tibble of VI scores.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;In order to avoid deprecation warnings due to recent updates to &lt;a href="https://cran.r-project.org/package=tibble" class="external-link"&gt;tibble&lt;/a&gt; and &lt;a href="https://cran.r-project.org/package=ggplot2" class="external-link"&gt;ggplot2&lt;/a&gt;, the code examples in this article are based on the latest development versions of both &lt;a href="https://cran.r-project.org/package=vip" class="external-link"&gt;vip&lt;/a&gt; (version 0.4.1) and &lt;a href="https://cran.r-project.org/package=pdp" class="external-link"&gt;pdp&lt;/a&gt; (version 0.8.1); the URL to the development version of each package is available on its associated CRAN landing page.&lt;/p&gt;'><sup>5</sup></a></p>
+<code class="sourceCode R"><span><span class="va">pfun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">object</span>, <span class="va">newdata</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">object</span>, newdata <span class="op">=</span> <span class="va">newdata</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">102</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
+<span><span class="va">vis</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">tree</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"permute"</span>, train <span class="op">=</span> <span class="va">trn</span>, target <span class="op">=</span> <span class="st">"y"</span>, metric <span class="op">=</span> <span class="st">"rmse"</span>,</span>
+<span>  pred_wrapper <span class="op">=</span> <span class="va">pfun</span>, nsim <span class="op">=</span> <span class="fl">10</span>  <span class="co"># average over 10 permutations</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">vis</span></span>
+<span><span class="co">#&gt;    Variable Importance      StDev</span></span>
+<span><span class="co">#&gt; 1        x4  2.4607753 0.13158990</span></span>
+<span><span class="co">#&gt; 2        x2  1.5100570 0.09939687</span></span>
+<span><span class="co">#&gt; 3        x1  1.2945714 0.08585396</span></span>
+<span><span class="co">#&gt; 4        x5  0.5815745 0.05896560</span></span>
+<span><span class="co">#&gt; 5        x3  0.3458391 0.06514739</span></span>
+<span><span class="co">#&gt; 6        x6  0.0000000 0.00000000</span></span>
+<span><span class="co">#&gt; 7        x7  0.0000000 0.00000000</span></span>
+<span><span class="co">#&gt; 8        x8  0.0000000 0.00000000</span></span>
+<span><span class="co">#&gt; 9        x9  0.0000000 0.00000000</span></span>
+<span><span class="co">#&gt; 10      x10  0.0000000 0.00000000</span></span></code></pre></div>
+<p>With <code>nsim &gt; 1</code> the raw per-permutation scores are
+retained, so the variation in the scores can be displayed with boxplots
+or violins; additional arguments to <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> are passed on to
+<code><a href="https://grantmcdermott.com/tinyplot/man/tinyplot.html" class="external-link">tinyplot::tinyplot()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Load required packages</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/koalaverse/vip/" class="external-link">vip</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Compute model-specific VI scores</span></span>
-<span><span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span>  <span class="co"># CART-like decision tree</span></span></code></pre></div>
-<pre><code><span><span class="co">## # A tibble: 10 × 2</span></span>
-<span><span class="co">##    Variable Importance</span></span>
-<span><span class="co">##    &lt;chr&gt;         &lt;dbl&gt;</span></span>
-<span><span class="co">##  1 x4            4234.</span></span>
-<span><span class="co">##  2 x2            2513.</span></span>
-<span><span class="co">##  3 x1            2461.</span></span>
-<span><span class="co">##  4 x5            1230.</span></span>
-<span><span class="co">##  5 x3             688.</span></span>
-<span><span class="co">##  6 x6             533.</span></span>
-<span><span class="co">##  7 x7             357.</span></span>
-<span><span class="co">##  8 x9             331.</span></span>
-<span><span class="co">##  9 x8             276.</span></span>
-<span><span class="co">## 10 x10            275.</span></span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vis</span>, type <span class="op">=</span> <span class="st">"boxplot"</span>, all_permutations <span class="op">=</span> <span class="cn">TRUE</span>, jitter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>     fill <span class="op">=</span> <span class="st">"grey90"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="vip_files/figure-html/permute-plot-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level2">
+<h2 id="variance-based-importance-firm">Variance-based importance (FIRM)<a class="anchor" aria-label="anchor" href="#variance-based-importance-firm"></a>
+</h2>
+<p>The FIRM approach measures the relative “flatness” of each feature’s
+effect, estimated via partial dependence <span class="citation">(<a href="#ref-friedman-2001-greedy">Friedman 2001</a>)</span> using the <a href="https://cran.r-project.org/package=pdp" class="external-link">pdp</a> package:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">tree</span>, method <span class="op">=</span> <span class="st">"firm"</span>, train <span class="op">=</span> <span class="va">trn</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    Variable Importance</span></span>
+<span><span class="co">#&gt; 1        x4  2.7747920</span></span>
+<span><span class="co">#&gt; 2        x2  1.7861122</span></span>
+<span><span class="co">#&gt; 3        x1  1.5560507</span></span>
+<span><span class="co">#&gt; 4        x5  0.9018752</span></span>
+<span><span class="co">#&gt; 5        x3  0.4036167</span></span>
+<span><span class="co">#&gt; 6        x6  0.0000000</span></span>
+<span><span class="co">#&gt; 7        x7  0.0000000</span></span>
+<span><span class="co">#&gt; 8        x8  0.0000000</span></span>
+<span><span class="co">#&gt; 9        x9  0.0000000</span></span>
+<span><span class="co">#&gt; 10      x10  0.0000000</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="shapley-based-importance">Shapley-based importance<a class="anchor" aria-label="anchor" href="#shapley-based-importance"></a>
+</h2>
+<p>SHAP-based importance aggregates the mean absolute Shapley value of
+each feature, computed with <a href="https://cran.r-project.org/package=fastshap" class="external-link">fastshap</a>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">rfo</span><span class="op">)</span>   <span class="co"># RF</span></span></code></pre></div>
-<pre><code><span><span class="co">## # A tibble: 10 × 2</span></span>
-<span><span class="co">##    Variable Importance</span></span>
-<span><span class="co">##    &lt;chr&gt;         &lt;dbl&gt;</span></span>
-<span><span class="co">##  1 x4           72.9  </span></span>
-<span><span class="co">##  2 x2           61.4  </span></span>
-<span><span class="co">##  3 x1           55.6  </span></span>
-<span><span class="co">##  4 x5           37.0  </span></span>
-<span><span class="co">##  5 x3           22.0  </span></span>
-<span><span class="co">##  6 x8            1.84 </span></span>
-<span><span class="co">##  7 x6            1.12 </span></span>
-<span><span class="co">##  8 x9            0.720</span></span>
-<span><span class="co">##  9 x7           -1.39 </span></span>
-<span><span class="co">## 10 x10          -2.61</span></span></code></pre>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">bst</span><span class="op">)</span>   <span class="co"># GBM</span></span></code></pre></div>
-<pre><code><span><span class="co">## # A tibble: 10 × 2</span></span>
-<span><span class="co">##    Variable Importance</span></span>
-<span><span class="co">##    &lt;chr&gt;         &lt;dbl&gt;</span></span>
-<span><span class="co">##  1 x4          0.403  </span></span>
-<span><span class="co">##  2 x2          0.225  </span></span>
-<span><span class="co">##  3 x1          0.189  </span></span>
-<span><span class="co">##  4 x5          0.0894 </span></span>
-<span><span class="co">##  5 x3          0.0682 </span></span>
-<span><span class="co">##  6 x9          0.00802</span></span>
-<span><span class="co">##  7 x6          0.00746</span></span>
-<span><span class="co">##  8 x7          0.00400</span></span>
-<span><span class="co">##  9 x10         0.00377</span></span>
-<span><span class="co">## 10 x8          0.00262</span></span></code></pre>
-<p>Notice how the <code><a href="../reference/vi.html">vi()</a></code> function always returns a tibble<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;Technically, it’s a tibble with an additional &lt;code&gt;"vi"&lt;/code&gt; class.&lt;/p&gt;'><sup>6</sup></a> with two columns: <code>Variable</code> and <code>Importance</code> (the exceptions are coefficient-based models which also include a <code>Sign</code> column giving the sign of the corresponding coefficient, and permutation importance involving multiple Monte Carlo simulations, but more on that later). Also, by default, <code><a href="../reference/vi.html">vi()</a></code> always orders the VI scores from highest to lowest; this, among other options, can be controlled by the user (see <code><a href="../reference/vi.html">?vip::vi</a></code> for details). Plotting VI scores with <code><a href="../reference/vip.html">vip()</a></code> is just as straightforward. For example, the following code can be used to reproduce Figure <a href="#fig:vi-plots"><strong>??</strong></a>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span>  <span class="co"># for easily arranging multiple ggplot2 plots</span></span>
-<span></span>
-<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Single tree"</span><span class="op">)</span></span>
-<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">rfo</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Random forest"</span><span class="op">)</span></span>
-<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">bst</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Gradient boosting"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Display plots in a grid (Figure 1)</span></span>
-<span><span class="va">p1</span> <span class="op">+</span> <span class="va">p2</span> <span class="op">+</span> <span class="va">p3</span></span></code></pre></div>
-<p>Notice how the <code><a href="../reference/vip.html">vip()</a></code> function always returns a <code>"ggplot"</code> object (by default, this will be a bar plot). For large models with many features, a Cleveland dot plot is more effective (in fact, a number of useful plotting options can be fiddled with). Below we call <code><a href="../reference/vip.html">vip()</a></code> and change a few useful options (the resulting plot is displayed in Figure <a href="#fig:dot-plot"><strong>??</strong></a>. Note that we can also call <code><a href="../reference/vip.html">vip()</a></code> directly on a <code>"vi"</code> object if it’s already been constructed.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Construct VIP (Figure 2)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>  <span class="co"># for theme_light() function</span></span>
-<span><span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">bst</span>, num_features <span class="op">=</span> <span class="fl">5</span>, geom <span class="op">=</span> <span class="st">"point"</span>, horizontal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>    aesthetics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"red"</span>, shape <span class="op">=</span> <span class="fl">17</span>, size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_light</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../reference/figures/dot-plot-1.png" alt="Illustrating various plotting options." width="70%"></p>
-</div>
-<div class="section level3">
-<h3 id="linear-models">Linear models<a class="anchor" aria-label="anchor" href="#linear-models"></a>
-</h3>
-<p>In multiple linear regression, or linear models (LMs), the absolute value of the <span class="math inline">\(t\)</span>-statistic (or some other scaled variant of the estimated coefficients) is commonly used as a measure of VI.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Since this approach is biased towards large-scale features it is important to properly standardize the predictors (before fitting the model) or the estimated coefficients.&lt;/p&gt;"><sup>7</sup></a>. Motivation for the use of the assoicated <span class="math inline">\(t\)</span>-statistic is given in <span class="citation">Bring (<a href="#ref-bring-1994-standardize">1994</a>)</span>. The same idea also extends to generalized linear models (GLMs). In the code chunk below, we fit an LM to the simulated Friedman data (<code>trn</code>) allowing for all main effects and two-way interactions, then use the <code><a href="https://rdrr.io/r/stats/step.html" class="external-link">step()</a></code> function to perform backward elimination. The resulting VIP is displayed in Figure <a href="#fig:vip-step"><strong>??</strong></a>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Fit a LM</span></span>
-<span><span class="va">linmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span><span class="op">^</span><span class="fl">2</span>, data <span class="op">=</span> <span class="va">trn</span><span class="op">)</span></span>
-<span><span class="va">backward</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/step.html" class="external-link">step</a></span><span class="op">(</span><span class="va">linmod</span>, direction <span class="op">=</span> <span class="st">"backward"</span>, trace <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Extract VI scores</span></span>
-<span><span class="op">(</span><span class="va">vi_backward</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">backward</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## # A tibble: 21 × 3</span></span>
-<span><span class="co">##    Variable Importance Sign </span></span>
-<span><span class="co">##    &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;</span></span>
-<span><span class="co">##  1 x4            14.2  POS  </span></span>
-<span><span class="co">##  2 x2             7.31 POS  </span></span>
-<span><span class="co">##  3 x1             5.63 POS  </span></span>
-<span><span class="co">##  4 x5             5.21 POS  </span></span>
-<span><span class="co">##  5 x3:x5          2.46 POS  </span></span>
-<span><span class="co">##  6 x1:x10         2.41 NEG  </span></span>
-<span><span class="co">##  7 x2:x6          2.41 NEG  </span></span>
-<span><span class="co">##  8 x1:x5          2.37 NEG  </span></span>
-<span><span class="co">##  9 x10            2.21 POS  </span></span>
-<span><span class="co">## 10 x3:x4          2.01 NEG  </span></span>
-<span><span class="co">## # ℹ 11 more rows</span></span></code></pre>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Plot VI scores; by default, `vip()` displays the top ten features</span></span>
-<span><span class="va">pal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palette.html" class="external-link">palette.colors</a></span><span class="op">(</span><span class="fl">2</span>, palette <span class="op">=</span> <span class="st">"Okabe-Ito"</span><span class="op">)</span>  <span class="co"># colorblind friendly palette</span></span>
-<span><span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">vi_backward</span>, num_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">backward</span><span class="op">)</span><span class="op">)</span>,  <span class="co"># Figure 3</span></span>
-<span>    geom <span class="op">=</span> <span class="st">"point"</span>, horizontal <span class="op">=</span> <span class="cn">FALSE</span>, mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">Sign</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">pal</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_light</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../reference/figures/vip-step-1.png" alt="Example VIP from a linear model fit to the simulated Friedman data. The points are colored according to the sign of the associated coefficient." width="70%"></p>
-<p>A major limitation of this approach is that a VI score is assigned to each term in the model, rather than to each individual feature! We can solve this problem using one of the model-agnostic approaches discussed later.</p>
-<p>Multivariate adaptive regression splines (MARS), which were introduced in <span class="citation">Friedman (<a href="#ref-multivariate-friedman-1991">1991</a>)</span>, is an automatic regression technique and can be seen as a generalization of LMs and GLMs. In the MARS algorithm, the contribution (or VI score) for each predictor is determined using a generalized cross-validation (GCV) statistic (though, other statistics can also be used; see for details). An example using the <a href="https://cran.r-project.org/package=earth" class="external-link">earth</a> package <span class="citation">(<a href="#ref-R-earth-fixed">Milborrow 2019</a>)</span> is given below (the results are plotted in Figure <a href="#fig:vip-earth"><strong>??</strong></a>):</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Load required packages</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.milbo.users.sonic.net/earth/" class="external-link">earth</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Fit a MARS model</span></span>
-<span><span class="va">mars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/earth/man/earth.html" class="external-link">earth</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">trn</span>, degree <span class="op">=</span> <span class="fl">2</span>, pmethod <span class="op">=</span> <span class="st">"exhaustive"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Extract VI scores</span></span>
-<span><span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">mars</span>, type <span class="op">=</span> <span class="st">"gcv"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## # A tibble: 10 × 2</span></span>
-<span><span class="co">##    Variable Importance</span></span>
-<span><span class="co">##    &lt;chr&gt;         &lt;dbl&gt;</span></span>
-<span><span class="co">##  1 x4            100  </span></span>
-<span><span class="co">##  2 x1             83.2</span></span>
-<span><span class="co">##  3 x2             83.2</span></span>
-<span><span class="co">##  4 x5             59.3</span></span>
-<span><span class="co">##  5 x3             43.5</span></span>
-<span><span class="co">##  6 x6              0  </span></span>
-<span><span class="co">##  7 x7              0  </span></span>
-<span><span class="co">##  8 x8              0  </span></span>
-<span><span class="co">##  9 x9              0  </span></span>
-<span><span class="co">## 10 x10             0</span></span></code></pre>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Plot VI scores (Figure 4)</span></span>
-<span><span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">mars</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../reference/figures/vip-earth-1.png" alt="Example VIP from a MARS model fit to the simulated Friedman data." width="70%"></p>
-<p>To access VI scores directly in <a href="https://cran.r-project.org/package=earth" class="external-link">earth</a>, you can use the <code><a href="https://rdrr.io/pkg/earth/man/evimp.html" class="external-link">earth::evimp()</a></code> function.</p>
-</div>
-<div class="section level3">
-<h3 id="neural-networks">Neural networks<a class="anchor" aria-label="anchor" href="#neural-networks"></a>
-</h3>
-<p>For neural networks (NNs), two popular methods for constructing VI scores are the Garson algorithm <span class="citation">(<a href="#ref-interpreting-garson-1991">Garson 1991</a>)</span>, later modified by <span class="citation">Goh (<a href="#ref-back-goh-1995">1995</a>)</span>, and the Olden algorithm <span class="citation">(<a href="#ref-accurate-olden-2004">Olden, Joy, and Death 2004</a>)</span>. For both algorithms, the basis of these VI scores is the network’s connection weights. The Garson algorithm determines VI by identifying all weighted connections between the nodes of interest. Olden’s algorithm, on the other hand, uses the products of the raw connection weights between each input and output neuron and sums these products across all hidden neurons. This has been shown to outperform the Garson method in various simulations. For DNNs, a similar method due to <span class="citation">Gedeon (<a href="#ref-data-gedeon-1997">1997</a>)</span> considers the weights connecting the input features to the first two hidden layers (for simplicity and speed); but this method can be slow for large networks. We illustrate these two methods below using <code><a href="../reference/vip.html">vip()</a></code> with the <a href="https://cran.r-project.org/package=nnet" class="external-link">nnet</a> package <span class="citation">(<a href="#ref-R-nnet">Ripley 2016</a>)</span> (see the results in Figure <a href="#fig:vip-nnet"><strong>??</strong></a>).</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Load required packages</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/" class="external-link">nnet</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Fit a neural network</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">0803</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="va">nn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/nnet/man/nnet.html" class="external-link">nnet</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">trn</span>, size <span class="op">=</span> <span class="fl">7</span>, decay <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>           linout <span class="op">=</span> <span class="cn">TRUE</span>, trace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Construct VIPs</span></span>
-<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">nn</span>, type <span class="op">=</span> <span class="st">"garson"</span><span class="op">)</span></span>
-<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">nn</span>, type <span class="op">=</span> <span class="st">"olden"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Display plots in a grid (Figure 5)</span></span>
-<span><span class="va">p1</span> <span class="op">+</span> <span class="va">p2</span></span></code></pre></div>
-<p><img src="../reference/figures/vip-nnet-1.png" alt="Example VIPs from a single-hidden-layer NN fit to the simulated Friedman data." width="70%"></p>
-</div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">103</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
+<span><span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">tree</span>, method <span class="op">=</span> <span class="st">"shap"</span>, train <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">trn</span>, select <span class="op">=</span> <span class="op">-</span><span class="va">y</span><span class="op">)</span>,</span>
+<span>   pred_wrapper <span class="op">=</span> <span class="va">pfun</span>, nsim <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    Variable Importance</span></span>
+<span><span class="co">#&gt; 1        x4  2.7516558</span></span>
+<span><span class="co">#&gt; 2        x2  1.8272401</span></span>
+<span><span class="co">#&gt; 3        x1  1.1810544</span></span>
+<span><span class="co">#&gt; 4        x5  0.8386485</span></span>
+<span><span class="co">#&gt; 5        x3  0.3018232</span></span>
+<span><span class="co">#&gt; 6        x6  0.0000000</span></span>
+<span><span class="co">#&gt; 7        x7  0.0000000</span></span>
+<span><span class="co">#&gt; 8        x8  0.0000000</span></span>
+<span><span class="co">#&gt; 9        x9  0.0000000</span></span>
+<span><span class="co">#&gt; 10      x10  0.0000000</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="model-agnostic-vi">Model-agnostic VI<a class="anchor" aria-label="anchor" href="#model-agnostic-vi"></a>
+<h2 id="plotting-options">Plotting options<a class="anchor" aria-label="anchor" href="#plotting-options"></a>
 </h2>
-<p>Model-agnostic interpretability separates interpretation from the model. Compared to model-specific approaches, model-agnostic VI methods are more flexible and can be applied to any supervised learning algorithm. In this section, we discuss model-agnostic methods for quantifying global feature importance using three different approaches:</p>
-<ol style="list-style-type: decimal">
-<li>a simple variance-based approach;</li>
-<li>permutation-based feature importance;</li>
-<li>Shapley-based feature importance.</li>
-</ol>
-<div class="section level3">
-<h3 id="variance-based-methods">Variance-based methods<a class="anchor" aria-label="anchor" href="#variance-based-methods"></a>
-</h3>
-<p>Our first model-agnostic method is based on a simple <em>feature importance ranking measure</em> (FIRM); for details, see <span class="citation">B. M. Greenwell, Boehmke, and McCarthy (<a href="#ref-greenwell-simple-2018">2018</a>)</span>, <span class="citation">Zien et al. (<a href="#ref-zien-2009-feature">2009</a>)</span>, and <span class="citation">Scholbeck et al. (<a href="#ref-scholbeck-2019-sampling">2019</a>)</span>. The specific approach used here is based on quantifying the “flatness” of the effects of each feature.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;A similar approach is taken in the &lt;a href="https://cran.r-project.org/package=vivo" class="external-link"&gt;vivo&lt;/a&gt; package &lt;span class="citation"&gt;(&lt;a href="#ref-R-vivo"&gt;Kozak and Biecek 2019&lt;/a&gt;)&lt;/span&gt;.&lt;/p&gt;'><sup>8</sup></a> Feature effects can be assessed using <em>partial dependence plots</em> (PDPs) or <em>individual conditional expectation</em> (ICE) curves <span class="citation">(<a href="#ref-goldstein-peeking-2015">Goldstein et al. 2015</a>)</span>. PDPs and ICE curves help visualize the effect of low cardinality subsets of the feature space on the estimated prediction surface (e.g., main effects and two/three-way interaction effects.). They are also model-agnostic and can be constructed in the same way for any supervised learning algorithm. Below, we fit a <em>projection pursuit regression</em> (PPR) model (see <code><a href="https://rdrr.io/r/stats/ppr.html" class="external-link">?stats::ppr</a></code> for details and references) and construct PDPs for each feature using the <a href="https://cran.r-project.org/package=pdp" class="external-link">pdp</a> package <span class="citation">B. M. Greenwell (<a href="#ref-pdp2017">2017</a>)</span>. The results are displayed in Figure <a href="#fig:pdp-ppr"><strong>??</strong></a>. Notice how the PDPs for the uninformative features are relatively flat compared to the PDPs for features <code>x1</code>–<code>x5</code>!</p>
-<p><img src="../reference/figures/pdp-ppr-1.png" alt="PDPs of main effects in the PPR model fit to the simulated Friedman data." width="100%"></p>
-<p>Next, we compute PDP-based VI scores for the fitted PPR and NN models. The PDP method constructs VI scores that quantify the relative “flatness” of each PDP (by default, this is defined by computing the standard deviation of the <span class="math inline">\(y\)</span>-axis values for each PDP). To use the PDP method, specify <code>method = "firm"</code> in the call to <code><a href="../reference/vi.html">vi()</a></code> or <code><a href="../reference/vip.html">vip()</a></code> (or just use <code><a href="../reference/vi_firm.html">vi_firm()</a></code> directly):</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Fit a PPR model (nterms was chosen using the caret package with 5 repeats of</span></span>
-<span><span class="co"># 5-fold cross-validation)</span></span>
-<span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ppr.html" class="external-link">ppr</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">trn</span>, nterms <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Construct VIPs</span></span>
-<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">pp</span>, method <span class="op">=</span> <span class="st">"firm"</span>, train <span class="op">=</span> <span class="va">trn</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"PPR"</span><span class="op">)</span></span>
-<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">nn</span>, method <span class="op">=</span> <span class="st">"firm"</span>, train <span class="op">=</span> <span class="va">trn</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"NN"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Display plots in a grid (Figure 7)</span></span>
-<span><span class="va">p1</span> <span class="op">+</span> <span class="va">p2</span></span></code></pre></div>
-<p><img src="../reference/figures/pdp-ppr-nn-1.png" alt="PDP-based feature importance for the PPR and NN models fit to the simulated Friedman data." width="70%"></p>
-<p>In Figure <a href="#fig:pdp-ppr-nn"><strong>??</strong></a> we display the PDP-based feature importance for the previously obtained PPR and NN models. These VI scores essentially capture the variability in the partial dependence values for each main effect.</p>
-<p>The ICE curve method is similar to the PDP method, except that we measure the “flatness” of each individual ICE curve and then aggregate the results (e.g., by averaging). If there are no (substantial) interaction effects, using ICE curves will produce results similar to using PDPs (which are just averaged ICE curves). However, if strong interaction effects are present, they can obfuscate the main effects and render the PDP-based approach less useful (since the PDPs for important features can be relatively flat when certain interactions are present; see <span class="citation">Goldstein et al. (<a href="#ref-goldstein-peeking-2015">2015</a>)</span> for details). In fact, it is probably safest to always use ICE curves when employing the FIRM method.</p>
-<p>Below, we display the ICE curves for each feature in the fitted PPR model using the same <span class="math inline">\(y\)</span>-axis scale; see Figure <a href="#fig:ice-ppr"><strong>??</strong></a>. Again, there is a clear difference between the ICE curves for features <code>x1</code>–<code>x5</code> and <code>x6</code>–<code>x10</code>; the later being relatively flat by comparison. Also, notice how the ICE curves within each feature are relatively parallel (if the ICE curves within each feature were perfectly parallel, the standard deviation for each curve would be the same and the results will be identical to the PDP method). In this example, the interaction term between <code>x1</code> and <code>x2</code> does not obfuscate the PDPs for the main effects and the results are not much different.</p>
-<p><img src="../reference/figures/ice-ppr-1.png" alt="ICE curves for each feature in the PPR model fit to the simulated Friedman data. The red curve represents the PDP (i.e., the averaged ICE curves)." width="100%"></p>
-<p>Obtaining the ICE-based feature importance scores is also straightforward, just specify <code>ice = TRUE</code> when using the FIRM approach. This is illustrated in the code chunk below and the results, which are displayed in Figure <a href="#fig:vip-ice-ppr-nn"><strong>??</strong></a>, are similar to those obtained using the PDP method.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Construct VIPs</span></span>
-<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">pp</span>, method <span class="op">=</span> <span class="st">"firm"</span>, ice <span class="op">=</span> <span class="cn">TRUE</span>, train <span class="op">=</span> <span class="va">trn</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"PPR"</span><span class="op">)</span></span>
-<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">nn</span>, method <span class="op">=</span> <span class="st">"firm"</span>, ice <span class="op">=</span> <span class="cn">TRUE</span>, train <span class="op">=</span> <span class="va">trn</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"NN"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Display plots in a grid (Figure 9)</span></span>
-<span><span class="va">p1</span> <span class="op">+</span> <span class="va">p2</span></span></code></pre></div>
-<p><img src="../reference/figures/vip-ice-ppr-nn-1.png" alt="ICE-based feature importance for the PPR and NN models fit to the simulated Friedman data." width="70%"></p>
-<p>When using <code>method = "firm"</code>, the feature effect values are stored in an attribute called <code>"effects"</code>. This is a convenience so that the feature effect plots (e.g., PDPs and ICE curves) can easily be reconstructed and compared with the VI scores, as demonstrated in the example below (see Figure <a href="#fig:pdp-from-attr"><strong>??</strong></a>):</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Construct PDP-based VI scores</span></span>
-<span><span class="op">(</span><span class="va">vis</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">pp</span>, method <span class="op">=</span> <span class="st">"firm"</span>, train <span class="op">=</span> <span class="va">trn</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## # A tibble: 10 × 2</span></span>
-<span><span class="co">##    Variable Importance</span></span>
-<span><span class="co">##    &lt;chr&gt;         &lt;dbl&gt;</span></span>
-<span><span class="co">##  1 x4           2.96  </span></span>
-<span><span class="co">##  2 x2           2.21  </span></span>
-<span><span class="co">##  3 x1           2.14  </span></span>
-<span><span class="co">##  4 x5           1.53  </span></span>
-<span><span class="co">##  5 x3           1.46  </span></span>
-<span><span class="co">##  6 x6           0.128 </span></span>
-<span><span class="co">##  7 x9           0.114 </span></span>
-<span><span class="co">##  8 x8           0.0621</span></span>
-<span><span class="co">##  9 x10          0.0374</span></span>
-<span><span class="co">## 10 x7           0.0170</span></span></code></pre>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Reconstruct PDPs for all 10 features (Figure 10)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">name</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">vis</span>, which <span class="op">=</span> <span class="st">"effects"</span><span class="op">)</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9</span>, <span class="fl">19</span><span class="op">)</span>, las <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p><img src="../reference/figures/pdp-from-attr-1.png" alt="PDPs for all ten features reconstructed from the \code{pdp} attribute of the \code{vis} object." width="100%"></p>
+<p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> supports bar charts (<code>type = "bar"</code>,
+the default), Cleveland dot plots (<code>type = "point"</code>),
+boxplots, and violins (the latter two require raw permutation scores;
+see above). Graphical parameters (e.g., <code>col</code>,
+<code>pch</code>, <code>cex</code>) are passed straight through to
+<code><a href="https://grantmcdermott.com/tinyplot/man/tinyplot.html" class="external-link">tinyplot::tinyplot()</a></code>, and <code>include_type = TRUE</code>
+adds the importance type to the axis label:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"point"</span>, horizontal <span class="op">=</span> <span class="cn">FALSE</span>, include_type <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>     col <span class="op">=</span> <span class="st">"forestgreen"</span>, pch <span class="op">=</span> <span class="fl">17</span>, cex <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span></span></code></pre></div>
+<p><img src="vip_files/figure-html/plotting-options-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 </div>
-<div class="section level3">
-<h3 id="permutation-method">Permutation method<a class="anchor" aria-label="anchor" href="#permutation-method"></a>
-</h3>
-<p>The permutation method exists in various forms and was made popular in <span class="citation">Breiman (<a href="#ref-random-breiman-2001">2001</a>)</span> for RFs, before being generalized and extended in <span class="citation">Fisher, Rudin, and Dominici (<a href="#ref-fisher-model-2018">2018</a>)</span>. The permutation approach used in <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> is quite simple and is outlined in Algorithm 1 below. The idea is that if we randomly permute the values of an important feature in the training data, the training performance would degrade (since permuting the values of a feature effectively destroys any relationship between that feature and the target variable). This of course assumes that the model has been properly tuned (e.g., using cross-validation) and is not over fitting. The permutation approach uses the difference between some baseline performance measure (e.g., training <span class="math inline">\(R^2\)</span>, AUC, or RMSE) and the same performance measure obtained after permuting the values of a particular feature in the training data (<strong>Note:</strong> the model is NOT refit to the training data after randomly permuting the values of a feature). It is also important to note that this method may not be appropriate when you have, for example, highly correlated features (since permuting one feature at a time may lead to unlikely data instances).</p>
-<p>Let <span class="math inline">\(x_1, x_2, \dots, x_j\)</span> be the features of interest and let <span class="math inline">\(M_{orig}\)</span> be the baseline performance metric for the trained model; for brevity, we’ll assume smaller is better (e.g., classification error or RMSE). The permutation-based importance scores can be computed as follows:</p>
-<ol style="list-style-type: decimal">
-<li>For <span class="math inline">\(i = 1, 2, \dots, j\)</span>:</li>
-</ol>
-<ol style="list-style-type: lower-alpha">
-<li>Permute the values of feature <span class="math inline">\(x_i\)</span> in the training data.</li>
-<li>Recompute the performance metric on the permuted data <span class="math inline">\(M_{perm}\)</span>.</li>
-<li>Record the difference from baseline using <span class="math inline">\(VI\left(x_i\right) = M_{perm} - M_{orig}\)</span>.</li>
-</ol>
-<ol start="2" style="list-style-type: decimal">
-<li>Return the VI scores <span class="math inline">\(VI\left(x_1\right), VI\left(x_2\right), \dots, VI\left(x_j\right)\)</span>.</li>
-</ol>
-<p>Algorithm 1: A simple algorithm for constructing permutation-based VI scores.</p>
-<p>Algorithm 1 can be improved or modified in a number of ways. For instance, the process can be repeated several times and the results averaged together. This helps to provide more stable VI scores, and also the opportunity to measure their variability. Rather than taking the difference in step (c), <span class="citation">Molnar (<a href="#ref-molnar-2019-iml">2019b, sec. 5.5.4</a>)</span> argues that using the ratio <span class="math inline">\(M_{perm} / M_{orig}\)</span> makes the importance scores more comparable across different problems. It’s also possible to assign importance scores to groups of features (e.g., by permuting more than one feature at a time); this would be useful if features can be categorized into mutually exclusive groups, for instance, categorical features that have been *one-hot-encoded.</p>
-<p>To use the permutation approach in <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a>, specify <code>method = "permute"</code> in the call to <code><a href="../reference/vi.html">vi()</a></code> or <code><a href="../reference/vip.html">vip()</a></code> (or you can use <code><a href="../reference/vi_permute.html">vi_permute()</a></code> directly). Note that using <code>method = "permute"</code> requires specifying a few additional arguments (e.g., the training data, target name or vector of target values, a prediction function, etc.); see <code><a href="../reference/vi_permute.html">?vi_permute</a></code> for details.</p>
-<p>To use <code><a href="../reference/vi_permute.html">vi_permute()</a></code> you should first define a prediction wrapper that tells the function how to generate the write predictions for your chosen metric. An example is given below for the previously fitted PPR and NN models. Here we use <span class="math inline">\(R^2\)</span> (<code>metric = "rsq"</code>) as the evaluation metric. The results, which are displayed in Figure <a href="#fig:vip-permute-ppr-nn"><strong>??</strong></a>, agree with those obtained using the PDP- and ICE-based methods.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Prediction wrapper</span></span>
-<span><span class="va">pfun_ppr</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">object</span>, <span class="va">newdata</span><span class="op">)</span> <span class="op">{</span>  <span class="co"># needs to return a numeric vector</span></span>
-<span>  <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">object</span>, newdata <span class="op">=</span> <span class="va">newdata</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="va">pfun_nnet</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">object</span>, <span class="va">newdata</span><span class="op">)</span> <span class="op">{</span>  <span class="co"># needs to return a numeric vector</span></span>
-<span>  <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">object</span>, newdata <span class="op">=</span> <span class="va">newdata</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1L</span>, drop <span class="op">=</span> <span class="cn">TRUE</span><span class="op">]</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># Plot VI scores</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2021</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">pp</span>, method <span class="op">=</span> <span class="st">"permute"</span>, train <span class="op">=</span> <span class="va">trn</span>, target <span class="op">=</span> <span class="st">"y"</span>, metric <span class="op">=</span> <span class="st">"rsq"</span>,</span>
-<span>          pred_wrapper <span class="op">=</span> <span class="va">pfun_ppr</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"PPR"</span><span class="op">)</span></span>
-<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">nn</span>, method <span class="op">=</span> <span class="st">"permute"</span>, train <span class="op">=</span> <span class="va">trn</span>, target <span class="op">=</span> <span class="st">"y"</span>, metric <span class="op">=</span> <span class="st">"rsq"</span>,</span>
-<span>          pred_wrapper <span class="op">=</span> <span class="va">pfun_nnet</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"NN"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Display plots in a grid (Figure 11)</span></span>
-<span><span class="va">p1</span> <span class="op">+</span> <span class="va">p2</span></span></code></pre></div>
-<p><img src="../reference/figures/vip-permute-ppr-nn-1.png" alt="Permutation-based feature importance for the PPR and NN models fit to the simulated Friedman data." width="70%"></p>
-<p>The permutation approach introduces randomness into the procedure and therefore should be run more than once if computationally feasible. The upside to performing multiple runs of Algorithm 1 is that it allows us to compute standard errors (among other metrics) for the estimated VI scores, as illustrated in the example below; here we specify <code>nsim = 30</code> to request that each feature be permuted 30 times and the results averaged together. (Additionally, if <code>nsim &gt; 1</code>, you can set in the call to <code><a href="../reference/vip.html">vip()</a></code> to construct boxplots of the raw permutation-based VI scores. This is useful if you want to visualize the variability in each of the VI estimates; see Figure <a href="#fig:vip-boxplots"><strong>??</strong></a> for an example.)</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Use 10 Monte Carlo reps</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">403</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="va">vis</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">pp</span>, method <span class="op">=</span> <span class="st">"permute"</span>, train <span class="op">=</span> <span class="va">trn</span>, target <span class="op">=</span> <span class="st">"y"</span>, metric <span class="op">=</span> <span class="st">"rsq"</span>,</span>
-<span>          pred_wrapper <span class="op">=</span> <span class="va">pfun_ppr</span>, nsim <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">vis</span>, geom <span class="op">=</span> <span class="st">"boxplot"</span><span class="op">)</span>  <span class="co"># Figure 12</span></span></code></pre></div>
-<p><img src="../reference/figures/vip-boxplots-1.png" alt="Boxplots of VI scores using the permutation method with 15 Monte Carlo repetitions." width="70%"></p>
-<p>All available performance metrics for regression and classification can be listed using the <code><a href="../reference/list_metrics.html">list_metrics()</a></code> function, for example:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/list_metrics.html">list_metrics</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##          metric                               description</span></span>
-<span><span class="co">## 1      accuracy                   Classification accuracy</span></span>
-<span><span class="co">## 2  bal_accuracy          Balanced classification accuracy</span></span>
-<span><span class="co">## 3        youden Youden;'s index (or Youden's J statistic)</span></span>
-<span><span class="co">## 4       roc_auc                      Area under ROC curve</span></span>
-<span><span class="co">## 5        pr_auc    Area under precision-recall (PR) curve</span></span>
-<span><span class="co">## 6       logloss                                  Log loss</span></span>
-<span><span class="co">## 7         brier                               Brier score</span></span>
-<span><span class="co">## 8           mae                       Mean absolute error</span></span>
-<span><span class="co">## 9          mape            Mean absolute percentage error</span></span>
-<span><span class="co">## 10         rmse                   Root mean squared error</span></span>
-<span><span class="co">## 11          rsq                   R-squared (correlation)</span></span>
-<span><span class="co">## 12     rsq_trad                   R-squared (traditional)</span></span>
-<span><span class="co">##                                task smaller_is_better yardstick_function</span></span>
-<span><span class="co">## 1  Binary/multiclass classification             FALSE       accuracy_vec</span></span>
-<span><span class="co">## 2  Binary/multiclass classification             FALSE   bal_accuracy_vec</span></span>
-<span><span class="co">## 3  Binary/multiclass classification             FALSE            j_index</span></span>
-<span><span class="co">## 4             Binary classification             FALSE        roc_auc_vec</span></span>
-<span><span class="co">## 5             Binary classification             FALSE         pr_auc_vec</span></span>
-<span><span class="co">## 6  Binary/multiclass classification              TRUE    mn_log_loss_vec</span></span>
-<span><span class="co">## 7  Binary/multiclass classification              TRUE    brier_class_vec</span></span>
-<span><span class="co">## 8                        Regression              TRUE            mae_vec</span></span>
-<span><span class="co">## 9                        Regression              TRUE           mape_vec</span></span>
-<span><span class="co">## 10                       Regression              TRUE           rmse_vec</span></span>
-<span><span class="co">## 11                       Regression             FALSE            rsq_vec</span></span>
-<span><span class="co">## 12                       Regression             FALSE       rsq_trad_vec</span></span></code></pre>
-<p>The permutation method in <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> supports the vector performance functions available in <a href="https://cran.r-project.org/package=yardstick" class="external-link">yardstick</a> <span class="citation">(<a href="#ref-R-yardstick">Kuhn, Vaughan, and Hvitfeldt 2023</a>)</span>. We can also use a custom metric (i.e., loss function). Suppose for example you want to measure importance using the <em>mean absolute error</em> (MAE):</p>
-<p><span class="math display">\[\begin{equation}
-  MAE = \frac{1}{n}\sum_{i = 1}^n\left|y_i - \hat{f}\left(\boldsymbol{x}_i\right)\right|,
-\end{equation}\]</span></p>
-<p>where <span class="math inline">\(\hat{f}\left(\boldsymbol{x}_i\right)\)</span> is the predicted value of <span class="math inline">\(y_i\)</span>. A simple function implementing this metric is given below (to be consistent with <a href="https://cran.r-project.org/package=yardstick" class="external-link">yardstick</a> functions, user-supplied metric functions require two arguments: <code>truth</code> and <code>estimate</code>).</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">truth</span>, <span class="va">estimate</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">truth</span> <span class="op">-</span> <span class="va">estimate</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>To use this for computing permutation-based VI scores just pass it via the <code>metric</code> argument (be warned, however, that the metric used for computing permutation importance should be the same as the metric used to train and tune the model). Also, since this is a custom metric, we need to specify whether a smaller value indicates better performance by setting <code>smaller_is_better = TRUE</code>. The results, which are displayed in Figure <a href="#fig:vip-nn-mae"><strong>??</strong></a>, are similar to those in Figure <a href="#fig:vip-permute-ppr-nn"><strong>??</strong></a>, albeit a different scale.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Construct VIP (Figure 13)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2321</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">nn</span>, method <span class="op">=</span> <span class="st">"permute"</span>, train <span class="op">=</span> <span class="va">trn</span>, target <span class="op">=</span> <span class="st">"y"</span>, metric <span class="op">=</span> <span class="va">mae</span>,</span>
-<span>          smaller_is_better <span class="op">=</span> <span class="cn">TRUE</span>, pred_wrapper <span class="op">=</span> <span class="va">pfun_nnet</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Custom loss function: MAE"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2321</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">nn</span>, method <span class="op">=</span> <span class="st">"permute"</span>, train <span class="op">=</span> <span class="va">trn</span>, target <span class="op">=</span> <span class="st">"y"</span>,</span>
-<span>          metric <span class="op">=</span> <span class="fu">yardstick</span><span class="fu">::</span><span class="va"><a href="https://yardstick.tidymodels.org/reference/mae.html" class="external-link">mae_vec</a></span>, smaller_is_better <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>          pred_wrapper <span class="op">=</span> <span class="va">pfun_nnet</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Using `yardstick`'s MAE function"</span><span class="op">)</span></span>
-<span><span class="va">p1</span> <span class="op">+</span> <span class="va">p2</span></span></code></pre></div>
-<p><img src="../reference/figures/vip-nn-mae-1.png" alt="Permutation-based VI scores for the NN model fit to the simulated Friedman data. In this example, permutation importance is based on the MAE metric." width="70%"></p>
-<p>Although permutation importance is most naturally computed on the training data, it may also be useful to do the shuffling and measure performance on new data! This is discussed in depth in <span class="citation">Molnar (<a href="#ref-molnar-2019-iml">2019b, sec. 5.2</a>)</span>. For users interested in computing permutation importance using new data, just supply it to the <code>train</code> argument in the call to <code><a href="../reference/vi.html">vi()</a></code>, <code><a href="../reference/vip.html">vip()</a></code>, or <code><a href="../reference/vi_permute.html">vi_permute()</a></code>. For instance, suppose we wanted to only use a fraction of the original training data to carry out the computations. In this case, we could simply pass the sampled data to the <code>train</code> argument as follows:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Construct VIP (Figure 14)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2327</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">nn</span>, method <span class="op">=</span> <span class="st">"permute"</span>, pred_wrapper <span class="op">=</span> <span class="va">pfun_nnet</span>, target <span class="op">=</span> <span class="st">"y"</span>,</span>
-<span>    metric <span class="op">=</span> <span class="st">"rmse"</span>,</span>
-<span>    train <span class="op">=</span> <span class="va">trn</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">400</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># sample 400 observations</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Using a random subset of training data"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../reference/figures/vip-permute-nn-sample-1.png" alt="Permutation-based feature importance for the NN model fit to the simulated Friedman data. In this example, permutation importance is based on a random sample of 400 training observations." width="70%"></p>
-<p>When using the permutation method with <code>nsim &gt; 1</code>, the default is to keep all the permutation scores as an attribute called <code>"raw_scores"</code>; you can turn this behavior off by setting <code>keep = FALSE</code> in the call to <code><a href="../reference/vi_permute.html">vi_permute()</a></code>, <code><a href="../reference/vi.html">vi()</a></code>, or <code><a href="../reference/vip.html">vip()</a></code>. If <code>keep = TRUE</code> and <code>nsim &gt; 1</code>, you can request all permutation scores to be plotted by setting <code>all_permutations = TRUE</code> in the call to <code><a href="../reference/vip.html">vip()</a></code>, as demonstrated in the code chunk below (see Figure <a href="#fig:vip-nn-mae-all"><strong>??</strong></a>). This also let’s you visually inspect the variability in the permutation scores within each feature.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Construct VIP (Figure 15)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">8264</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">nn</span>, method <span class="op">=</span> <span class="st">"permute"</span>, pred_wrapper <span class="op">=</span> <span class="va">pfun_nnet</span>, train <span class="op">=</span> <span class="va">trn</span>,</span>
-<span>    target <span class="op">=</span> <span class="st">"y"</span>, metric <span class="op">=</span> <span class="st">"mae"</span>, nsim <span class="op">=</span> <span class="fl">10</span>, geom <span class="op">=</span> <span class="st">"point"</span>,</span>
-<span>    all_permutations <span class="op">=</span> <span class="cn">TRUE</span>, jitter <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Plotting all permutation scores"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../reference/figures/vip-nn-mae-all-1.png" alt="Permutation-based feature importance for the NN model fit to the simulated Friedman data. In this example, all the permutation importance scores (points) are displayed for each feature along with their average (bars)." width="70%"></p>
-<div class="section level4">
-<h4 id="a-classification-example">A classification example<a class="anchor" aria-label="anchor" href="#a-classification-example"></a>
-</h4>
-<p>In this example, we’ll illustrate the use of permutation importance in a classification problem. To start, we’ll use the <a href="https://cran.r-project.org/package=randomForest" class="external-link">randomForest</a> package <span class="citation">(<a href="#ref-R-randomForest">Liaw and Wiener 2002</a>)</span> to build a (default) random forest to predict survivability of passengers on the ill-fated Titanic.</p>
-<p>The <a href="https://hbiostat.org/data/" class="external-link">source data</a> (also available in <code><a href="../reference/titanic.html">vip::titanic</a></code>) contains 263 missing values (i.e., <code>NA</code>’s) in the age column. The <code>titanic_mice</code> version, which we’ll use in this vignette, contains imputed values for the age column using <em>multivariate imputation by chained equations</em> via the <a href="https://cran.r-project.org/package=mice" class="external-link">mice</a> package. Consequently, <code>titanic_mice</code> is a list containing 11 imputed versions of the original data; see <code><a href="../reference/titanic_mice.html">?vip::titanic_mice</a></code> for details. For now, we’ll just use one of the 11 imputed versions:</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">t1</span> <span class="op">&lt;-</span> <span class="fu">vip</span><span class="fu">::</span><span class="va"><a href="../reference/titanic_mice.html">titanic_mice</a></span><span class="op">[[</span><span class="fl">1L</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   survived pclass   age    sex sibsp parch</span></span>
-<span><span class="co">## 1      yes      1 29.00 female     0     0</span></span>
-<span><span class="co">## 2      yes      1  0.92   male     1     2</span></span>
-<span><span class="co">## 3       no      1  2.00 female     1     2</span></span>
-<span><span class="co">## 4       no      1 30.00   male     1     2</span></span>
-<span><span class="co">## 5       no      1 25.00 female     1     2</span></span>
-<span><span class="co">## 6      yes      1 48.00   male     0     0</span></span></code></pre>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">t1</span><span class="op">$</span><span class="va">pclass</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.ordered</a></span><span class="op">(</span><span class="va">t1</span><span class="op">$</span><span class="va">pclass</span><span class="op">)</span>  <span class="co"># makes more sense as an ordered factor</span></span></code></pre></div>
-<p>Next, we’ll build a default random forest to predict survivability:</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.stat.berkeley.edu/~breiman/RandomForests/" class="external-link">randomForest</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2053</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="op">(</span><span class="va">rfo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/randomForest/man/randomForest.html" class="external-link">randomForest</a></span><span class="op">(</span><span class="va">survived</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">t1</span>, importance <span class="op">=</span> <span class="cn">TRUE</span>, nPerm <span class="op">=</span> <span class="fl">30</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## </span></span>
-<span><span class="co">## Call:</span></span>
-<span><span class="co">##  randomForest(formula = survived ~ ., data = t1, importance = TRUE,      nPerm = 30) </span></span>
-<span><span class="co">##                Type of random forest: classification</span></span>
-<span><span class="co">##                      Number of trees: 500</span></span>
-<span><span class="co">## No. of variables tried at each split: 2</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">##         OOB estimate of  error rate: 18.79%</span></span>
-<span><span class="co">## Confusion matrix:</span></span>
-<span><span class="co">##      no yes class.error</span></span>
-<span><span class="co">## no  727  82   0.1013597</span></span>
-<span><span class="co">## yes 164 336   0.3280000</span></span></code></pre>
-<p>For comparison, here’s a plot of the OOB-based permutation importance scores available in a random forest (note that setting <code>include_type = TRUE</code> results in the <span class="math inline">\(x\)</span>-axis label including the method of importance that was computed):</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">rfo</span>, include_type <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../reference/figures/titanic-rfo-vi-1.png" alt="plot of chunk titanic-rfo-vi" width="70%"></p>
-<p>For categorical outcomes, random forests can provide predicted class labels (i.e., classification) or predicted class probabilities (i.e., prediction), as shown below.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">rfo</span>, newdata <span class="op">=</span> <span class="va">t1</span>, type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span><span class="op">)</span>  <span class="co"># predicted class labels</span></span></code></pre></div>
-<pre><code><span><span class="co">##   1   2   3   4   5   6 </span></span>
-<span><span class="co">## yes yes yes  no yes  no </span></span>
-<span><span class="co">## Levels: no yes</span></span></code></pre>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">rfo</span>, newdata <span class="op">=</span> <span class="va">t1</span>, type <span class="op">=</span> <span class="st">"prob"</span><span class="op">)</span><span class="op">)</span>  <span class="co"># predicted class probabilities</span></span></code></pre></div>
-<pre><code><span><span class="co">##      no   yes</span></span>
-<span><span class="co">## 1 0.014 0.986</span></span>
-<span><span class="co">## 2 0.114 0.886</span></span>
-<span><span class="co">## 3 0.472 0.528</span></span>
-<span><span class="co">## 4 0.716 0.284</span></span>
-<span><span class="co">## 5 0.392 0.608</span></span>
-<span><span class="co">## 6 0.894 0.106</span></span></code></pre>
-<p>The performance metric we choose for permutation importance will determine whether our prediction wrapper should return a class label (as a factor) or a numeric vector of class probabilities. We’ll start with classification accuracy (the same metric used by random forest’s build-in OOB-based permutation VI scores). A basic call to <code><a href="../reference/vi.html">vi()</a></code> (or, similarly, to <code><a href="../reference/vi_permute.html">vi_permute()</a></code>) would look something like:</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pfun_class</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">object</span>, <span class="va">newdata</span><span class="op">)</span> <span class="op">{</span>  <span class="co"># prediction wrapper</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">object</span>, newdata <span class="op">=</span> <span class="va">newdata</span>, type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># Compute mean decrease in accuracy</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1359</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">rfo</span>,</span>
-<span>   method <span class="op">=</span> <span class="st">"permute"</span>,</span>
-<span>   train <span class="op">=</span> <span class="va">t1</span>,</span>
-<span>   target <span class="op">=</span> <span class="st">"survived"</span>,</span>
-<span>   metric <span class="op">=</span> <span class="st">"accuracy"</span>,  <span class="co"># or pass in `yardstick::accuracy_vec` directly</span></span>
-<span>   <span class="co"># smaller_is_better = FALSE,  # no need to set for built-in metrics</span></span>
-<span>   pred_wrapper <span class="op">=</span> <span class="va">pfun_class</span>,</span>
-<span>   nsim <span class="op">=</span> <span class="fl">30</span>  <span class="co"># use 30 repetitions</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## # A tibble: 5 × 3</span></span>
-<span><span class="co">##   Variable Importance   StDev</span></span>
-<span><span class="co">##   &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;</span></span>
-<span><span class="co">## 1 sex          0.226  0.0111 </span></span>
-<span><span class="co">## 2 pclass       0.0801 0.00488</span></span>
-<span><span class="co">## 3 age          0.0738 0.00595</span></span>
-<span><span class="co">## 4 sibsp        0.0346 0.00459</span></span>
-<span><span class="co">## 5 parch        0.0166 0.00247</span></span></code></pre>
-<p>Note that the standard deviation of each VI score is also computed and returned whenever <code>nsim &gt; 1</code>. The results are comparable to what the fitted random forest computed internally by setting <code>importance = TRUE</code> and <code>nPerm = 30</code>; the difference as that the random forest uses the OOB data when computing the drop in accuracy after shuffling each variable.</p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">rfo</span><span class="op">$</span><span class="va">importance</span><span class="op">[</span>, <span class="st">"MeanDecreaseAccuracy"</span><span class="op">]</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##        sex     pclass        age      parch      sibsp </span></span>
-<span><span class="co">## 0.17102147 0.05877827 0.04408406 0.01895065 0.01583429</span></span></code></pre>
-<p>Next, we’ll compute permutation VI scores using a metric that requires predicted probabilities. Here, we’ll use the Brier score, which measures the accuracy of the individual probabilities (smaller is better). However, instead of using the built-in <code>metric = "brier"</code> option, we’ll pass the corresponding <a href="https://cran.r-project.org/package=yardstick" class="external-link">yardstick</a> function directly. Note that we have to modify the prediction wrapper to not only return predicted probabilities, but a single vector of probabilities in the case of a binary outcome (in this case, we care about the event <code>survived = "yes"</code>):</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pfun_prob</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">object</span>, <span class="va">newdata</span><span class="op">)</span> <span class="op">{</span>  <span class="co"># prediction wrapper</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">object</span>, newdata <span class="op">=</span> <span class="va">newdata</span>, type <span class="op">=</span> <span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>, <span class="st">"yes"</span><span class="op">]</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># Compute mean increase in Brier score</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1411</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">rfo</span>,</span>
-<span>   method <span class="op">=</span> <span class="st">"permute"</span>,</span>
-<span>   train <span class="op">=</span> <span class="va">t1</span>,</span>
-<span>   target <span class="op">=</span> <span class="st">"survived"</span>,</span>
-<span>   metric <span class="op">=</span> <span class="fu">yardstick</span><span class="fu">::</span><span class="va"><a href="https://yardstick.tidymodels.org/reference/brier_class.html" class="external-link">brier_class_vec</a></span>,  <span class="co"># or pass in `"brier"` directly</span></span>
-<span>   smaller_is_better <span class="op">=</span> <span class="cn">FALSE</span>,  <span class="co"># need to set when supplying a function</span></span>
-<span>   pred_wrapper <span class="op">=</span> <span class="va">pfun_prob</span>,</span>
-<span>   nsim <span class="op">=</span> <span class="fl">30</span>  <span class="co"># use 30 repetitions</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## # A tibble: 5 × 3</span></span>
-<span><span class="co">##   Variable Importance   StDev</span></span>
-<span><span class="co">##   &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;</span></span>
-<span><span class="co">## 1 sex          0.209  0.00866</span></span>
-<span><span class="co">## 2 pclass       0.0977 0.00479</span></span>
-<span><span class="co">## 3 age          0.0947 0.00460</span></span>
-<span><span class="co">## 4 parch        0.0542 0.00271</span></span>
-<span><span class="co">## 5 sibsp        0.0414 0.00186</span></span></code></pre>
-<p>Finally, to illustrate the use of the <code>event_level</code> argument, we’ll compute the permutation-based VI scores using the <em>area under the ROC curve</em> (AUROC or <code>metric = "roc_auc"</code>).</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1413</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">rfo</span>,</span>
-<span>   method <span class="op">=</span> <span class="st">"permute"</span>,</span>
-<span>   train <span class="op">=</span> <span class="va">t1</span>,</span>
-<span>   target <span class="op">=</span> <span class="st">"survived"</span>,</span>
-<span>   metric <span class="op">=</span> <span class="st">"roc_auc"</span>,</span>
-<span>   pred_wrapper <span class="op">=</span> <span class="va">pfun_prob</span>,</span>
-<span>   nsim <span class="op">=</span> <span class="fl">30</span>  <span class="co"># use 30 repetitions</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## # A tibble: 5 × 3</span></span>
-<span><span class="co">##   Variable Importance   StDev</span></span>
-<span><span class="co">##   &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;</span></span>
-<span><span class="co">## 1 parch       -0.0251 0.00351</span></span>
-<span><span class="co">## 2 sibsp       -0.0283 0.00211</span></span>
-<span><span class="co">## 3 age         -0.0850 0.00477</span></span>
-<span><span class="co">## 4 pclass      -0.0920 0.00533</span></span>
-<span><span class="co">## 5 sex         -0.229  0.0137</span></span></code></pre>
-<p>Why are the results are negative? The issue is that metrics like AUROC (similar with <em>area under the PR curve</em>) treat one of the class outcomes as the “event” of interest. In our case, we are using the predicted probability for the event <code>survived = "yes"</code>, but the default event level (in <a href="https://cran.r-project.org/package=yardstick" class="external-link">yardstick</a> and therefore <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a>) is always the first class label in alphabetical order (or <code>survived = "no"</code>, in this case):</p>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">$</span><span class="va">survived</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "no"  "yes"</span></span></code></pre>
-<p>Consequently, when using metrics like AUROC, it is a good idea to set the <code>event_level</code> parameter in the call to <code><a href="../reference/vi.html">vi()</a></code> or <code><a href="../reference/vi_permute.html">vi_permute()</a></code>. To fix the previous issue, just set the event level to the second class label using <code>even_level = "second"</code>:</p>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1413</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="fu"><a href="../reference/vi.html">vi</a></span><span class="op">(</span><span class="va">rfo</span>,</span>
-<span>   method <span class="op">=</span> <span class="st">"permute"</span>,</span>
-<span>   train <span class="op">=</span> <span class="va">t1</span>,</span>
-<span>   target <span class="op">=</span> <span class="st">"survived"</span>,</span>
-<span>   metric <span class="op">=</span> <span class="st">"roc_auc"</span>,</span>
-<span>   event_level <span class="op">=</span> <span class="st">"second"</span>,  <span class="co"># use "yes" as class label/"event" of interest</span></span>
-<span>   pred_wrapper <span class="op">=</span> <span class="va">pfun_prob</span>,</span>
-<span>   nsim <span class="op">=</span> <span class="fl">30</span>  <span class="co"># use 30 repetitions</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## # A tibble: 5 × 3</span></span>
-<span><span class="co">##   Variable Importance   StDev</span></span>
-<span><span class="co">##   &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;</span></span>
-<span><span class="co">## 1 sex          0.229  0.0137 </span></span>
-<span><span class="co">## 2 pclass       0.0920 0.00533</span></span>
-<span><span class="co">## 3 age          0.0850 0.00477</span></span>
-<span><span class="co">## 4 sibsp        0.0283 0.00211</span></span>
-<span><span class="co">## 5 parch        0.0251 0.00351</span></span></code></pre>
-<p>Much better (and just the negative of the previous results, as expected)! For a similar example using a multiclass outcome, see the discussion in <a href="https://github.com/juliasilge/juliasilge.com/issues/57" class="external-link">this issue</a>.</p>
-</div>
-<div class="section level4">
-<h4 id="benchmarks">Benchmarks<a class="anchor" aria-label="anchor" href="#benchmarks"></a>
-</h4>
-<p>In this section, we compare the performance of four implementations of permutation-based VI scores: <code>iml::FeatureImp()</code> (version 0.11.1), <code>ingredients::feature_importance()</code> (version 2.3.0), <code>mmpf::permutationImportance</code> (version 0.0.5), and <code><a href="../reference/vi.html">vip::vi()</a></code> (version 0.4.1).</p>
-<p>We simulated 10,000 training observations from the Friedman 1 benchmark problem and trained a random forest using the <a href="https://cran.r-project.org/package=ranger" class="external-link">ranger</a> package. For each implementation, we computed permutation-based VI scores 100 times using the <a href="https://cran.r-project.org/package=microbenchmark" class="external-link">microbenchmark</a> package <span class="citation">(<a href="#ref-R-microbenchmark">Mersmann 2019</a>)</span>. For this benchmark we did not use any of the parallel processing capability available in the <a href="https://cran.r-project.org/package=iml" class="external-link">iml</a> and <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> implementations. The results from <a href="https://cran.r-project.org/package=microbenchmark" class="external-link">microbenchmark</a> are displayed in Figure (fig:benchmark) and summarized in the output below. In this case, the <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> package (version 0.4.1) was the fastest, followed closely by <a href="https://cran.r-project.org/package=ingredients" class="external-link">ingredients</a> and <a href="https://cran.r-project.org/package=mmpf" class="external-link">mmpf</a>. It should be noted, however, that the implementations in <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> and <a href="https://cran.r-project.org/package=iml" class="external-link">iml</a> can be parallelized. To the best of our knowledge, this is not the case for <a href="https://cran.r-project.org/package=ingredients" class="external-link">ingredients</a> or <a href="https://cran.r-project.org/package=mmpf" class="external-link">mmpf</a> (although it would not be difficult to write a simple parallel wrapper for either). The code used to generate these benchmarks can be found at <a href="https://github.com/koalaverse/vip/blob/main/slowtests/slowtests-benchmarks.R" class="external-link uri">https://github.com/koalaverse/vip/blob/main/slowtests/slowtests-benchmarks.R</a>.</p>
-<p><img src="../reference/figures/benchmark-1.png" alt="Violin plots comparing the computation time from three different implementations of permutation-based VI scores across 100 simulations." width="70%"></p>
-</div>
-</div>
-<div class="section level3">
-<h3 id="shapley-method">Shapley method<a class="anchor" aria-label="anchor" href="#shapley-method"></a>
-</h3>
-<p>Although <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> focuses on global VI methods, it is becoming increasing popular to asses global importance by aggregating local VI measures; in particular, <em>Shapley explanations</em> <span class="citation">(<a href="#ref-strumbelj-2014-explaining">Štrumbelj and Kononenko 2014</a>)</span>. Using <em>Shapley values</em> (a method from coalitional game theory), the prediction for a single instance <span class="math inline">\(x^\star\)</span> can be explained by assuming that each feature value in <span class="math inline">\(x^\star\)</span> is a “player” in a game with a payout equal to the corresponding prediction <span class="math inline">\(\hat{f}\left(x^\star\right)\)</span>. Shapley values tell us how to fairly distribute the “payout” (i.e., prediction) among the features. Shapley values have become popular due to the attractive fairness properties they posses <span class="citation">(<a href="#ref-lundberg_unified_2017">Lundberg and Lee 2017</a>)</span>. The most popular implementation is available in the Python <a href="https://github.com/shap/shap" class="external-link">shap</a> package <span class="citation">(<a href="#ref-lundberg_unified_2017">Lundberg and Lee 2017</a>)</span>; although a number of implementations are now available in R; for example, <a href="https://cran.r-project.org/package=iml" class="external-link">iml</a>, <a href="https://cran.r-project.org/package=iBreakDown" class="external-link">iBreakDown</a> <span class="citation">(<a href="#ref-R-iBreakDown">Biecek et al. 2019</a>)</span>, and <a href="https://cran.r-project.org/package=fastshap" class="external-link">fastshap</a> <span class="citation">(<a href="#ref-R-fastshap">B. Greenwell 2019</a>)</span>.</p>
-<p>Obtaining a global VI score from Shapley values requires aggregating the Shapley values for each feature across the entire training set (or at least a reasonable sample thereof). In particular, we use the mean of the absolute value of the individual Shapley values for each feature. Unfortunately, Shapley values can be computationally expensive, and therefore this approach may not be feasible for large training sets (say, &gt;3000 observations). The <a href="https://cran.r-project.org/package=fastshap" class="external-link">fastshap</a> package provides some relief by exploiting a few computational tricks, including the option to perform computations in parallel (see for details). Also, fast and exact algorithms can be exploited for certain classes of models.</p>
-<p>Starting with <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> version 0.4.1 you can now use <code>method = "shap"</code> in the call to <code><a href="../reference/vi.html">vi()</a></code> (or use <code><a href="../reference/vi_shap.html">vi_shap()</a></code> directly) to compute global Shapley-based VI scores using the method described above (provided you have the <a href="https://cran.r-project.org/package=fastshap" class="external-link">fastshap</a> package installed)—see <code><a href="../reference/vi_shap.html">?vip::vi_shap</a></code> for details. To illustrate, we compute Shapley-based VI scores from an <a href="https://cran.r-project.org/package=xgboost" class="external-link">xgboost</a> model [R-xgboost] using the Friedman data from earlier; the results are displayed in Figure (fig:vi-shap).<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;Note that the &lt;code&gt;exact = TRUE&lt;/code&gt; option is only available if you have &lt;a href="https://cran.r-project.org/package=fastshap" class="external-link"&gt;fastshap&lt;/a&gt; version 0.0.4 or later.&lt;/p&gt;'><sup>9</sup></a> (<strong>{Note:</strong> specifying <code>include_type = TRUE</code> in the call to <code><a href="../reference/vip.html">vip()</a></code> causes the type of VI computed to be displayed as part of the axis label.)</p>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Load required packages</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Feature matrix</span></span>
-<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.matrix.html" class="external-link">data.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">trn</span>, select <span class="op">=</span> <span class="op">-</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>  <span class="co"># matrix of feature values</span></span>
-<span></span>
-<span><span class="co"># Fit an XGBoost model; hyperparameters were tuned using 5-fold CV</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">859</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="va">bst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgboost.html" class="external-link">xgboost</a></span><span class="op">(</span><span class="va">X</span>, label <span class="op">=</span> <span class="va">trn</span><span class="op">$</span><span class="va">y</span>, nrounds <span class="op">=</span> <span class="fl">338</span>, max_depth <span class="op">=</span> <span class="fl">3</span>, eta <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>               verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Construct VIP (Figure 17)</span></span>
-<span><span class="fu"><a href="../reference/vip.html">vip</a></span><span class="op">(</span><span class="va">bst</span>, method <span class="op">=</span> <span class="st">"shap"</span>, train <span class="op">=</span> <span class="va">X</span>, exact <span class="op">=</span> <span class="cn">TRUE</span>, include_type <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    geom <span class="op">=</span> <span class="st">"point"</span>, horizontal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>    aesthetics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"forestgreen"</span>, shape <span class="op">=</span> <span class="fl">17</span>, size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_light</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../reference/figures/vi-shap-1.png" alt="Shapley-based VI scores from an XGBoost model fit to the simulated Friedman data." width="70%"></p>
-<p>Passing <code>exact = TRUE</code> to <code><a href="https://bgreenwell.github.io/fastshap/reference/explain.html" class="external-link">fastshap::explain()</a></code> via the <code>...</code> argument in the call to <code><a href="../reference/vip.html">vip()</a></code> (or <code><a href="../reference/vi.html">vi()</a></code> and <code><a href="../reference/vi_shap.html">vi_shap()</a></code>) only works for <a href="https://cran.r-project.org/package=lightgbm" class="external-link">lightgbm</a>, <a href="https://cran.r-project.org/package=xgboost" class="external-link">xgboost</a>, and additive (generalized) linear models fit using R’s internal <strong><code>stats</code></strong> package. For all other cases, a prediction wrapper must be supplied via the <code>...</code> argument.</p>
-<p>To illustrate, let’s use the previous random forest that was fit to the Titanic data set. Note that Shapley explanation do not support classification, so we’ll have to use the probability-based prediction wrapper defined before:</p>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pfun_prob</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">object</span>, <span class="va">newdata</span><span class="op">)</span> <span class="op">{</span>  <span class="co"># prediction wrapper</span></span>
-<span>  <span class="co"># For Shapley explanations, this should ALWAYS return a numeric vector</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">object</span>, newdata <span class="op">=</span> <span class="va">newdata</span>, type <span class="op">=</span> <span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>, <span class="st">"yes"</span><span class="op">]</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># Compute Shapley-based VI scores</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">853</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span>
-<span><span class="fu"><a href="../reference/vi_shap.html">vi_shap</a></span><span class="op">(</span><span class="va">rfo</span>, train <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">t1</span>, select <span class="op">=</span> <span class="op">-</span><span class="va">survived</span><span class="op">)</span>, pred_wrapper <span class="op">=</span> <span class="va">pfun_prob</span>,</span>
-<span>        nsim <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## # A tibble: 5 × 2</span></span>
-<span><span class="co">##   Variable Importance</span></span>
-<span><span class="co">##   &lt;chr&gt;         &lt;dbl&gt;</span></span>
-<span><span class="co">## 1 pclass       0.104 </span></span>
-<span><span class="co">## 2 age          0.0649</span></span>
-<span><span class="co">## 3 sex          0.272 </span></span>
-<span><span class="co">## 4 sibsp        0.0260</span></span>
-<span><span class="co">## 5 parch        0.0291</span></span></code></pre>
-</div>
-<div class="section level3">
-<h3 id="drawbacks-of-existing-methods">Drawbacks of existing methods<a class="anchor" aria-label="anchor" href="#drawbacks-of-existing-methods"></a>
-</h3>
-<p>As discussed in <span class="citation">Hooker and Mentch (<a href="#ref-hooker-2019-stop">2019</a>)</span>, <em>permute-and-predict</em> methods—like PDPs, ICE curves, and permutation importance—can produce results that are highly misleading.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;It’s been argued that approximate Shapley values share the same drawback, however, &lt;span class="citation"&gt;Janzing, Minorics, and Blöbaum (&lt;a href="#ref-janzing-2019-feature"&gt;2019&lt;/a&gt;)&lt;/span&gt; makes a compelling case against those arguments.&lt;/p&gt;'><sup>10</sup></a> For example, the standard approach to computing permutation-based VI scores involves independently permuting individual features. This implicitly makes the assumption that the observed features are statistically independent. In practice, however, features are often not independent which can lead to nonsensical VI scores. One way to mitigate this issue is to use the conditional approach described in <span class="citation">Strobl et al. (<a href="#ref-strobl-2019-conditional">2008</a>)</span>; <span class="citation">Hooker and Mentch (<a href="#ref-hooker-2019-stop">2019</a>)</span> provides additional alternatives, such as <em>permute-and-relearn importance</em>. Unfortunately, to the best of our knowledge, this approach is not yet available for general purpose. A similar modification can be applied to PDPs <span class="citation">(<a href="#ref-parr-2019-technical">Parr and Wilson 2019</a>)</span><a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;A basic R implementation is available at &lt;a href="https://github.com/bgreenwell/rstratx" class="external-link uri"&gt;https://github.com/bgreenwell/rstratx&lt;/a&gt;.&lt;/p&gt;'><sup>11</sup></a> which seems reasonable to use in the FIRM approach when strong dependencies among the features are present (though, we have not given this much thought or consideration).</p>
-<p>We already mentioned that PDPs can be misleading in the presence of strong interaction effects. This drawback, of course, equally applies to the FIRM approach using PDPs for computing VI scores. As discussed earlier, this can be mitigated by using ICE curves instead. Another alternative would be to use <em>accumulated local effect</em> (ALE) plots <span class="citation">(<a href="#ref-apley-2016-visualizing">D. W. Apley and Zhu 2016</a>)</span> (though we haven’t really tested this idea). Compared to PDPs, ALE plots have the advantage of being faster to compute and less affected by strong dependencies among the features. The downside, however, is that ALE plots are more complicated to implement (hence, they are not currently available when using <code>method = "firm"</code>). ALE plots are available in the <a href="https://cran.r-project.org/package=ALEPlot" class="external-link">ALEPlot</a> <span class="citation">(<a href="#ref-R-ALEPlot">D. Apley 2018</a>)</span> and <a href="https://cran.r-project.org/package=iml" class="external-link">iml</a> packages.</p>
-<p><span class="citation">Hooker (<a href="#ref-hooker-2007-generalized">2007</a>)</span> also argues that feature importance (which concern only <em>main effects</em>) can be misleading in high dimensional settings, especially when there are strong dependencies and interaction effects among the features, and suggests an approach based on a <em>generalized functional ANOVA decomposition</em>—though, to our knowledge, this approach is not widely implemented in open source.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
+<div class="section level2 unnumbered">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<p>VIPs help to visualize the strength of the relationship between each feature and the predicted response, while accounting for all the other features in the model. We’ve discussed two types of VI: model-specific and model-agnostic, as well as some of their strengths and weaknesses. In this paper, we showed how to construct VIPs for various types of “black box” models in R using the <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> package. We also briefly discussed related approaches available in a number of other R packages. Suggestions to avoid high execution times were discussed and demonstrated via examples. This paper is based on <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> version 0.4.1. In terms of future development, <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> can be expanded in a number of ways. For example, we plan to incorporate the option to compute group-based and conditional permutation scores. Although not discussed in this paper, <a href="https://cran.r-project.org/package=vip" class="external-link">vip</a> also includes a promising statistic (similar to the variance-based VI scores previously discussed) for measuring the relative strength of interaction between features. Although VIPs can help understand which features are driving the model’s predictions, ML practitioners should be cognizant of the fact that none of the methods discussed in this paper are uniformly best across all situations; they require an accurate model that has been properly tuned, and should be checked for consistency with human domain knowledge.</p>
-</div>
-<div class="section level2">
-<h2 id="acknowledgments">Acknowledgments<a class="anchor" aria-label="anchor" href="#acknowledgments"></a>
-</h2>
-<p>The authors would like to thank the anonymous reviewers and the Editor for their helpful comments and suggestions. We would also like to thank the members of the 84.51<span class="math inline">\(^{\circ}\)</span> Interpretable Machine Learning Special Interest Group for their thoughtful discussions on the topics discussed herein.</p>
-</div>
-<div class="section level2">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
-</h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
-<div id="ref-R-ALEPlot" class="csl-entry">
-Apley, Dan. 2018. <em>ALEPlot: Accumulated Local Effects (ALE) Plots and Partial Dependence (PD) Plots</em>. <a href="https://CRAN.R-project.org/package=ALEPlot" class="external-link">https://CRAN.R-project.org/package=ALEPlot</a>.
-</div>
-<div id="ref-apley-2016-visualizing" class="csl-entry">
-Apley, Daniel W., and Jingyu Zhu. 2016. <span>“Visualizing the Effects of Predictor Variables in Black Box Supervised Learning Models.”</span> <a href="https://arxiv.org/abs/1612.08468" class="external-link">https://arxiv.org/abs/1612.08468</a>.
-</div>
-<div id="ref-bau-2017-network" class="csl-entry">
-Bau, David, Bolei Zhou, Aditya Khosla, Aude Oliva, and Antonio Torralba. 2017. <span>“Network Dissection: Quantifying Interpretability of Deep Visual Representations.”</span> In <em>The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</em>.
-</div>
-<div id="ref-bibal-2016-intterpretability" class="csl-entry">
-Bibal, Adrien, and Benoît Frénay. 2016. <span>“Interpretability of Machine Learning Models and Representations: An Introduction.”</span> In <em>ESANN</em>.
-</div>
-<div id="ref-R-DALEX" class="csl-entry">
-Biecek, Przemyslaw. 2019. <em>DALEX: Descriptive mAchine Learning EXplanations</em>. <a href="https://CRAN.R-project.org/package=DALEX" class="external-link">https://CRAN.R-project.org/package=DALEX</a>.
-</div>
-<div id="ref-R-ingredients" class="csl-entry">
-Biecek, Przemyslaw, Hubert Baniecki, and Adam Izdebski. 2019. <em>Ingredients: Effects and Importances of Model Ingredients</em>. <a href="https://CRAN.R-project.org/package=ingredients" class="external-link">https://CRAN.R-project.org/package=ingredients</a>.
-</div>
-<div id="ref-R-iBreakDown" class="csl-entry">
-Biecek, Przemyslaw, Alicja Gosiewska, Hubert Baniecki, and Adam Izdebski. 2019. <em>iBreakDown: Model Agnostic Instance Level Variable Attributions</em>. <a href="https://CRAN.R-project.org/package=iBreakDown" class="external-link">https://CRAN.R-project.org/package=iBreakDown</a>.
-</div>
-<div id="ref-R-mlr" class="csl-entry">
-Bischl, Bernd, Michel Lang, Lars Kotthoff, Julia Schiffner, Jakob Richter, Zachary Jones, Giuseppe Casalicchio, Mason Gallo, and Patrick Schratz. 2020. <em>Mlr: Machine Learning in r</em>. <a href="https://CRAN.R-project.org/package=mlr" class="external-link">https://CRAN.R-project.org/package=mlr</a>.
-</div>
-<div id="ref-bagging-breiman-1996" class="csl-entry">
-Breiman, Leo. 1996. <span>“Bagging Predictors.”</span> <em>Machine Learning</em> 8 (2): 209–18. <a href="https://doi.org/10.1023/A:1018054314350" class="external-link">https://doi.org/10.1023/A:1018054314350</a>.
-</div>
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-random-breiman-2001" class="csl-entry">
-———. 2001. <span>“Random Forests.”</span> <em>Machine Learning</em> 45 (1): 5–32. <a href="https://doi.org/10.1023/A:1010933404324" class="external-link">https://doi.org/10.1023/A:1010933404324</a>.
+Breiman, Leo. 2001. <span>“Random Forests.”</span> <em>Machine
+Learning</em> 45 (1): 5–32. <a href="https://doi.org/10.1023/A:1010933404324" class="external-link">https://doi.org/10.1023/A:1010933404324</a>.
 </div>
 <div id="ref-classification-breiman-1984" class="csl-entry">
-Breiman, Leo, Jerome Friedman, and Richard A. Olshen Charles J. Stone. 1984. <em>Classification and Regression Trees</em>. The Wadsworth and Brooks-Cole Statistics-Probability Series. Taylor &amp; Francis.
-</div>
-<div id="ref-bring-1994-standardize" class="csl-entry">
-Bring, Johan. 1994. <span>“How to Standardize Regression Coefficients.”</span> <em>The American Statistician</em> 48 (3): 209–13. <a href="https://www.tandfonline.com/doi/abs/10.1080/00031305.1994.10476059" class="external-link">https://www.tandfonline.com/doi/abs/10.1080/00031305.1994.10476059</a>.
-</div>
-<div id="ref-caruana-2015-intelligible" class="csl-entry">
-Caruana, Rich, Yin Lou, Johannes Gehrke, Paul Koch, Marc Sturm, and Noemie Elhadad. 2015. <span>“Intelligible Models for HealthCare: Predicting Pneumonia Risk and Hospital 30-Day Readmission.”</span> In <em>Proceedings of the 21th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em>, 1721–30. KDD ’15. New York, NY, USA: Association for Computing Machinery. <a href="https://doi.org/10.1145/2783258.2788613" class="external-link">https://doi.org/10.1145/2783258.2788613</a>.
-</div>
-<div id="ref-R-vita" class="csl-entry">
-Celik, Ender. 2015. <em>Vita: Variable Importance Testing Approaches</em>. <a href="https://CRAN.R-project.org/package=vita" class="external-link">https://CRAN.R-project.org/package=vita</a>.
-</div>
-<div id="ref-R-R6" class="csl-entry">
-Chang, Winston. 2019. <em>R6: Encapsulated Classes with Reference Semantics</em>. <a href="https://CRAN.R-project.org/package=R6" class="external-link">https://CRAN.R-project.org/package=R6</a>.
-</div>
-<div id="ref-robust-cleveland-1979" class="csl-entry">
-Cleveland, William S. 1979. <span>“Robust Locally Weighted Regression and Smoothing Scatterplots.”</span> <em>Journal of the American Statistical Association</em> 74 (368): 829–36. <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.1979.10481038" class="external-link">https://www.tandfonline.com/doi/abs/10.1080/01621459.1979.10481038</a>.
-</div>
-<div id="ref-R-pkgsearch" class="csl-entry">
-Csárdi, Gábor, and Maëlle Salmon. 2019. <em>Pkgsearch: Search and Query CRAN r Packages</em>. <a href="https://CRAN.R-project.org/package=pkgsearch" class="external-link">https://CRAN.R-project.org/package=pkgsearch</a>.
-</div>
-<div id="ref-doshivelez-2017-rigorous" class="csl-entry">
-Doshi-Velez, Finale, and Been Kim. 2017. <span>“Towards a Rigorous Science of Interpretable Machine Learning.”</span> <a href="https://arxiv.org/abs/1702.08608" class="external-link">https://arxiv.org/abs/1702.08608</a>.
+Breiman, Leo, Jerome Friedman, and Richard A. Olshen Charles J. Stone.
+1984. <em>Classification and Regression Trees</em>. The Wadsworth and
+Brooks-Cole Statistics-Probability Series. Taylor &amp; Francis.
 </div>
 <div id="ref-fisher-model-2018" class="csl-entry">
-Fisher, A., C. Rudin, and F. Dominici. 2018. <span>“Model Class Reliance: Variable Importance Measures for Any Machine Learning Model Class, from the "Rashomon" Perspective.”</span> <em>arXiv Preprint arXiv:1801.01489</em>.
+Fisher, A., C. Rudin, and F. Dominici. 2018. <span>“Model Class
+Reliance: Variable Importance Measures for Any Machine Learning Model
+Class, from the "Rashomon" Perspective.”</span> <em>arXiv Preprint
+arXiv:1801.01489</em>.
 </div>
 <div id="ref-multivariate-friedman-1991" class="csl-entry">
-Friedman, Jerome H. 1991. <span>“Multivariate Adaptive Regression Splines.”</span> <em>The Annals of Statistics</em> 19 (1): 1–67. <a href="https://doi.org/10.1214/aos/1176347963" class="external-link">https://doi.org/10.1214/aos/1176347963</a>.
+Friedman, Jerome H. 1991. <span>“Multivariate Adaptive Regression
+Splines.”</span> <em>The Annals of Statistics</em> 19 (1): 1–67. <a href="https://doi.org/10.1214/aos/1176347963" class="external-link">https://doi.org/10.1214/aos/1176347963</a>.
 </div>
-<div id="ref-interpreting-garson-1991" class="csl-entry">
-Garson, David G. 1991. <span>“Interpreting Neural-Network Connection Weights.”</span> <em>Artificial Intelligence Expert</em> 6 (4): 46–51.
-</div>
-<div id="ref-data-gedeon-1997" class="csl-entry">
-Gedeon, T. D. 1997. <span>“Data Mining of Inputs: Analysing Magnitude and Functional Measures.”</span> <em>International Journal of Neural Systems</em> 24 (2): 123–40. <a href="https://doi.org/10.1007/s10994-006-6226-1" class="external-link">https://doi.org/10.1007/s10994-006-6226-1</a>.
-</div>
-<div id="ref-back-goh-1995" class="csl-entry">
-Goh, A. T. C. 1995. <span>“Back-Propagation Neural Networks for Modeling Complex Systems.”</span> <em>Artificial Intelligence in Engineering</em> 9 (3): 143–51. <a href="https://dx.doi.org/10.1016/0954-1810(94)00011-S" class="external-link">https://dx.doi.org/10.1016/0954-1810(94)00011-S</a>.
-</div>
-<div id="ref-goldstein-peeking-2015" class="csl-entry">
-Goldstein, Alex, Adam Kapelner, Justin Bleich, and Emil Pitkin. 2015. <span>“Peeking Inside the Black Box: Visualizing Statistical Learning with Plots of Individual Conditional Expectation.”</span> <em>Journal of Computational and Graphical Statistics</em> 24 (1): 44–65. <a href="https://www.tandfonline.com/doi/full/10.1080/10618600.2014.907095" class="external-link">https://www.tandfonline.com/doi/full/10.1080/10618600.2014.907095</a>.
-</div>
-<div id="ref-R-fastshap" class="csl-entry">
-Greenwell, Brandon. 2019. <em>Fastshap: Fast Approximate Shapley Values</em>. <a href="https://github.com/bgreenwell/fastshap" class="external-link">https://github.com/bgreenwell/fastshap</a>.
-</div>
-<div id="ref-pdp2017" class="csl-entry">
-Greenwell, Brandon M. 2017. <span>“Pdp: An r Package for Constructing Partial Dependence Plots.”</span> <em>The R Journal</em> 9 (1): 421–36. <a href="https://journal.r-project.org/articles/RJ-2017-016/" class="external-link">https://journal.r-project.org/articles/RJ-2017-016/</a>.
+<div id="ref-friedman-2001-greedy" class="csl-entry">
+Friedman, Jerome H. 2001. <span>“Greedy Function Approximation: A
+Gradient Boosting Machine.”</span> <em>The Annals of Statistics</em> 29
+(5): 1189–232. <a href="https://doi.org/10.1214/aos/1013203451" class="external-link">https://doi.org/10.1214/aos/1013203451</a>.
 </div>
 <div id="ref-RJ-2020-013" class="csl-entry">
-Greenwell, Brandon M., and Bradley C. Boehmke. 2020. <span>“<span class="nocase">Variable Importance Plots—An Introduction to the vip Package</span>.”</span> <em><span>The R Journal</span></em> 12 (1): 343–66. <a href="https://doi.org/10.32614/RJ-2020-013" class="external-link">https://doi.org/10.32614/RJ-2020-013</a>.
+Greenwell, Brandon M., and Bradley C. Boehmke. 2020. <span>“<span class="nocase">Variable Importance Plots—An Introduction to the vip
+Package</span>.”</span> <em><span>The R Journal</span></em> 12 (1):
+343–66. <a href="https://doi.org/10.32614/RJ-2020-013" class="external-link">https://doi.org/10.32614/RJ-2020-013</a>.
 </div>
 <div id="ref-greenwell-simple-2018" class="csl-entry">
-Greenwell, Brandon M., Bradley C. Boehmke, and Andrew J. McCarthy. 2018. <span>“A Simple and Effective Model-Based Variable Importance Measure.”</span> <em>arXiv Preprint arXiv:1805.04755</em>.
-</div>
-<div id="ref-R-vip" class="csl-entry">
-Greenwell, Brandon, Brad Boehmke, and Bernie Gray. 2019. <em>Vip: Variable Importance Plots</em>. <a href="https://github.com/koalaverse/vip/" class="external-link">https://github.com/koalaverse/vip/</a>.
-</div>
-<div id="ref-hastie-elements-2009" class="csl-entry">
-Hastie, Trevor, Robert. Tibshirani, and Jerome Friedman. 2009. <em>The Elements of Statistical Learning: Data Mining, Inference, and Prediction, Second Edition</em>. Springer Series in Statistics. Springer-Verlag.
-</div>
-<div id="ref-hooker-2007-generalized" class="csl-entry">
-Hooker, Giles. 2007. <span>“Generalized Functional ANOVA Diagnostics for High-Dimensional Functions of Dependent Variables.”</span> <em>Journal of Computational and Graphical Statistics</em> 16 (3): 709–32. <a href="https://www.tandfonline.com/doi/abs/10.1198/106186007X237892" class="external-link">https://www.tandfonline.com/doi/abs/10.1198/106186007X237892</a>.
-</div>
-<div id="ref-hooker-2019-stop" class="csl-entry">
-Hooker, Giles, and Lucas Mentch. 2019. <span>“Please Stop Permuting Features: An Explanation and Alternatives.”</span> <a href="https://arxiv.org/abs/1905.03151" class="external-link">https://arxiv.org/abs/1905.03151</a>.
-</div>
-<div id="ref-R-party" class="csl-entry">
-Hothorn, Torsten, Kurt Hornik, Carolin Strobl, and Achim Zeileis. 2019. <em>Party: A Laboratory for Recursive Partytioning</em>. <a href="https://CRAN.R-project.org/package=party" class="external-link">https://CRAN.R-project.org/package=party</a>.
-</div>
-<div id="ref-R-partykit" class="csl-entry">
-Hothorn, Torsten, and Achim Zeileis. 2019. <em>Partykit: A Toolkit for Recursive Partytioning</em>. <a href="https://CRAN.R-project.org/package=partykit" class="external-link">https://CRAN.R-project.org/package=partykit</a>.
-</div>
-<div id="ref-janzing-2019-feature" class="csl-entry">
-Janzing, Dominik, Lenon Minorics, and Patrick Blöbaum. 2019. <span>“Feature Relevance Quantification in Explainable AI: A Causal Problem.”</span> <a href="https://arxiv.org/abs/1910.13413" class="external-link">https://arxiv.org/abs/1910.13413</a>.
-</div>
-<div id="ref-R-mmpf" class="csl-entry">
-Jones, Zachary. 2018. <em>Mmpf: Monte-Carlo Methods for Prediction Functions</em>. <a href="https://CRAN.R-project.org/package=mmpf" class="external-link">https://CRAN.R-project.org/package=mmpf</a>.
-</div>
-<div id="ref-R-vivo" class="csl-entry">
-Kozak, Anna, and Przemyslaw Biecek. 2019. <em>Vivo: Local Variable Importance via Oscillations of Ceteris Paribus Profiles</em>. <a href="https://CRAN.R-project.org/package=vivo" class="external-link">https://CRAN.R-project.org/package=vivo</a>.
-</div>
-<div id="ref-R-caret" class="csl-entry">
-Kuhn, Max. 2020. <em>Caret: Classification and Regression Training</em>. <a href="https://CRAN.R-project.org/package=caret" class="external-link">https://CRAN.R-project.org/package=caret</a>.
-</div>
-<div id="ref-applied-kuhn-2013" class="csl-entry">
-Kuhn, Max, and Kjell Johnson. 2013. <em>Applied Predictive Modeling</em>. SpringerLink : B<span>ü</span>cher. Springer New York.
-</div>
-<div id="ref-R-yardstick" class="csl-entry">
-Kuhn, Max, Davis Vaughan, and Emil Hvitfeldt. 2023. <em>Yardstick: Tidy Characterizations of Model Performance</em>. <a href="https://CRAN.R-project.org/package=yardstick" class="external-link">https://CRAN.R-project.org/package=yardstick</a>.
-</div>
-<div id="ref-laan-2006-statistical" class="csl-entry">
-Laan, M. van der. 2006. <span>“Statistical Inference for Variable Importance.”</span> <em>The International Journal of Biostatistics</em> 2 (1). <a href="https://doi.org/10.2202/1557-4679.1008" class="external-link">https://doi.org/10.2202/1557-4679.1008</a>.
-</div>
-<div id="ref-R-randomForest" class="csl-entry">
-Liaw, Andy, and Matthew Wiener. 2002. <span>“Classification and Regression by randomForest.”</span> <em>R News</em> 2 (3): 18–22. <a href="https://CRAN.R-project.org/doc/Rnews/" class="external-link">https://CRAN.R-project.org/doc/Rnews/</a>.
-</div>
-<div id="ref-R-rfVarImpOOB" class="csl-entry">
-Loecher, Markus. 2019. <em>rfVarImpOOB: Unbiased Variable Importance for Random Forests</em>. <a href="https://CRAN.R-project.org/package=rfVarImpOOB" class="external-link">https://CRAN.R-project.org/package=rfVarImpOOB</a>.
-</div>
-<div id="ref-lundberg_unified_2017" class="csl-entry">
-Lundberg, Scott M, and Su-In Lee. 2017. <span>“A Unified Approach to Interpreting Model Predictions.”</span> In <em>Advances in Neural Information Processing Systems 30</em>, 4765–74. Curran Associates, Inc. <a href="https://papers.nips.cc/paper/7062-a-unified-approach-to-interpreting-model-predictions.pdf" class="external-link">https://papers.nips.cc/paper/7062-a-unified-approach-to-interpreting-model-predictions.pdf</a>.
-</div>
-<div id="ref-R-microbenchmark" class="csl-entry">
-Mersmann, Olaf. 2019. <em>Microbenchmark: Accurate Timing Functions</em>. <a href="https://CRAN.R-project.org/package=microbenchmark" class="external-link">https://CRAN.R-project.org/package=microbenchmark</a>.
-</div>
-<div id="ref-R-earth-fixed" class="csl-entry">
-Milborrow, Stephen. 2019. <em>Earth: Multivariate Adaptive Regression Splines</em>. <a href="https://CRAN.R-project.org/package=earth" class="external-link">https://CRAN.R-project.org/package=earth</a>.
-</div>
-<div id="ref-R-iml" class="csl-entry">
-Molnar, Christoph. 2019a. <em>Iml: Interpretable Machine Learning</em>. <a href="https://CRAN.R-project.org/package=iml" class="external-link">https://CRAN.R-project.org/package=iml</a>.
-</div>
-<div id="ref-molnar-2019-iml" class="csl-entry">
-———. 2019b. <em>Interpretable Machine Learning: A Guide for Making Black Box Models Explainable</em>.
-</div>
-<div id="ref-montavon-2018-methods" class="csl-entry">
-Montavon, Grégoire, Wojciech Samek, and Klaus-Robert Müller. 2018. <span>“Methods for Interpreting and Understanding Deep Neural Networks.”</span> <em>Digital Signal Processing</em> 73: 1–15. <a href="https://doi.org/10.1016/j.dsp.2017.10.011" class="external-link">https://doi.org/10.1016/j.dsp.2017.10.011</a>.
-</div>
-<div id="ref-R-tibble" class="csl-entry">
-Müller, Kirill, and Hadley Wickham. 2019. <em>Tibble: Simple Data Frames</em>. <a href="https://CRAN.R-project.org/package=tibble" class="external-link">https://CRAN.R-project.org/package=tibble</a>.
-</div>
-<div id="ref-accurate-olden-2004" class="csl-entry">
-Olden, Julian D, Michael K Joy, and Russell G Death. 2004. <span>“An Accurate Comparison of Methods for Quantifying Variable Importance in Artificial Neural Networks Using Simulated Data.”</span> <em>Ecological Modelling</em> 178 (3): 389–97. <a href="https://dx.doi.org/10.1016/j.ecolmodel.2004.03.013" class="external-link">https://dx.doi.org/10.1016/j.ecolmodel.2004.03.013</a>.
-</div>
-<div id="ref-R-randomForestExplainer" class="csl-entry">
-Paluszynska, Aleksandra, Przemyslaw Biecek, and Yue Jiang. 2019. <em>randomForestExplainer: Explaining and Visualizing Random Forests in Terms of Variable Importance</em>. <a href="https://CRAN.R-project.org/package=randomForestExplainer" class="external-link">https://CRAN.R-project.org/package=randomForestExplainer</a>.
-</div>
-<div id="ref-parr-2019-technical" class="csl-entry">
-Parr, Terence, and James D. Wilson. 2019. <span>“Technical Report: A Stratification Approach to Partial Dependence for Codependent Variables.”</span> <a href="https://arxiv.org/abs/1907.06698" class="external-link">https://arxiv.org/abs/1907.06698</a>.
-</div>
-<div id="ref-poulin-2006-visual" class="csl-entry">
-Poulin, Brett, Roman Eisner, Duane Szafron, Paul Lu, Russ Greiner, D. S. Wishart, Alona Fyshe, Brandon Pearcy, Cam MacDonell, and John Anvik. 2006. <span>“Visual Explanation of Evidence in Additive Classifiers.”</span> In <em>Proceedings of the 18th Conference on Innovative Applications of Artificial Intelligence - Volume 2</em>, 1822–29. IAAI’06. Boston, Massachusetts: AAAI Press.
-</div>
-<div id="ref-R-measures" class="csl-entry">
-Probst, Philipp. 2018. <em>Measures: Performance Measures for Statistical Learning</em>. <a href="https://CRAN.R-project.org/package=measures" class="external-link">https://CRAN.R-project.org/package=measures</a>.
-</div>
-<div id="ref-R-varImp" class="csl-entry">
-———. 2019. <em>varImp: RF Variable Importance for Arbitrary Measures</em>. <a href="https://CRAN.R-project.org/package=varImp" class="external-link">https://CRAN.R-project.org/package=varImp</a>.
-</div>
-<div id="ref-R-foreach" class="csl-entry">
-Revolution Analytics, and Steve Weston. n.d. <em>Foreach: Provides Foreach Looping Construct</em>.
-</div>
-<div id="ref-R-nnet" class="csl-entry">
-Ripley, Brian. 2016. <em>Nnet: Feed-Forward Neural Networks and Multinomial Log-Linear Models</em>. <a href="https://CRAN.R-project.org/package=nnet" class="external-link">https://CRAN.R-project.org/package=nnet</a>.
-</div>
-<div id="ref-scholbeck-2019-sampling" class="csl-entry">
-Scholbeck, Christian A., Christoph Molnar, Christian Heumann, Bernd Bischl, and Giuseppe Casalicchio. 2019. <span>“Sampling, Intervention, Prediction, Aggregation: <span>A</span> Generalized Framework for Model Agnostic Interpretations.”</span> <em>CoRR</em> abs/1904.03959. <a href="https://arxiv.org/abs/1904.03959" class="external-link">https://arxiv.org/abs/1904.03959</a>.
-</div>
-<div id="ref-strobl-2019-conditional" class="csl-entry">
-Strobl, Carolin, Anne-Laure Boulesteix, Thomas Kneib, Thomas Augustin, and Achim Zeileis. 2008. <span>“Conditional Variable Importance for Random Forests.”</span> <em>BMC Bioinformatics</em> 9 (1): 307. <a href="https://doi.org/10.1186/1471-2105-9-307" class="external-link">https://doi.org/10.1186/1471-2105-9-307</a>.
-</div>
-<div id="ref-party2007a" class="csl-entry">
-Strobl, Carolin, Anne-Laure Boulesteix, Achim Zeileis, and Torsten Hothorn. 2007. <span>“Bias in Random Forest Variable Importance Measures: Illustrations, Sources and a Solution.”</span> <em>BMC Bioinformatics</em> 8 (25). <a href="https://link.springer.com/article/10.1186/1471-2105-8-25" class="external-link">https://link.springer.com/article/10.1186/1471-2105-8-25</a>.
+Greenwell, Brandon M., Bradley C. Boehmke, and Andrew J. McCarthy. 2018.
+<span>“A Simple and Effective Model-Based Variable Importance
+Measure.”</span> <em>arXiv Preprint arXiv:1805.04755</em>.
 </div>
 <div id="ref-strumbelj-2014-explaining" class="csl-entry">
-Štrumbelj, Erik, and Igor Kononenko. 2014. <span>“Explaining Prediction Models and Individual Predictions with Feature Contributions.”</span> <em>Knowledge and Information Systems</em> 31 (3): 647–65. <a href="https://doi.org/10.1007/s10115-013-0679-x" class="external-link">https://doi.org/10.1007/s10115-013-0679-x</a>.
-</div>
-<div id="ref-R-tree.interpreter" class="csl-entry">
-Sun, Qingyao. 2019. <em>Tree.interpreter: Random Forest Prediction Decomposition and Feature Importance Measure</em>. <a href="https://CRAN.R-project.org/package=tree.interpreter" class="external-link">https://CRAN.R-project.org/package=tree.interpreter</a>.
-</div>
-<div id="ref-R-ggplot2" class="csl-entry">
-Wickham, Hadley, Winston Chang, Lionel Henry, Thomas Lin Pedersen, Kohske Takahashi, Claus Wilke, Kara Woo, and Hiroaki Yutani. 2019. <em>Ggplot2: Create Elegant Data Visualisations Using the Grammar of Graphics</em>. <a href="https://CRAN.R-project.org/package=ggplot2" class="external-link">https://CRAN.R-project.org/package=ggplot2</a>.
-</div>
-<div id="ref-R-ranger" class="csl-entry">
-Wright, Marvin N., Stefan Wager, and Philipp Probst. 2020. <em>Ranger: A Fast Implementation of Random Forests</em>. <a href="https://CRAN.R-project.org/package=ranger" class="external-link">https://CRAN.R-project.org/package=ranger</a>.
-</div>
-<div id="ref-zien-2009-feature" class="csl-entry">
-Zien, Alexander, Nicole Kraemer, Soeren Sonnenburg, and Gunnar Raetsch. 2009. <span>“The Feature Importance Ranking Measure.”</span> <a href="https://arxiv.org/abs/0906.4258" class="external-link">https://arxiv.org/abs/0906.4258</a>.
+Štrumbelj, Erik, and Igor Kononenko. 2014. <span>“Explaining Prediction
+Models and Individual Predictions with Feature Contributions.”</span>
+<em>Knowledge and Information Systems</em> 31 (3): 647–65. <a href="https://doi.org/10.1007/s10115-013-0679-x" class="external-link">https://doi.org/10.1007/s10115-013-0679-x</a>.
 </div>
 </div>
 </div>
-
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>

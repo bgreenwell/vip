@@ -1,288 +1,125 @@
-# vip: Variable Importance Plots
+# vip ![](reference/figures/logo-vip.png)
 
-![](reference/figures/logo-vip.png)
+Variable importance plots (VIPs) for R: quantify and visualize which
+features drive a fitted model’s predictions.
 
-**Make your ML models more interpretable with beautiful variable
-importance plots**
-
-[![CRAN
-Status](https://www.r-pkg.org/badges/version/vip)](https://cran.r-project.org/package=vip)
-[![R-CMD-check](https://github.com/koalaverse/vip/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/koalaverse/vip/actions/workflows/R-CMD-check.yaml)
-[![Codecov](https://codecov.io/gh/koalaverse/vip/graph/badge.svg)](https://app.codecov.io/github/koalaverse/vip?branch=main)
-[![CRAN
-Downloads](https://cranlogs.r-pkg.org/badges/grand-total/vip)](https://cran.r-project.org/package=vip/)
-[![R
-Journal](https://img.shields.io/badge/The%20R%20Journal-10.32614%2FRJ--2020--013-brightgreen)](https://doi.org/10.32614/RJ-2020-013)
-[![Lifecycle:
-stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
-
-------------------------------------------------------------------------
-
-## Overview
-
-**vip** provides a unified framework for constructing variable
-importance plots from virtually any machine learning model in R. Instead
-of juggling different
-[`importance()`](http://imbs-hl.github.io/ranger/reference/importance.ranger.md)
-functions across packages, vip gives you one consistent interface for
-interpretable ML.
-
-### Key features
-
-- Universal interface that works with 40+ model types from different
-  packages
-- Multiple methods: model-specific, permutation, SHAP, and
-  variance-based importance
-- Publication-ready visualizations with ggplot2
-- Optimized algorithms with parallel processing support
-- Easy to add support for new model types
-- Comprehensive guides and academic backing
+- **One interface, many models** —
+  [`vi()`](https://bgreenwell.github.io/vip/reference/vi.md) and
+  [`vip()`](https://bgreenwell.github.io/vip/reference/vip.md) work with
+  dozens of model classes out of the box (randomForest, ranger, gbm,
+  xgboost, lightgbm, glmnet, caret, tidymodels, mlr3, …)
+- **Model-specific and model-agnostic methods** — native importance
+  measures (`method = "model"`), permutation importance
+  (`method = "permute"`), Shapley-based importance (`method = "shap"`),
+  and variance-based importance (`method = "firm"`)
+- **Works with *any* model** — the model-agnostic methods only require a
+  user-supplied prediction wrapper
+- **Lightweight plotting** via
+  [tinyplot](https://grantmcdermott.com/tinyplot/) (base R graphics)
+- **Minimal dependencies** — imports only base R packages plus tinyplot
+  (itself dependency-free)
 
 ## Installation
 
-``` r
-# Install from CRAN (stable)
-install.packages("vip")
+**vip** is no longer available on CRAN due to CRAN’s stringent and
+ever-changing policies. It is now hosted on
+[r-universe](https://bgreenwell.r-universe.dev/vip), which provides a
+reliable alternative for distributing R packages.
 
-# Install development version (latest features)
-# install.packages("pak")
-pak::pak("koalaverse/vip")
+``` r
+
+# Latest stable release (recommended)
+install.packages("vip", repos = c("https://bgreenwell.r-universe.dev", "https://cloud.r-project.org"))
+
+# Or with pak
+pak::pak("bgreenwell/vip@main")  # latest stable release
+pak::pak("bgreenwell/vip")       # development version (devel branch)
 ```
 
 ## Quick start
 
 ``` r
+
 library(vip)
-library(randomForest)
 
-# Fit a model
-model <- randomForest(Species ~ ., data = iris)
+# Simulate Friedman 1 benchmark data; only x1-x5 are important!
+trn <- gen_friedman(500, seed = 101)  # ?vip::gen_friedman
 
-# Get importance scores
-vi_scores <- vi(model)
-print(vi_scores)
-#> # A tibble: 4 × 2
-#>   Variable     Importance
-#>   <chr>             <dbl>
-#> 1 Petal.Length      32.4 
-#> 2 Petal.Width       31.3 
-#> 3 Sepal.Length       9.51
-#> 4 Sepal.Width        6.75
-
-# Create a beautiful plot
-vip(model)
-```
-
-## Supported methods
-
-| Method             | Description                      | Use case               | Function                        |
-|--------------------|----------------------------------|------------------------|---------------------------------|
-| **Model-specific** | Extract built-in importance      | Fast, model-native     | `vi(model, method = "model")`   |
-| **Permutation**    | Shuffle features, measure impact | Model-agnostic, robust | `vi(model, method = "permute")` |
-| **Shapley values** | Game theory attribution          | Detailed explanations  | `vi(model, method = "shap")`    |
-| **Variance-based** | FIRM approach                    | Feature ranking        | `vi(model, method = "firm")`    |
-
-## Supported models
-
-**Tree-based models** -
-[randomForest](https://cran.r-project.org/package=randomForest) •
-[ranger](https://cran.r-project.org/package=ranger) •
-[xgboost](https://cran.r-project.org/package=xgboost) •
-[lightgbm](https://cran.r-project.org/package=lightgbm) •
-[gbm](https://cran.r-project.org/package=gbm) •
-[C50](https://cran.r-project.org/package=C50) •
-[Cubist](https://cran.r-project.org/package=Cubist) •
-[rpart](https://cran.r-project.org/package=rpart) •
-[party](https://cran.r-project.org/package=party) •
-[partykit](https://cran.r-project.org/package=partykit)
-
-**Linear models** - [glmnet](https://cran.r-project.org/package=glmnet)
-• [earth](https://cran.r-project.org/package=earth) (MARS) • Base R (lm,
-glm)
-
-**Neural networks** - [nnet](https://cran.r-project.org/package=nnet) •
-[neuralnet](https://cran.r-project.org/package=neuralnet) •
-[h2o](https://cran.r-project.org/package=h2o) •
-[RSNNS](https://cran.r-project.org/package=RSNNS)
-
-**Meta-frameworks** - [caret](https://cran.r-project.org/package=caret)
-• [tidymodels](https://cran.r-project.org/package=tidymodels) •
-[parsnip](https://cran.r-project.org/package=parsnip) •
-[workflows](https://cran.r-project.org/package=workflows) •
-[mlr](https://cran.r-project.org/package=mlr) •
-[mlr3](https://cran.r-project.org/package=mlr3) •
-[sparklyr](https://cran.r-project.org/package=sparklyr)
-
-**Specialized models** - [pls](https://cran.r-project.org/package=pls) •
-[mixOmics](https://bioconductor.org/packages/mixOmics/) (Bioconductor) •
-And many more…
-
-## Advanced examples
-
-### Permutation importance with custom metrics
-
-``` r
+# Model-specific importance from a random forest
 library(ranger)
+set.seed(101)
+rfo <- ranger(y ~ ., data = trn, importance = "impurity")
+vi(rfo)    # data frame of variable importance scores
+vip(rfo)   # variable importance plot
 
-# Fit model
-rf_model <- ranger(mpg ~ ., data = mtcars, importance = "none")
+# Permutation importance works for ANY model; just supply a prediction wrapper
+pfun <- function(object, newdata) predict(object, data = newdata)$predictions
+set.seed(102)
+vis <- vi(rfo, method = "permute", train = trn, target = "y", metric = "rmse",
+          pred_wrapper = pfun, nsim = 10)
 
-# Permutation importance with custom metric
-vi_perm <- vi(
-  rf_model, 
-  method = "permute",
-  train = mtcars,
-  target = "mpg",
-  metric = "rmse",
-  nsim = 50,        # 50 permutations for stability
-  parallel = TRUE   # Speed up with parallel processing
-)
-
-# Create enhanced plot
-vip(vi_perm, num_features = 10, geom = "point") +
-  labs(title = "Permutation-based Variable Importance",
-       subtitle = "RMSE metric, 50 permutations") +
-  theme_minimal()
+# "vi" objects have a plot() method; additional arguments are passed on to
+# tinyplot::tinyplot()
+plot(vis, type = "boxplot", all_permutations = TRUE, jitter = TRUE,
+     fill = "grey90")
 ```
 
-### SHAP values for detailed attribution
+[`vi()`](https://bgreenwell.github.io/vip/reference/vi.md) returns a
+tidy data frame of importance scores, so results are easy to
+post-process or plot with any graphics package.
 
-``` r
-library(xgboost)
+## Documentation
 
-# Prepare data
-X <- data.matrix(subset(mtcars, select = -mpg))
-y <- mtcars$mpg
+- [Package website](https://bgreenwell.github.io/vip/) — function
+  reference and the [introductory
+  vignette](https://bgreenwell.github.io/vip/articles/vip.html)
+- Greenwell, B. M., and Boehmke, B. C. (2020). “Variable Importance
+  Plots—An Introduction to the vip Package.” *The R Journal*, 12(1),
+  343–366.
+  [doi:10.32614/RJ-2020-013](https://doi.org/10.32614/RJ-2020-013)
+  (`citation("vip")`)
+- For visualizing feature *effects* (which pair naturally with variable
+  importance), see [pdp](https://bgreenwell.github.io/pdp/)
 
-# Fit XGBoost model
-xgb_model <- xgboost(data = X, label = y, nrounds = 100, verbose = 0)
+## Development
 
-# SHAP-based importance
-vi_shap <- vi(
-  xgb_model, 
-  method = "shap",
-  train = X,
-  nsim = 30
-)
-
-# Beautiful SHAP plot
-vip(vi_shap, geom = "col", aesthetics = list(fill = "steelblue", alpha = 0.8)) +
-  labs(title = "SHAP-based Variable Importance") +
-  theme_light()
-```
-
-## Contributing
-
-We welcome contributions! Here’s how to get involved:
-
-### Development setup
-
-``` bash
-# Clone the repo
-git clone https://github.com/koalaverse/vip.git
-cd vip
-
-# Open in RStudio or your favorite editor
-```
-
-### Testing framework
-
-We use [tinytest](https://cran.r-project.org/package=tinytest) for
-lightweight, reliable testing:
-
-``` r
-# Run all tests
-tinytest::test_package("vip")
-
-# Test specific functionality
-tinytest::run_test_file("inst/tinytest/test_vip.R")
-```
-
-### Development workflow
-
-1.  **Check issues**: Look for [good first
-    issues](https://github.com/koalaverse/vip/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-2.  **Create branch**: `git checkout -b feature/awesome-feature`
-3.  **Write tests**: Follow TDD principles
-4.  **Run checks**: `R CMD check` and tests
-5.  **Submit PR**: With clear description
-
-### Adding model support
-
-Adding support for new models is straightforward:
-
-``` r
-# Add S3 method to R/vi_model.R
-vi_model.your_model_class <- function(object, ...) {
-  # Extract importance from your model
-  importance_scores <- your_model_importance_function(object)
-  
-  # Return as tibble
-  tibble::tibble(
-    Variable = names(importance_scores),
-    Importance = as.numeric(importance_scores)
-  )
-}
-```
-
-## Getting help
-
-- Bug reports: [GitHub Issues](https://github.com/koalaverse/vip/issues)
-
-## Citation
-
-If you use vip in your research, please cite:
-
-``` bibtex
-@article{greenwell2020variable,
-  title={Variable Importance Plots—An Introduction to the vip Package},
-  author={Greenwell, Brandon M and Boehmke, Bradley C},
-  journal={The R Journal},
-  volume={12},
-  number={1},
-  pages={343--366},
-  year={2020},
-  doi={10.32614/RJ-2020-013}
-}
-```
-
-## License
-
-GPL (\>= 2) © [Brandon M. Greenwell](https://github.com/bgreenwell),
-[Brad Boehmke](https://github.com/bradleyboehmke)
-
-------------------------------------------------------------------------
-
-*Built by the [koalaverse](https://github.com/koalaverse) team*
+Development happens on the
+[`devel`](https://github.com/bgreenwell/vip/tree/devel) branch (the
+repository default); `main` holds stable releases, which is what
+r-universe builds and the website documents. Please open pull requests
+against `devel` and report bugs via the [issue
+tracker](https://github.com/bgreenwell/vip/issues).
 
 # Package index
 
 ## All functions
 
-- [`gen_friedman()`](https://koalaverse.github.io/vip/reference/gen_friedman.md)
+- [`gen_friedman()`](https://bgreenwell.github.io/vip/reference/gen_friedman.md)
   : Friedman benchmark data
-- [`list_metrics()`](https://koalaverse.github.io/vip/reference/list_metrics.md)
+- [`list_metrics()`](https://bgreenwell.github.io/vip/reference/list_metrics.md)
   : List metrics
-- [`titanic`](https://koalaverse.github.io/vip/reference/titanic.md) :
+- [`plot(`*`<vi>`*`)`](https://bgreenwell.github.io/vip/reference/plot.vi.md)
+  : Plot variable importance scores
+- [`titanic`](https://bgreenwell.github.io/vip/reference/titanic.md) :
   Survival of Titanic passengers
-- [`titanic_mice`](https://koalaverse.github.io/vip/reference/titanic_mice.md)
+- [`titanic_mice`](https://bgreenwell.github.io/vip/reference/titanic_mice.md)
   : Survival of Titanic passengers
-- [`vi()`](https://koalaverse.github.io/vip/reference/vi.md) : Variable
+- [`vi()`](https://bgreenwell.github.io/vip/reference/vi.md) : Variable
   importance
-- [`vi_firm()`](https://koalaverse.github.io/vip/reference/vi_firm.md) :
+- [`vi_firm()`](https://bgreenwell.github.io/vip/reference/vi_firm.md) :
   Variance-based variable importance
-- [`vi_model()`](https://koalaverse.github.io/vip/reference/vi_model.md)
+- [`vi_model()`](https://bgreenwell.github.io/vip/reference/vi_model.md)
   : Model-specific variable importance
-- [`vi_permute()`](https://koalaverse.github.io/vip/reference/vi_permute.md)
+- [`vi_permute()`](https://bgreenwell.github.io/vip/reference/vi_permute.md)
   : Permutation-based variable importance
-- [`vi_shap()`](https://koalaverse.github.io/vip/reference/vi_shap.md) :
+- [`vi_shap()`](https://bgreenwell.github.io/vip/reference/vi_shap.md) :
   SHAP-based variable importance
-- [`vip()`](https://koalaverse.github.io/vip/reference/vip.md) :
+- [`vip()`](https://bgreenwell.github.io/vip/reference/vip.md) :
   Variable importance plots
 
 # Articles
 
 ### All vignettes
 
-- [Variable Importance Plots—An Introduction to the vip
-  Package](https://koalaverse.github.io/vip/articles/vip.md):
+- [Variable importance plots: an introduction to
+  vip](https://bgreenwell.github.io/vip/articles/vip.md):

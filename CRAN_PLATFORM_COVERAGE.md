@@ -7,21 +7,21 @@ platform configurations that map to CRAN’s 13 check flavors.
 
 ### Platform Matrix (9 configurations)
 
-| GitHub Actions Config      | R Version | Maps to CRAN Platforms                    |
-|----------------------------|-----------|-------------------------------------------|
-| **Windows**                |           |                                           |
-| windows-latest             | release   | Windows (x86_64-w64-mingw32)              |
-| windows-latest             | devel     | Windows (r-devel)                         |
-| **macOS ARM64 (M1/M2/M3)** |           |                                           |
-| macos-latest               | release   | macOS 14.x ARM64 (aarch64-apple-darwin20) |
-| macos-latest               | devel     | macOS ARM64 (r-devel)                     |
-| **macOS Intel**            |           |                                           |
-| macos-13                   | release   | macOS 13.x Intel (x86_64-apple-darwin20)  |
-| **Linux (Ubuntu/Debian)**  |           |                                           |
-| ubuntu-latest              | devel     | Debian Linux (r-devel, r-patched)         |
-| ubuntu-latest              | release   | Debian Linux (r-release)                  |
-| ubuntu-latest              | oldrel-1  | Debian Linux (r-oldrel-1)                 |
-| ubuntu-latest              | oldrel-2  | Debian Linux (r-oldrel-2)                 |
+| GitHub Actions Config | R Version | Maps to CRAN Platforms |
+|----|----|----|
+| **Windows** |  |  |
+| windows-latest | release | Windows (x86_64-w64-mingw32) |
+| windows-latest | devel | Windows (r-devel) |
+| **macOS ARM64 (M1/M2/M3)** |  |  |
+| macos-latest | release | macOS 14.x ARM64 (aarch64-apple-darwin20) |
+| macos-latest | devel | macOS ARM64 (r-devel) |
+| **macOS Intel** |  |  |
+| macos-13 | release | macOS 13.x Intel (x86_64-apple-darwin20) |
+| **Linux (Ubuntu/Debian)** |  |  |
+| ubuntu-latest | devel | Debian Linux (r-devel, r-patched) |
+| ubuntu-latest | release | Debian Linux (r-release) |
+| ubuntu-latest | oldrel-1 | Debian Linux (r-oldrel-1) |
+| ubuntu-latest | oldrel-2 | Debian Linux (r-oldrel-2) |
 
 ### CRAN Platform Coverage
 

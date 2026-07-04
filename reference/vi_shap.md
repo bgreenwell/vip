@@ -24,7 +24,7 @@ vi_shap(object, feature_names = NULL, train = NULL, ...)
 
   Additional arguments to be passed on to
   [`fastshap::explain()`](https://bgreenwell.github.io/fastshap/reference/explain.html)
-  (e.g., `nsim = 30`, `adjust = TRUE`, or avprediction wrapper via the
+  (e.g., `nsim = 30`, `adjust = TRUE`, or a prediction wrapper via the
   `pred_wrapper` argument); see
   [`?fastshap::explain`](https://bgreenwell.github.io/fastshap/reference/explain.html)
   for details on these and other useful arguments.
@@ -45,9 +45,10 @@ vi_shap(object, feature_names = NULL, train = NULL, ...)
 
 ## Value
 
-A tidy data frame (i.e., a
-[tibble](https://tibble.tidyverse.org/reference/tibble.html) object)
-with two columns:
+A tidy data frame (specifically, a data frame inheriting from class
+`"vi"`; use
+[`tibble::as_tibble()`](https://tibble.tidyverse.org/reference/as_tibble.html)
+if you prefer a tibble) with two columns:
 
 - `Variable` - the corresponding feature name;
 
@@ -68,7 +69,6 @@ information systems 41.3 (2014): 647-665.
 
 ``` r
 if (FALSE) { # \dontrun{
-library(ggplot2)  # for theme_light() function
 library(xgboost)
 
 # Simulate training data
@@ -86,8 +86,7 @@ bst <- xgboost(X, label = trn$y, nrounds = 338, max_depth = 3, eta = 0.1,
 # functionality
 vip(bst, method = "shap", train = X, exact = TRUE, include_type = TRUE,
     geom = "point", horizontal = FALSE,
-    aesthetics = list(color = "forestgreen", shape = 17, size = 5)) +
-  theme_light()
+    plot_args = list(col = "forestgreen", pch = 17, cex = 2))
 
 # Use Monte-Carlo approach, which works for any model; requires prediction
 # wrapper
@@ -100,7 +99,6 @@ pfun_prob <- function(object, newdata) {  # prediction wrapper
 set.seed(853)  # for reproducibility
 vi_shap(rfo, train = subset(t1, select = -survived), pred_wrapper = pfun_prob,
         nsim = 30)
-## # A tibble: 5 × 2
 ## Variable Importance
 ##   <chr>         <dbl>
 ## 1 pclass       0.104

@@ -62,6 +62,9 @@ vi_model(object, type = c("olden", "garson"), ...)
 # S3 method for class 'nnet'
 vi_model(object, type = c("olden", "garson"), ...)
 
+# S3 method for class 'mlp'
+vi_model(object, type = c("olden", "garson"), ...)
+
 # S3 method for class 'RandomForest'
 vi_model(object, type = c("accuracy", "auc"), ...)
 
@@ -74,18 +77,6 @@ vi_model(object, ...)
 # S3 method for class 'mvr'
 vi_model(object, ...)
 
-# S3 method for class 'mixo_pls'
-vi_model(object, ncomp = NULL, ...)
-
-# S3 method for class 'mixo_spls'
-vi_model(object, ncomp = NULL, ...)
-
-# S3 method for class 'WrappedModel'
-vi_model(object, ...)
-
-# S3 method for class 'Learner'
-vi_model(object, ...)
-
 # S3 method for class 'randomForest'
 vi_model(object, ...)
 
@@ -94,9 +85,6 @@ vi_model(object, ...)
 
 # S3 method for class 'rpart'
 vi_model(object, ...)
-
-# S3 method for class 'mlp'
-vi_model(object, type = c("olden", "garson"), ...)
 
 # S3 method for class 'ml_model_decision_tree_regression'
 vi_model(object, ...)
@@ -110,16 +98,16 @@ vi_model(object, ...)
 # S3 method for class 'ml_model_gbt_classification'
 vi_model(object, ...)
 
-# S3 method for class 'ml_model_generalized_linear_regression'
-vi_model(object, ...)
-
-# S3 method for class 'ml_model_linear_regression'
-vi_model(object, ...)
-
 # S3 method for class 'ml_model_random_forest_regression'
 vi_model(object, ...)
 
 # S3 method for class 'ml_model_random_forest_classification'
+vi_model(object, ...)
+
+# S3 method for class 'ml_model_generalized_linear_regression'
+vi_model(object, ...)
+
+# S3 method for class 'ml_model_linear_regression'
 vi_model(object, ...)
 
 # S3 method for class 'lm'
@@ -180,15 +168,16 @@ American Statistician, 48:3, 209-213, DOI:
 
 ## Value
 
-A tidy data frame (i.e., a
-[tibble](https://tibble.tidyverse.org/reference/tibble.html) object)
-with two columns:
+A tidy data frame (specifically, a data frame inheriting from class
+`"vi"`; use
+[`tibble::as_tibble()`](https://tibble.tidyverse.org/reference/as_tibble.html)
+if you prefer a tibble) with two columns:
 
 - `Variable` - the corresponding feature name;
 
-- `Importance` - the associated importance, computed as the average
-  change in performance after a random permutation (or permutations, if
-  `nsim > 1`) of the feature in question.
+- `Importance` - the associated importance, computed using the
+  model-specific approach described in the details section below for the
+  class of `object`.
 
 For
 [lm](https://rdrr.io/r/stats/lm.html)/[glm](https://rdrr.io/r/stats/glm.html)-like

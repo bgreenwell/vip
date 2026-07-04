@@ -2,5 +2,5 @@
 
 ### All vignettes
 
-- [Variable Importance Plots—An Introduction to the vip
-  Package](https://koalaverse.github.io/vip/articles/vip.md):
+- [Variable importance plots: an introduction to
+  vip](https://bgreenwell.github.io/vip/articles/vip.md):
