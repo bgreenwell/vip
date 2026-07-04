@@ -1,7 +1,7 @@
 Package: vip
 Type: Package
 Title: Variable Importance Plots
-Version: 0.5.0
+Version: 0.5.0.9000
 Authors@R: c(
   person(c("Brandon", "M."), family = "Greenwell", 
          email = "greenwell.brandon@gmail.com",
