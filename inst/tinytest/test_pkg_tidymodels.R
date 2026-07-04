@@ -77,8 +77,7 @@ vi_auc <- ranger_fit_workflow |>
      pred_wrapper = pfun,
      event_level = "first",
      nsim = 10,
-     train = bivariate_train,
-     reference_class = "One")
+     train = bivariate_train)
 
 # Not always the case, but here we can expect these to be in (0, 1)
 expect_true(all(vi_auc$Importance > 0 & vi_auc$Importance < 1))
