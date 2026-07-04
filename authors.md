@@ -10,7 +10,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/bgreenwell/vip/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/bgreenwell/vip/blob/v0.5.0/inst/CITATION)
 
 Brandon M. Greenwell and Bradley C. Boehmke (2020). Variable Importance
 Plots—An Introduction to the vip Package. The R Journal, 12(1),

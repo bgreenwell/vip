@@ -3,7 +3,7 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   vip: vip.html
-last_built: 2026-07-04T19:34Z
+last_built: 2026-07-04T19:38Z
 urls:
   reference: https://bgreenwell.github.io/vip/reference
   article: https://bgreenwell.github.io/vip/articles
