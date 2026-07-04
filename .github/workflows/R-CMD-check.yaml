@@ -53,14 +53,21 @@ jobs:
           # fastshap (Suggests) is distributed via r-universe, not CRAN
           extra-repositories: 'https://bgreenwell.r-universe.dev'
 
+      # data.table (pulled in as a dependency) needs libintl.h when built
+      # from source, which happens on macOS + R-devel (no binaries). R takes
+      # compiler flags from its Makeconf, which overrides inherited
+      # environment variables, so the flags must go in ~/.R/Makevars instead
+      # of $GITHUB_ENV.
       - name: Install gettext (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew update
-          brew install gettext
-          echo "PKG_CONFIG_PATH=$(brew --prefix gettext)/lib/pkgconfig" >> $GITHUB_ENV
-          echo "CPPFLAGS=-I$(brew --prefix gettext)/include" >> $GITHUB_ENV
-          echo "LDFLAGS=-L$(brew --prefix gettext)/lib" >> $GITHUB_ENV
+          brew install gettext || true
+          mkdir -p ~/.R
+          {
+            echo "CPPFLAGS += -I$(brew --prefix gettext)/include"
+            echo "LDFLAGS += -L$(brew --prefix gettext)/lib -lintl"
+          } >> ~/.R/Makevars
+          cat ~/.R/Makevars
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
