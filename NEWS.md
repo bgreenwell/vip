@@ -1,4 +1,4 @@
-# vip (development version)
+# vip 0.5.0
 
 ## New features
 
