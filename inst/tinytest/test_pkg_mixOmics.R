@@ -31,25 +31,25 @@ for (i in 1:3) {
   pls_vip_imp <- vi_model(pls_mo, ncomp = i)
   expect_identical(
     current = pls_vip_imp$Importance,
-    target = pls_mo_imp[,i]
+    target = unname(pls_mo_imp[,i])
   )
 
   spls_vip_imp <- vi_model(spls_mo, ncomp = i)
   expect_identical(
     current = spls_vip_imp$Importance,
-    target = spls_mo_imp[,i]
+    target = unname(spls_mo_imp[,i])
   )
 
   plsda_vip_imp <- vi_model(plsda_mo, ncomp = i)
   expect_identical(
     current = plsda_vip_imp$Importance,
-    target = plsda_mo_imp[,i]
+    target = unname(plsda_mo_imp[,i])
   )
 
   splsda_vip_imp <- vi_model(splsda_mo, ncomp = i)
   expect_identical(
     current = splsda_vip_imp$Importance,
-    target = splsda_mo_imp[,i]
+    target = unname(splsda_mo_imp[,i])
   )
 
 }
@@ -57,25 +57,25 @@ for (i in 1:3) {
 pls_vip_imp <- vi_model(pls_mo)
 expect_identical(
   current = pls_vip_imp$Importance,
-  target = pls_mo_imp[,3]
+  target = unname(pls_mo_imp[,3])
 )
 
 spls_vip_imp <- vi_model(spls_mo)
 expect_identical(
   current = spls_vip_imp$Importance,
-  target = spls_mo_imp[,3]
+  target = unname(spls_mo_imp[,3])
 )
 
 plsda_vip_imp <- vi_model(plsda_mo)
 expect_identical(
   current = plsda_vip_imp$Importance,
-  target = plsda_mo_imp[,3]
+  target = unname(plsda_mo_imp[,3])
 )
 
 splsda_vip_imp <- vi_model(splsda_mo)
 expect_identical(
   current = splsda_vip_imp$Importance,
-  target = splsda_mo_imp[,3]
+  target = unname(splsda_mo_imp[,3])
 )
 
 expect_error(
@@ -89,5 +89,5 @@ expect_warning(
 )
 expect_identical(
   current = too_many$Importance,
-  target = pls_mo_imp[,3]
+  target = unname(pls_mo_imp[,3])
 )

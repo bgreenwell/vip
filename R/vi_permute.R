@@ -99,7 +99,8 @@
 #' @param ... Additional optional arguments to be passed on to
 #' [foreach][foreach::foreach] (e.g., `.packages` or `.export`).
 #'
-#' @return A tidy data frame (i.e., a [tibble][tibble::tibble] object) with two
+#' @return A tidy data frame (specifically, a data frame inheriting from class
+#' `"vi"`; use `tibble::as_tibble()` if you prefer a tibble) with two
 #' columns:
 #'
 #' * `Variable` - the corresponding feature name;
@@ -209,7 +210,6 @@
 #'    pred_wrapper = pfun_class,
 #'    nsim = 30  # use 30 repetitions
 #' )
-#' ## # A tibble: 5 × 3
 #' ##   Variable Importance   StDev
 #' ##   <chr>         <dbl>   <dbl>
 #' ## 1 sex          0.228  0.0110
@@ -242,7 +242,6 @@
 #'    nsim = 30  # use 30 repetitions
 #' )
 #'
-#' ## # A tibble: 5 × 3
 #' ## Variable Importance   StDev
 #' ##   <chr>         <dbl>   <dbl>
 #' ## 1 sex          0.210  0.00869
@@ -277,7 +276,6 @@
 #'    nsim = 30  # use 30 repetitions
 #' )
 #'
-#' ## # A tibble: 5 × 3
 #' ## Variable Importance   StDev
 #' ##   <chr>         <dbl>   <dbl>
 #' ## 1 sex          0.229  0.0137
@@ -526,11 +524,9 @@ vi_permute.default <- function(
   })
   vis <- do.call(cbind, args = reps)  # features (rows) by repetitions (cols)
 
-  # Construct tibble of variable importance scores
-  tib <- tibble::tibble(
-    "Variable" = feature_names,
-    "Importance" = rowMeans(vis)
-  )
+  # Construct data frame of variable importance scores
+  tib <- new_vi(feature_names, importance = rowMeans(vis),
+                type = "permutation")
   if (nsim > 1) {
     tib$StDev <- apply(vis, MARGIN = 1, FUN = stats::sd)
   }
@@ -541,12 +537,6 @@ vi_permute.default <- function(
     colnames(vis) <- paste0("permutation_", seq_len(ncol(vis)))
     attr(tib, which = "raw_scores") <- vis
   }
-
-  # Add variable importance type attribute
-  attr(tib, which = "type") <- "permutation"
-
-  # Add "vi" class
-  class(tib) <- c("vi", class(tib))
 
   # Return results
   tib

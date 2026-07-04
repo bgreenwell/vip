@@ -77,7 +77,7 @@ variable importance computed in the axis label. Default is \code{FALSE}.}
 }
 \value{
 Draws a plot as a side effect and invisibly returns the underlying
-\link[=vi]{vi} object (a tibble of variable importance scores).
+\link[=vi]{vi} object (a data frame of variable importance scores).
 }
 \description{
 Compute variable importance scores for the predictors in a model and plot

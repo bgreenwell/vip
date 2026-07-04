@@ -24,7 +24,8 @@
 #' See the details section below for arguments that can be passed to specific
 #' object types.
 #'
-#' @return A tidy data frame (i.e., a [tibble][tibble::tibble] object) with two
+#' @return A tidy data frame (specifically, a data frame inheriting from class
+#' `"vi"`; use `tibble::as_tibble()` if you prefer a tibble) with two
 #' columns:
 #'
 #' * `Variable` - the corresponding feature name;
@@ -359,7 +360,7 @@ vi_model.earth <- function(object, type = c("nsubsets", "rss", "gcv"), ...) {
   vis <- earth::evimp(object, trim = FALSE, ...)[, type, drop = TRUE]
   new_vi(
     gsub("-unused$", replacement = "", x = names(vis)),
-    importance = unname(vis),  # per tibble 3.0.0
+    importance = unname(vis),  # strip names
     type = type
   )
 }
@@ -404,7 +405,7 @@ vi_glmnet <- function(object, lambda) {
 
   new_vi(
     names(coefs),
-    importance = unname(abs(coefs)),  # per tibble 3.0.0
+    importance = unname(abs(coefs)),  # strip names
     type = "|coefficient|",
     sign = ifelse(coefs >= 0, yes = "POS", no = "NEG")
   )
@@ -439,7 +440,7 @@ vi_model.cv.glmnet <- function(object, lambda = NULL, ...) {
 #'
 #' @export
 vi_model.H2OBinomialModel <- function(object, ...) {
-  tib <- tibble::as_tibble(h2o::h2o.varimp(object))
+  tib <- as.data.frame(h2o::h2o.varimp(object))
   if (object@algorithm == "glm") {
     names(tib) <- c("Variable", "Importance", "Sign")
     # FIXME: Extra row at the bottom?

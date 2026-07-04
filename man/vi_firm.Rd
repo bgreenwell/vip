@@ -48,7 +48,8 @@ for categorical features. Defaults to using the range divided by four; that
 is, \code{function(x) diff(range(x)) / 4}.}
 }
 \value{
-A tidy data frame (i.e., a \link[tibble:tibble]{tibble} object) with two
+A tidy data frame (specifically, a data frame inheriting from class
+\code{"vi"}; use \code{tibble::as_tibble()} if you prefer a tibble) with two
 columns:
 \itemize{
 \item \code{Variable} - the corresponding feature name;

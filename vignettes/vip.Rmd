@@ -56,7 +56,7 @@ truly affect the response.
 library(vip)
 
 trn <- gen_friedman(500, seed = 101)  # see ?vip::gen_friedman
-tibble::as_tibble(trn)
+head(trn)
 ```
 
 ## Model-specific importance
@@ -69,7 +69,7 @@ of split [@classification-breiman-1984]:
 library(rpart)
 
 tree <- rpart(y ~ ., data = trn)
-vi(tree)  # a tibble of class "vi"
+vi(tree)  # a data frame of class "vi"
 ```
 
 `"vi"` objects have a `plot()` method (drawing with lightweight base R

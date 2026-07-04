@@ -65,7 +65,8 @@ Potentially useful when comparing variable importance scores across different
 models using different methods.}
 }
 \value{
-A tidy data frame (i.e., a \link[tibble:tibble]{tibble} object) with two
+A tidy data frame (specifically, a data frame inheriting from class
+\code{"vi"}; use \code{tibble::as_tibble()} if you prefer a tibble) with two
 columns:
 \itemize{
 \item \code{Variable} - the corresponding feature name;

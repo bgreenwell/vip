@@ -22,8 +22,8 @@ drive a fitted model's predictions.
   user-supplied prediction wrapper
 - **Lightweight plotting** via
   [tinyplot](https://grantmcdermott.com/tinyplot/) (base R graphics)
-- **Minimal dependencies** — imports only base R packages plus tibble and
-  tinyplot
+- **Minimal dependencies** — imports only base R packages plus tinyplot
+  (itself dependency-free)
 
 ## Installation
 
@@ -53,7 +53,7 @@ trn <- gen_friedman(500, seed = 101)  # ?vip::gen_friedman
 library(ranger)
 set.seed(101)
 rfo <- ranger(y ~ ., data = trn, importance = "impurity")
-vi(rfo)    # tibble of variable importance scores
+vi(rfo)    # data frame of variable importance scores
 vip(rfo)   # variable importance plot
 
 # Permutation importance works for ANY model; just supply a prediction wrapper
@@ -68,7 +68,7 @@ plot(vis, type = "boxplot", all_permutations = TRUE, jitter = TRUE,
      fill = "grey90")
 ```
 
-`vi()` returns a tidy tibble of importance scores, so results are easy to
+`vi()` returns a tidy data frame of importance scores, so results are easy to
 post-process or plot with any graphics package.
 
 ## Documentation

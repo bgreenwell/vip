@@ -29,7 +29,8 @@ internal \code{get_training_data()} function will be called to try and extract i
 automatically. It is good practice to always specify this argument.}
 }
 \value{
-A tidy data frame (i.e., a \link[tibble:tibble]{tibble} object) with two
+A tidy data frame (specifically, a data frame inheriting from class
+\code{"vi"}; use \code{tibble::as_tibble()} if you prefer a tibble) with two
 columns:
 \itemize{
 \item \code{Variable} - the corresponding feature name;
@@ -82,7 +83,6 @@ pfun_prob <- function(object, newdata) {  # prediction wrapper
 set.seed(853)  # for reproducibility
 vi_shap(rfo, train = subset(t1, select = -survived), pred_wrapper = pfun_prob,
         nsim = 30)
-## # A tibble: 5 × 2
 ## Variable Importance
 ##   <chr>         <dbl>
 ## 1 pclass       0.104

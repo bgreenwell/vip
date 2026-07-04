@@ -223,7 +223,7 @@ plot.vi <- function(
 #' @param ... Additional optional arguments to be passed on to [vi][vip::vi].
 #'
 #' @return Draws a plot as a side effect and invisibly returns the underlying
-#' [vi][vip::vi] object (a tibble of variable importance scores).
+#' [vi][vip::vi] object (a data frame of variable importance scores).
 #'
 #' @rdname vip
 #'

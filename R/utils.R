@@ -1,8 +1,11 @@
 #' Construct a "vi" object
 #'
-#' Internal constructor for the tibble of variable importance scores returned
-#' by all of the `vi_*()` functions; ensures a consistent structure (column
-#' names, `"type"` attribute, and `"vi"` class).
+#' Internal constructor for the data frame of variable importance scores
+#' returned by all of the `vi_*()` functions; ensures a consistent structure
+#' (column names, `"type"` attribute, and `"vi"` class). Note that base R's
+#' `[.data.frame` and `na.omit()` preserve both the class and the custom
+#' attributes of `"vi"` objects, which the `vi()` and `plot.vi()` pipelines
+#' rely on.
 #'
 #' @param variable Character vector of feature names.
 #'
@@ -17,16 +20,20 @@
 #' @keywords internal
 #' @noRd
 new_vi <- function(variable, importance, type, sign = NULL) {
+  # Strip any names/dimnames carried by the inputs (e.g., from named vectors
+  # or matrix columns) so the resulting columns are always plain vectors
   tib <- if (is.null(sign)) {
-    tibble::tibble(
-      "Variable" = variable,
-      "Importance" = importance
+    data.frame(
+      "Variable" = unname(variable),
+      "Importance" = unname(importance),
+      stringsAsFactors = FALSE
     )
   } else {
-    tibble::tibble(
-      "Variable" = variable,
-      "Importance" = importance,
-      "Sign" = sign
+    data.frame(
+      "Variable" = unname(variable),
+      "Importance" = unname(importance),
+      "Sign" = unname(sign),
+      stringsAsFactors = FALSE
     )
   }
   attr(tib, which = "type") <- type
@@ -63,5 +70,7 @@ check_var_fun <- function(x) {
 
 #' @keywords internal
 sort_importance_scores <- function(x, decreasing) {
-  x[order(x$Importance, decreasing = decreasing), ]
+  x <- x[order(x$Importance, decreasing = decreasing), ]
+  rownames(x) <- NULL  # don't display shuffled row numbers
+  x
 }

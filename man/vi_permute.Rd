@@ -127,7 +127,8 @@ across features (\code{parallelize_by = "features"}) or repetitions
 \code{nsim > 1}. Default is \code{"features"}.}
 }
 \value{
-A tidy data frame (i.e., a \link[tibble:tibble]{tibble} object) with two
+A tidy data frame (specifically, a data frame inheriting from class
+\code{"vi"}; use \code{tibble::as_tibble()} if you prefer a tibble) with two
 columns:
 \itemize{
 \item \code{Variable} - the corresponding feature name;
@@ -234,7 +235,6 @@ vi(rfo2,
    pred_wrapper = pfun_class,
    nsim = 30  # use 30 repetitions
 )
-## # A tibble: 5 × 3
 ##   Variable Importance   StDev
 ##   <chr>         <dbl>   <dbl>
 ## 1 sex          0.228  0.0110
@@ -267,7 +267,6 @@ vi(rfo2,
    nsim = 30  # use 30 repetitions
 )
 
-## # A tibble: 5 × 3
 ## Variable Importance   StDev
 ##   <chr>         <dbl>   <dbl>
 ## 1 sex          0.210  0.00869
@@ -302,7 +301,6 @@ vi(rfo2,
    nsim = 30  # use 30 repetitions
 )
 
-## # A tibble: 5 × 3
 ## Variable Importance   StDev
 ##   <chr>         <dbl>   <dbl>
 ## 1 sex          0.229  0.0137

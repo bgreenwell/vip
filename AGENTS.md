@@ -19,7 +19,7 @@ Exports: `vi()` (front end), `vi_model()`, `vi_permute()`, `vi_firm()`,
 
 ## Dependency philosophy
 
-Keep Imports minimal: `stats, tibble, tinyplot, utils` — nothing else without
+Keep Imports minimal: `stats, tinyplot, utils` — nothing else without
 strong justification. Plotting is **tinyplot** (zero-dep base graphics), *not*
 ggplot2 (removed in 0.5.0). `foreach` lives in Suggests and is only touched
 when `parallel = TRUE` (see `ploop()` in `R/vi_permute.R`); `yardstick` lives
@@ -47,7 +47,9 @@ a NEWS.md entry; never edit `man/` by hand.
   methods are aliased (e.g., `vi_model.nnet <- vi_model.nn`); shared logic
   lives in internal workers (`vi_glmnet()`, `vi_spark_importance()`,
   `vi_spark_lm()`). All methods return via the `new_vi()` constructor in
-  `R/utils.R` (tibble + `"type"` attribute + `"vi"` class).
+  `R/utils.R` (plain data.frame + `"type"` attribute + `"vi"` class; base
+  `[.data.frame`/`na.omit()` preserve the class and custom attributes, which
+  the `vi()`/`plot.vi()` pipelines rely on).
 - `vi_permute.R` — permutation importance; sequential base-R loops with
   optional foreach parallelism via the internal `ploop()` helper. One
   subsample per repetition (baseline recomputed on the subsample).
@@ -66,7 +68,7 @@ a NEWS.md entry; never edit `man/` by hand.
 
 - **tinyplot records calls** for `tinyplot_add()` — build internal plot calls
   with `do.call()` so stored calls hold values, never `...` or local symbols.
-- `vip()`/`plot.vi()` return the `vi` tibble **invisibly**; tests assert
+- `vip()`/`plot.vi()` return the `vi` data frame **invisibly**; tests assert
   `expect_inherits(p, "vi")` on a null device (`pdf(NULL)`), not ggplot
   classes.
 - `vip()` must NOT gain a `type` formal: its `...` forward to `vi()`, and

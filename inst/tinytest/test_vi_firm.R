@@ -24,7 +24,7 @@ expectations <- function(object) {
 
   # Check class
   expect_identical(class(object),
-                   target = c("vi", "tbl_df", "tbl", "data.frame"))
+                   target = c("vi", "data.frame"))
 
   # Check dimensions (should be one row for each feature)
   expect_identical(ncol(titanic) - 1L, target = nrow(object))

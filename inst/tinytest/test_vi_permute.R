@@ -35,7 +35,7 @@ expect_true(inherits(metrics, what = "data.frame"))
 expectations_f1 <- function(object) {
   # Check class
   expect_identical(class(object),
-                   target = c("vi", "tbl_df", "tbl", "data.frame"))
+                   target = c("vi", "data.frame"))
 
   # Check dimensions (should be one row for each feature)
   expect_identical(ncol(f1) - 1L, target = nrow(object))
@@ -164,7 +164,7 @@ expect_error(  # setting `sample_frac` outside of range
 expectations_t3 <- function(object) {
   # Check class
   expect_identical(class(object),
-                   target = c("vi", "tbl_df", "tbl", "data.frame"))
+                   target = c("vi", "data.frame"))
 
   # Check dimensions (should be one row for each feature)
   expect_identical(ncol(t3) - 1L, target = nrow(object))

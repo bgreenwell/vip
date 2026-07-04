@@ -21,7 +21,8 @@
 #' `pred_wrapper` argument); see `?fastshap::explain` for details on these and
 #' other useful arguments.
 #'
-#' @return A tidy data frame (i.e., a [tibble][tibble::tibble] object) with two
+#' @return A tidy data frame (specifically, a data frame inheriting from class
+#' `"vi"`; use `tibble::as_tibble()` if you prefer a tibble) with two
 #' columns:
 #'
 #' * `Variable` - the corresponding feature name;
@@ -72,7 +73,6 @@
 #' set.seed(853)  # for reproducibility
 #' vi_shap(rfo, train = subset(t1, select = -survived), pred_wrapper = pfun_prob,
 #'         nsim = 30)
-#' ## # A tibble: 5 × 2
 #' ## Variable Importance
 #' ##   <chr>         <dbl>
 #' ## 1 pclass       0.104

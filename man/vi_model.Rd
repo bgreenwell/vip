@@ -147,7 +147,8 @@ to be used in the importance calculations. If more components are requested
 than were used in the model, all of the model's components are used.}
 }
 \value{
-A tidy data frame (i.e., a \link[tibble:tibble]{tibble} object) with two
+A tidy data frame (specifically, a data frame inheriting from class
+\code{"vi"}; use \code{tibble::as_tibble()} if you prefer a tibble) with two
 columns:
 \itemize{
 \item \code{Variable} - the corresponding feature name;

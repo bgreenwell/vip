@@ -26,8 +26,13 @@
     ggplot2-era value `"col"` is retained as a silent legacy alias.
   - ggplot2 was removed from the package's dependencies entirely.
 
+* `vi()` and friends now return a plain data frame with class `"vi"` instead
+  of a tibble; printing changes accordingly. Use `tibble::as_tibble()` on the
+  result if you prefer a tibble.
+
 * Slimmed down the dependency tree: **vip** now imports only `stats`,
-  `tibble`, `tinyplot`, and `utils`:
+  `tinyplot`, and `utils`:
+  - `tibble` was removed entirely (see above).
   - `foreach` moved to Suggests; it is only needed (and only loaded) when
     calling `vi_permute()` with `parallel = TRUE`.
   - `yardstick` moved to Suggests; it is only needed when specifying a

@@ -34,7 +34,8 @@
 #' `pred.fun` argument); see `?pdp::partial` for details on these and other
 #' useful arguments.
 #'
-#' @return A tidy data frame (i.e., a [tibble][tibble::tibble] object) with two
+#' @return A tidy data frame (specifically, a data frame inheriting from class
+#' `"vi"`; use `tibble::as_tibble()` if you prefer a tibble) with two
 #' columns:
 #'
 #' * `Variable` - the corresponding feature name;

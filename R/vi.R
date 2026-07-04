@@ -48,7 +48,8 @@
 #' [vi_permute][vip::vi_permute], or [vi_shap][vip::vi_shap]; see their
 #' respective help pages for details.
 #'
-#' @return A tidy data frame (i.e., a [tibble][tibble::tibble] object) with two
+#' @return A tidy data frame (specifically, a data frame inheriting from class
+#' `"vi"`; use `tibble::as_tibble()` if you prefer a tibble) with two
 #' columns:
 #'
 #' * `Variable` - the corresponding feature name;
@@ -164,7 +165,7 @@ vi.default <- function(
     }
   }
 
-  # Construct tibble of VI scores
+  # Construct data frame of VI scores
   tib <- switch(method,
     "model" = vi_model(object, ...),
     "firm" = vi_firm(object, feature_names = feature_names, ...),

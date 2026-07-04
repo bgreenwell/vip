@@ -32,7 +32,6 @@ VignetteBuilder: knitr
 Depends: R (>= 4.1.0)
 Imports:
     stats,
-    tibble,
     tinyplot (>= 0.3.0),
     utils
 Suggests:
