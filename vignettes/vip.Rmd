@@ -72,12 +72,13 @@ tree <- rpart(y ~ ., data = trn)
 vi(tree)  # a tibble of class "vi"
 ```
 
-`vip()` plots the scores (drawing with lightweight base R graphics via the
-[tinyplot](https://grantmcdermott.com/tinyplot/) package) and invisibly
-returns the plotted `"vi"` object:
+`"vi"` objects have a `plot()` method (drawing with lightweight base R
+graphics via the [tinyplot](https://grantmcdermott.com/tinyplot/) package)
+that invisibly returns the plotted `"vi"` object; `vip()` is a convenience
+wrapper that computes the scores and plots them in one call:
 
 ```{r model-specific-plot}
-vip(tree)
+vip(tree)  # equivalent to plot(vi(tree))
 ```
 
 ## Permutation importance
@@ -98,11 +99,12 @@ vis
 ```
 
 With `nsim > 1` the raw per-permutation scores are retained, so the variation
-in the scores can be displayed with boxplots or violins:
+in the scores can be displayed with boxplots or violins; additional arguments
+to `plot()` are passed on to `tinyplot::tinyplot()`:
 
 ```{r permute-plot, eval = has_yardstick}
-vip(vis, geom = "boxplot", all_permutations = TRUE, jitter = TRUE,
-    aesthetics = list(fill = "grey90"))
+plot(vis, type = "boxplot", all_permutations = TRUE, jitter = TRUE,
+     fill = "grey90")
 ```
 
 ## Variance-based importance (FIRM)
@@ -129,15 +131,15 @@ vi(tree, method = "shap", train = subset(trn, select = -y),
 
 ## Plotting options
 
-`vip()` supports bar charts (`geom = "col"`, the default), Cleveland dot plots
-(`geom = "point"`), boxplots, and violins (the latter two require raw
-permutation scores; see above). Fixed graphical parameters are passed via the
-`aesthetics` argument, and `include_type = TRUE` adds the importance type to
-the axis label:
+`plot()` supports bar charts (`type = "bar"`, the default), Cleveland dot
+plots (`type = "point"`), boxplots, and violins (the latter two require raw
+permutation scores; see above). Graphical parameters (e.g., `col`, `pch`,
+`cex`) are passed straight through to `tinyplot::tinyplot()`, and
+`include_type = TRUE` adds the importance type to the axis label:
 
 ```{r plotting-options}
-vip(tree, geom = "point", horizontal = FALSE, include_type = TRUE,
-    aesthetics = list(col = "forestgreen", pch = 17, cex = 1.5))
+plot(vi(tree), type = "point", horizontal = FALSE, include_type = TRUE,
+     col = "forestgreen", pch = 17, cex = 1.5)
 ```
 
 ## References

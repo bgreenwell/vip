@@ -1,5 +1,15 @@
 # vip (development version)
 
+## New features
+
+* New `plot()` method for `"vi"` objects; this is now the primary plotting
+  interface. Its `type` argument (`"bar"`, `"point"`, `"boxplot"`, or
+  `"violin"`) selects the display, and additional arguments are passed
+  directly on to `tinyplot::tinyplot()` (e.g.,
+  `plot(vi(fit), type = "point", col = "red", pch = 17)`). `vip()` remains as
+  a convenience wrapper that computes and plots in one call (its `...` are
+  reserved for `vi()`).
+
 ## Breaking changes
 
 * `vip()` now draws plots with lightweight base R graphics via the
@@ -8,10 +18,12 @@
   underlying `"vi"` object is returned invisibly. Consequently:
   - The `mapping` argument (a ggplot2 aesthetic mapping) is deprecated and
     ignored with a warning.
-  - The `aesthetics` argument now takes base R graphical parameters (e.g.,
-    `col`, `fill`, `pch`, `cex`, `lwd`) that are passed on to
-    `tinyplot::tinyplot()`, rather than ggplot2 layer aesthetics (e.g.,
-    `colour`, `shape`, `size`).
+  - The `aesthetics` argument is deprecated in favor of `plot_args`, a named
+    list of base R graphical parameters (e.g., `col`, `fill`, `pch`, `cex`,
+    `lwd`) passed on to `tinyplot::tinyplot()`; supplying `aesthetics` warns
+    but still works for this release.
+  - `geom = "bar"` is the new preferred value for bar charts; the
+    ggplot2-era value `"col"` is retained as a silent legacy alias.
   - ggplot2 was removed from the package's dependencies entirely.
 
 * Slimmed down the dependency tree: **vip** now imports only `stats`,

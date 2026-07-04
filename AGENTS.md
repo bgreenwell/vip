@@ -3,7 +3,8 @@
 R package for **variable importance plots (VIPs)**: model-specific and
 model-agnostic variable importance (VI) scores from fitted ML models.
 Exports: `vi()` (front end), `vi_model()`, `vi_permute()`, `vi_firm()`,
-`vi_shap()`, `vip()` (plots), `list_metrics()`, and `gen_friedman()`.
+`vi_shap()`, `plot.vi()` (plots), `vip()` (vi + plot in one call),
+`list_metrics()`, and `gen_friedman()`.
 
 ## Branches & releases
 
@@ -52,8 +53,10 @@ a NEWS.md entry; never edit `man/` by hand.
   subsample per repetition (baseline recomputed on the subsample).
 - `vi_firm.R` — variance-based importance from `pdp::partial()` effects.
 - `vi_shap.R` — mean(|Shapley value|) via `fastshap::explain()`.
-- `vip.R` — plotting via tinyplot; draws as a side effect and invisibly
-  returns the plotted `"vi"` object.
+- `vip.R` — plotting via tinyplot; `plot.vi()` is the engine (its `...` go
+  straight to `tinyplot::tinyplot()`) and `vip()` is a thin wrapper whose
+  `...` are reserved for `vi()`. Both draw as a side effect and invisibly
+  return the plotted `"vi"` object.
 - `metrics.R` — `metric_table()` is the single source of truth for built-in
   metrics; `get_metric()` resolves yardstick functions lazily.
 - `get_feature_names.R` / `get_training_data.R` — per-model S3 helpers for
@@ -63,9 +66,13 @@ a NEWS.md entry; never edit `man/` by hand.
 
 - **tinyplot records calls** for `tinyplot_add()` — build internal plot calls
   with `do.call()` so stored calls hold values, never `...` or local symbols.
-- `vip()` returns the `vi` tibble **invisibly**; tests assert
+- `vip()`/`plot.vi()` return the `vi` tibble **invisibly**; tests assert
   `expect_inherits(p, "vi")` on a null device (`pdf(NULL)`), not ggplot
   classes.
+- `vip()` must NOT gain a `type` formal: its `...` forward to `vi()`, and
+  `vi_permute()` has a documented `type = "difference"/"ratio"` passthrough
+  that an own-formal would silently capture (hence `geom` in `vip()` vs.
+  `type` in `plot.vi()`).
 - Supporting a new model class = add `vi_model.<class>()` (+ optionally
   `get_feature_names.<class>()`), document in the `vi_model()` details
   section, and add an `at_home()`-gated `inst/tinytest/test_pkg_<pkg>.R`.

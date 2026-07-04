@@ -90,9 +90,10 @@
 #' (vis <- vi(mtcars.ppr, method = "permute", target = "mpg", nsim = 10,
 #'            metric = "rmse", pred_wrapper = pfun, train = mtcars))
 #'
-#' # Plot variable importance scores
-#' vip(vis, include_type = TRUE, all_permutations = TRUE,
-#'     geom = "point", aesthetics = list(col = "forestgreen", cex = 2))
+#' # Plot variable importance scores (`plot()` passes its `...` on to
+#' # `tinyplot::tinyplot()`)
+#' plot(vis, type = "point", include_type = TRUE, all_permutations = TRUE,
+#'      col = "forestgreen", cex = 2)
 #'
 #' #
 #' # A binary classification example

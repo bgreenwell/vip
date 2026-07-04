@@ -69,7 +69,7 @@ bst <- xgboost(X, label = trn$y, nrounds = 338, max_depth = 3, eta = 0.1,
 # functionality
 vip(bst, method = "shap", train = X, exact = TRUE, include_type = TRUE,
     geom = "point", horizontal = FALSE,
-    aesthetics = list(col = "forestgreen", pch = 17, cex = 2))
+    plot_args = list(col = "forestgreen", pch = 17, cex = 2))
 
 # Use Monte-Carlo approach, which works for any model; requires prediction
 # wrapper

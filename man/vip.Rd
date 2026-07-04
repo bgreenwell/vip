@@ -14,9 +14,10 @@ vip(object, ...)
 \method{vip}{default}(
   object,
   num_features = 10L,
-  geom = c("col", "point", "boxplot", "violin"),
+  geom = c("bar", "point", "boxplot", "violin", "col"),
   mapping = NULL,
-  aesthetics = list(),
+  aesthetics = NULL,
+  plot_args = list(),
   horizontal = TRUE,
   all_permutations = FALSE,
   jitter = FALSE,
@@ -41,31 +42,25 @@ vip(object, ...)
 \item{num_features}{Integer specifying the number of variable importance
 scores to plot. Default is \code{10}.}
 
-\item{geom}{Character string specifying which type of plot to construct.
-The currently available options are described below.
-\itemize{
-\item \code{geom = "col"} constructs a bar chart of the variable importance scores.
-\item \code{geom = "point"} constructs a Cleveland dot plot of the variable
-importance scores.
-\item \code{geom = "boxplot"} constructs a boxplot of the raw permutation scores
-for each feature. This option can only be used for the permutation-based
-importance method with \code{nsim > 1} and \code{keep = TRUE}; see
-\link[=vi_permute]{vi_permute} for details.
-\item \code{geom = "violin"} constructs a violin plot of the raw permutation scores
-for each feature. This option can only be used for the permutation-based
-importance method with \code{nsim > 1} and \code{keep = TRUE}; see
-\link[=vi_permute]{vi_permute} for details.
-}}
+\item{geom}{Character string specifying which type of plot to construct;
+one of \code{"bar"} (the default), \code{"point"}, \code{"boxplot"}, or \code{"violin"}. See
+\link[=plot.vi]{plot.vi} for a description of each. (The value \code{"col"} is
+accepted as a legacy alias for \code{"bar"}.)}
 
 \item{mapping}{Deprecated and ignored (with a warning); as of vip 0.5.0,
 plots are drawn with \link[tinyplot:tinyplot]{tinyplot} (base R graphics)
 instead of ggplot2, so ggplot2 aesthetic mappings no longer apply. Use the
-\code{aesthetics} argument to set fixed graphical parameters instead.}
+\code{plot_args} argument to set fixed graphical parameters instead.}
 
-\item{aesthetics}{Named list of additional graphical parameters passed on
+\item{aesthetics}{Deprecated; use \code{plot_args} instead. If supplied (with a
+warning), it is used in place of an empty \code{plot_args}.}
+
+\item{plot_args}{Named list of additional graphical parameters passed on
 to \link[tinyplot:tinyplot]{tinyplot} (e.g., \code{col}, \code{fill}, \code{pch}, \code{cex}, or
 \code{lwd}), used to set an aesthetic to a fixed value, like
-\code{aesthetics = list(fill = "forestgreen")}. See example usage below.}
+\code{plot_args = list(fill = "forestgreen")}. Only needed because \code{vip()}'s
+\code{...} are reserved for \link[=vi]{vi}; with \link[=plot.vi]{plot.vi} you can
+pass these directly (e.g., \code{plot(vi_obj, fill = "forestgreen")}).}
 
 \item{horizontal}{Logical indicating whether or not to plot the importance
 scores on the x-axis (\code{TRUE}). Default is \code{TRUE}.}
@@ -85,9 +80,12 @@ Draws a plot as a side effect and invisibly returns the underlying
 \link[=vi]{vi} object (a tibble of variable importance scores).
 }
 \description{
-Plot variable importance scores for the predictors in a model using
-lightweight base R graphics (via the
-\href{https://grantmcdermott.com/tinyplot/}{tinyplot} package).
+Compute variable importance scores for the predictors in a model and plot
+them in a single call; a convenience wrapper around \link[=vi]{vi} and
+\link[=plot.vi]{plot.vi}. If you already have a \link[=vi]{vi} object, using
+\code{plot()} directly is more flexible (its \code{...} are passed on to
+\link[tinyplot:tinyplot]{tinyplot}, whereas \code{vip()}'s \code{...} are reserved for
+\link[=vi]{vi}).
 }
 \examples{
 #
@@ -106,17 +104,16 @@ pfun <- function(object, newdata) predict(object, newdata = newdata)
 vip(model, method = "permute", train = mtcars, target = "mpg", nsim = 10,
     metric = "rmse", pred_wrapper = pfun)
 
-# Better yet, store the variable importance scores and then plot
+# Better yet, store the variable importance scores and then plot; `plot()`
+# passes its `...` directly to `tinyplot::tinyplot()`
 set.seed(825)  # for reproducibility
 vis <- vi(model, method = "permute", train = mtcars, target = "mpg",
           nsim = 10, metric = "rmse", pred_wrapper = pfun)
-vip(vis, geom = "point", horizontal = FALSE)
-vip(vis, geom = "point", horizontal = FALSE,
-    aesthetics = list(col = "forestgreen", cex = 2))
+plot(vis, type = "point", horizontal = FALSE, col = "forestgreen", cex = 2)
 
 # Plot unaggregated permutation scores (boxplot plus raw jittered scores)
-vip(vis, geom = "boxplot", all_permutations = TRUE, jitter = TRUE,
-    aesthetics = list(fill = "grey90"))
+plot(vis, type = "boxplot", all_permutations = TRUE, jitter = TRUE,
+     fill = "grey90")
 
 #
 # A binary classification example

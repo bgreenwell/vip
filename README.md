@@ -61,7 +61,11 @@ pfun <- function(object, newdata) predict(object, data = newdata)$predictions
 set.seed(102)
 vis <- vi(rfo, method = "permute", train = trn, target = "y", metric = "rmse",
           pred_wrapper = pfun, nsim = 10)
-vip(vis, geom = "boxplot", all_permutations = TRUE, jitter = TRUE)
+
+# "vi" objects have a plot() method; additional arguments are passed on to
+# tinyplot::tinyplot()
+plot(vis, type = "boxplot", all_permutations = TRUE, jitter = TRUE,
+     fill = "grey90")
 ```
 
 `vi()` returns a tidy tibble of importance scores, so results are easy to
