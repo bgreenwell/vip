@@ -36,6 +36,41 @@ pak::pak("bgreenwell/vip@main")  # latest stable release
 pak::pak("bgreenwell/vip")       # development version (devel branch)
 ```
 
+## Migrating from vip 0.4.x
+
+CRAN will archive the last CRAN release of **vip** (0.4.6) on
+**2026-07-13**; all future releases live on r-universe (see above). vip
+0.5.0 is also a breaking release — the main changes if you’re coming
+from 0.4.x:
+
+- **Plots are base R graphics now, not ggplot2.**
+  [`vip()`](https://bgreenwell.github.io/vip/reference/vip.md) (and the
+  new [`plot()`](https://rdrr.io/r/graphics/plot.default.html) method
+  for `"vi"` objects) draws via
+  [tinyplot](https://grantmcdermott.com/tinyplot/) and invisibly returns
+  the `"vi"` object, so `vip(fit) + theme_bw()` no longer works. Style
+  plots with graphical parameters instead —
+  `plot(vi(fit), type = "point", col = "red")` — or build your own
+  ggplot from the tidy data frame that
+  [`vi()`](https://bgreenwell.github.io/vip/reference/vi.md) returns.
+- **[`vi()`](https://bgreenwell.github.io/vip/reference/vi.md) returns a
+  plain data frame** (class `"vi"`), not a tibble; call
+  [`tibble::as_tibble()`](https://tibble.tidyverse.org/reference/as_tibble.html)
+  on the result if you need one.
+- `aesthetics` is deprecated in favor of `plot_args` in
+  [`vip()`](https://bgreenwell.github.io/vip/reference/vip.md); the
+  ggplot2-era `mapping` argument is ignored with a warning;
+  `geom = "col"` still works as an alias for `geom = "bar"`.
+- **For package maintainers depending on vip**: keep vip in `Suggests`,
+  use it conditionally
+  ([`requireNamespace("vip", quietly = TRUE)`](https://rdrr.io/r/base/ns-load.html)),
+  and declare
+  `Additional_repositories: https://bgreenwell.r-universe.dev` in your
+  DESCRIPTION — CRAN accepts this for Suggests-level dependencies.
+
+See [NEWS.md](https://github.com/bgreenwell/vip/blob/main/NEWS.md) for
+the complete list.
+
 ## Quick start
 
 ``` r

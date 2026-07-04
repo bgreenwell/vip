@@ -79,6 +79,22 @@
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"bgreenwell/vip"</span><span class="op">)</span>       <span class="co"># development version (devel branch)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="migrating-from-vip-04x">Migrating from vip 0.4.x<a class="anchor" aria-label="anchor" href="#migrating-from-vip-04x"></a>
+</h2>
+<p>CRAN will archive the last CRAN release of <strong>vip</strong> (0.4.6) on <strong>2026-07-13</strong>; all future releases live on r-universe (see above). vip 0.5.0 is also a breaking release — the main changes if you’re coming from 0.4.x:</p>
+<ul>
+<li>
+<strong>Plots are base R graphics now, not ggplot2.</strong> <code><a href="reference/vip.html">vip()</a></code> (and the new <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method for <code>"vi"</code> objects) draws via <a href="https://grantmcdermott.com/tinyplot/" class="external-link">tinyplot</a> and invisibly returns the <code>"vi"</code> object, so <code>vip(fit) + theme_bw()</code> no longer works. Style plots with graphical parameters instead — <code>plot(vi(fit), type = "point", col = "red")</code> — or build your own ggplot from the tidy data frame that <code><a href="reference/vi.html">vi()</a></code> returns.</li>
+<li>
+<strong><code><a href="reference/vi.html">vi()</a></code> returns a plain data frame</strong> (class <code>"vi"</code>), not a tibble; call <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">tibble::as_tibble()</a></code> on the result if you need one.</li>
+<li>
+<code>aesthetics</code> is deprecated in favor of <code>plot_args</code> in <code><a href="reference/vip.html">vip()</a></code>; the ggplot2-era <code>mapping</code> argument is ignored with a warning; <code>geom = "col"</code> still works as an alias for <code>geom = "bar"</code>.</li>
+<li>
+<strong>For package maintainers depending on vip</strong>: keep vip in <code>Suggests</code>, use it conditionally (<code><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace("vip", quietly = TRUE)</a></code>), and declare <code>Additional_repositories: https://bgreenwell.r-universe.dev</code> in your DESCRIPTION — CRAN accepts this for Suggests-level dependencies.</li>
+</ul>
+<p>See <a href="https://github.com/bgreenwell/vip/blob/main/NEWS.md" class="external-link">NEWS.md</a> for the complete list.</p>
+</div>
+<div class="section level2">
 <h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
