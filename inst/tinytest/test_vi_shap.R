@@ -22,3 +22,9 @@ set.seed(1511)  # for reproducibility
 vis1 <- vi_shap(fit1, pred_wrapper = pfun, nsim = 10, train = trn1)
 vis2 <- vi_shap(fit2, pred_wrapper = pfun, nsim = 10, train = trn2)
 vis3 <- vi(fit1, method = "shap", pred_wrapper = pfun, nsim = 10, train = trn1)
+
+# Expectations
+for (v in list(vis1, vis2, vis3)) {
+  expect_inherits(v, c("vi", "tbl_df", "tbl", "data.frame"))
+  expect_true(all(c("Variable", "Importance") %in% names(v)))
+}

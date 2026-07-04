@@ -65,7 +65,7 @@ Compute variance-based variable importance (VI) scores using a simple
 \details{
 This approach is based on quantifying the relative "flatness" of the
 effect of each feature and assumes the user has some familiarity with the
-\code{\link[pdp:partial]{pdp::partial()}} function. The  Feature effects can be assessed
+\code{\link[pdp:partial]{pdp::partial()}} function. Feature effects can be assessed
 using \emph{partial dependence} (PD) plots (Friedman, 2001) or
 \emph{individual conditional expectation} (ICE) plots (Goldstein et al., 2014).
 These methods are model-agnostic and can be applied to any supervised
@@ -99,7 +99,7 @@ mtcars.ppr <- ppr(mpg ~ ., data = mtcars, nterms = 1)
 # the training data or a prediction wrapper, but it's good practice.
 vi_firm(mtcars.ppr, train = mtcars)
 
-# For unsopported models, need to define a prediction wrapper; this approach
+# For unsupported models, need to define a prediction wrapper; this approach
 # will work for ANY model (supported or unsupported, so better to just always
 # define it pass it)
 pfun <- function(object, newdata) {

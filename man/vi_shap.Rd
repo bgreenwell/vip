@@ -14,7 +14,7 @@ vi_shap(object, ...)
 \link[randomForest:randomForest]{randomForest} object).}
 
 \item{...}{Additional arguments to be passed on to \code{\link[fastshap:explain]{fastshap::explain()}}
-(e.g., \code{nsim =  30}, \code{adjust = TRUE}, or avprediction wrapper via the
+(e.g., \code{nsim = 30}, \code{adjust = TRUE}, or a prediction wrapper via the
 \code{pred_wrapper} argument); see \code{?fastshap::explain} for details on these and
 other useful arguments.}
 
@@ -52,7 +52,6 @@ predictions with feature contributions. Knowledge and information systems
 }
 \examples{
 \dontrun{
-library(ggplot2)  # for theme_light() function
 library(xgboost)
 
 # Simulate training data
@@ -70,8 +69,7 @@ bst <- xgboost(X, label = trn$y, nrounds = 338, max_depth = 3, eta = 0.1,
 # functionality
 vip(bst, method = "shap", train = X, exact = TRUE, include_type = TRUE,
     geom = "point", horizontal = FALSE,
-    aesthetics = list(color = "forestgreen", shape = 17, size = 5)) +
-  theme_light()
+    aesthetics = list(col = "forestgreen", pch = 17, cex = 2))
 
 # Use Monte-Carlo approach, which works for any model; requires prediction
 # wrapper

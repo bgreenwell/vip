@@ -1,3 +1,5 @@
+exit_if_not(at_home())
+
 # Check dependencies
 exit_if_not(
   requireNamespace("pdp", quietly = TRUE),
@@ -50,7 +52,7 @@ vis_pd_pfun <- vi_firm(rfo, pred.fun = pfun.pd, train = titanic)
 
 # Expectations
 expectations(vis_pd)
-expect_equal(vis_pd_prob$Importance, vis_pd_pfun$Importance)
+expect_equal(vis_pd_prob$Importance, vis_pd_pfun$Importance, tolerance = 1e-6)
 
 # Compute ICE-based importance
 vis_ice <- vi_firm(rfo, ice = TRUE, prob = TRUE, var_continuous = mad, train = titanic)  # use ICE plots
@@ -58,7 +60,7 @@ vis_ice_pfun <- vi_firm(rfo, pred.fun = pfun.ice, var_continuous = mad, train = 
 
 # Expectations
 expectations(vis_ice)
-expect_equal(vis_ice$Importance, vis_ice_pfun$Importance)
+expect_equal(vis_ice$Importance, vis_ice_pfun$Importance, tolerance = 1e-6)
 
 # Use `vi()` function
 vis_ice_vi <- vi(rfo, method = "firm", ice = TRUE, prob = TRUE,

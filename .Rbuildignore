@@ -4,16 +4,11 @@
 ^\.planning$
 ^_pkgdown\.yml$
 ^codecov\.yml$
+^AGENTS\.md$
 ^CLAUDE\.md$
 ^CRAN-COMMENTS\.md$
 ^data-raw$
 ^docs$
-^lightgbm\.model$
-^README\.Rmd$
-^README_cache
 ^revdep
 ^rjournal$
-^slowtests
 ^tools$
-^vignettes/references\.bib$
-^vignettes/benchmark\.rds$

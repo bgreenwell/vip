@@ -52,9 +52,10 @@
 #' columns:
 #'
 #' * `Variable` - the corresponding feature name;
-#' * `Importance` - the associated importance, computed as the average change in
-#' performance after a random permutation (or permutations, if `nsim > 1`) of
-#' the feature in question.
+#' * `Importance` - the associated importance, computed by the requested
+#' `method` (e.g., the average change in performance after permutation for
+#' `method = "permute"`, or a model-specific measure for `method = "model"`);
+#' see the help page for the corresponding `vi_*()` function for details.
 #'
 #' For [lm][stats::lm]/[glm][stats::glm]-like objects, whenever
 #' `method = "model"`, the sign (i.e., POS/NEG) of the original coefficient is
@@ -91,7 +92,7 @@
 #'
 #' # Plot variable importance scores
 #' vip(vis, include_type = TRUE, all_permutations = TRUE,
-#'     geom = "point", aesthetics = list(color = "forestgreen", size = 3))
+#'     geom = "point", aesthetics = list(col = "forestgreen", cex = 2))
 #'
 #' #
 #' # A binary classification example
@@ -191,9 +192,10 @@ vi.default <- function(
     tib$Importance <- tib$Importance / max(tib$Importance) * 100
   }
 
-  # Rank VI scores (i.e., convert to integer ranks)
+  # Rank VI scores (i.e., convert to ranks with 1 = most important); works
+  # regardless of whether or how the scores are sorted
   if (rank) {
-    tib$Importance <- rev(rank(tib$Importance, ties.method = "average"))
+    tib$Importance <- rank(-tib$Importance, ties.method = "average")
   }
 
   # Restore attribute

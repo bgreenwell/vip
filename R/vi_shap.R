@@ -17,7 +17,7 @@
 #' automatically. It is good practice to always specify this argument.
 #'
 #' @param ... Additional arguments to be passed on to [fastshap::explain()]
-#' (e.g., `nsim =  30`, `adjust = TRUE`, or avprediction wrapper via the
+#' (e.g., `nsim = 30`, `adjust = TRUE`, or a prediction wrapper via the
 #' `pred_wrapper` argument); see `?fastshap::explain` for details on these and
 #' other useful arguments.
 #'
@@ -42,7 +42,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(ggplot2)  # for theme_light() function
 #' library(xgboost)
 #'
 #' # Simulate training data
@@ -60,8 +59,7 @@
 #' # functionality
 #' vip(bst, method = "shap", train = X, exact = TRUE, include_type = TRUE,
 #'     geom = "point", horizontal = FALSE,
-#'     aesthetics = list(color = "forestgreen", shape = 17, size = 5)) +
-#'   theme_light()
+#'     aesthetics = list(col = "forestgreen", pch = 17, cex = 2))
 #'
 #' # Use Monte-Carlo approach, which works for any model; requires prediction
 #' # wrapper
@@ -126,15 +124,12 @@ vi_shap.default <- function(object, feature_names = NULL, train = NULL, ...) {
   )
 
   # Construct SHAP-based variable importance scores
-  tib <- tibble::tibble(
-    "Variable" = colnames(shap),
-    "Importance" = apply(shap, MARGIN = 2, FUN = function(x) mean(abs(x)))
+  tib <- new_vi(
+    colnames(shap),
+    importance = unname(colMeans(abs(as.matrix(shap)))),
+    type = "mean(|Shapley value|)"
   )
   attr(tib, which = "shap") <- shap
-  attr(tib, which = "type") <- "mean(|Shapley value|)"
-
-  # Add "vi" class
-  class(tib) <- c("vi", class(tib))
 
   # Return results
   tib

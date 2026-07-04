@@ -17,7 +17,7 @@ get_formula <- function(object) {
 
 #' @keywords internal
 get_formula.default <- function(object) {
-  form <- tryCatch(
+  tryCatch(
     expr = stats::formula(object),
     error = function(e) {
       NULL
@@ -279,9 +279,10 @@ get_feature_names.rpart <- function(object, ...) {
 
 #' @keywords internal
 get_feature_names.xgb.Booster <- function(object, ...) {
-  if (is.null(object$feature_names)) {
+  feature_names <- xgboost::getinfo(object, name = "feature_name")
+  if (is.null(feature_names)) {
     get_feature_names.default(object)
   } else {
-    object$feature_names
+    feature_names
   }
 }

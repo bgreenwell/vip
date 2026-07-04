@@ -1,6 +1,4 @@
-if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) {
-  exit_file("Skip on CRAN")
-}
+exit_if_not(at_home())
 
 # Load Friedman benchmark data
 friedman1 <- gen_friedman(seed = 101)

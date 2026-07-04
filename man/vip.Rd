@@ -44,28 +44,28 @@ scores to plot. Default is \code{10}.}
 \item{geom}{Character string specifying which type of plot to construct.
 The currently available options are described below.
 \itemize{
-\item \code{geom = "col"} uses \link[ggplot2:geom_bar]{geom_col} to construct a bar chart
-of the variable importance scores.
-\item \code{geom = "point"} uses \link[ggplot2:geom_point]{geom_point} to construct a
-Cleveland dot plot of the variable importance scores.
-\item \code{geom = "boxplot"} uses \link[ggplot2:geom_boxplot]{geom_boxplot} to
-construct a boxplot plot of the variable importance scores. This option can
-only for the permutation-based importance method with \code{nsim > 1} and
-\code{keep = TRUE}; see \link[=vi_permute]{vi_permute} for details.
-\item \code{geom = "violin"} uses \link[ggplot2:geom_violin]{geom_violin} to
-construct a violin plot of the variable importance scores. This option can
-only for the permutation-based importance method with \code{nsim > 1} and
-\code{keep = TRUE}; see \link[=vi_permute]{vi_permute} for details.
+\item \code{geom = "col"} constructs a bar chart of the variable importance scores.
+\item \code{geom = "point"} constructs a Cleveland dot plot of the variable
+importance scores.
+\item \code{geom = "boxplot"} constructs a boxplot of the raw permutation scores
+for each feature. This option can only be used for the permutation-based
+importance method with \code{nsim > 1} and \code{keep = TRUE}; see
+\link[=vi_permute]{vi_permute} for details.
+\item \code{geom = "violin"} constructs a violin plot of the raw permutation scores
+for each feature. This option can only be used for the permutation-based
+importance method with \code{nsim > 1} and \code{keep = TRUE}; see
+\link[=vi_permute]{vi_permute} for details.
 }}
 
-\item{mapping}{Set of aesthetic mappings created by
-\link[ggplot2:aes]{aes}-related functions and/or tidy eval helpers. See example
-usage below.}
+\item{mapping}{Deprecated and ignored (with a warning); as of vip 0.5.0,
+plots are drawn with \link[tinyplot:tinyplot]{tinyplot} (base R graphics)
+instead of ggplot2, so ggplot2 aesthetic mappings no longer apply. Use the
+\code{aesthetics} argument to set fixed graphical parameters instead.}
 
-\item{aesthetics}{List specifying additional arguments passed on to
-\link[ggplot2:layer]{layer}. These are often aesthetics, used to set an aesthetic
-to a fixed value, like\code{colour = "red"} or \code{size = 3}. See example usage
-below.}
+\item{aesthetics}{Named list of additional graphical parameters passed on
+to \link[tinyplot:tinyplot]{tinyplot} (e.g., \code{col}, \code{fill}, \code{pch}, \code{cex}, or
+\code{lwd}), used to set an aesthetic to a fixed value, like
+\code{aesthetics = list(fill = "forestgreen")}. See example usage below.}
 
 \item{horizontal}{Logical indicating whether or not to plot the importance
 scores on the x-axis (\code{TRUE}). Default is \code{TRUE}.}
@@ -80,8 +80,14 @@ scores. Default is \code{FALSE}. (Only used when \code{all_permutations = TRUE}.
 \item{include_type}{Logical indicating whether or not to include the type of
 variable importance computed in the axis label. Default is \code{FALSE}.}
 }
+\value{
+Draws a plot as a side effect and invisibly returns the underlying
+\link[=vi]{vi} object (a tibble of variable importance scores).
+}
 \description{
-Plot variable importance scores for the predictors in a model.
+Plot variable importance scores for the predictors in a model using
+lightweight base R graphics (via the
+\href{https://grantmcdermott.com/tinyplot/}{tinyplot} package).
 }
 \examples{
 #
@@ -104,15 +110,13 @@ vip(model, method = "permute", train = mtcars, target = "mpg", nsim = 10,
 set.seed(825)  # for reproducibility
 vis <- vi(model, method = "permute", train = mtcars, target = "mpg",
           nsim = 10, metric = "rmse", pred_wrapper = pfun)
-vip(vis, geom = "point", horiz = FALSE)
-vip(vis, geom = "point", horiz = FALSE, aesthetics = list(size = 3))
+vip(vis, geom = "point", horizontal = FALSE)
+vip(vis, geom = "point", horizontal = FALSE,
+    aesthetics = list(col = "forestgreen", cex = 2))
 
-# Plot unaggregated permutation scores (boxplot colored by feature)
-library(ggplot2)  # for `aes()`-related functions and tidy eval helpers
+# Plot unaggregated permutation scores (boxplot plus raw jittered scores)
 vip(vis, geom = "boxplot", all_permutations = TRUE, jitter = TRUE,
-    #mapping = aes_string(fill = "Variable"),   # for ggplot2 (< 3.0.0)
-    mapping = aes(fill = .data[["Variable"]]),  # for ggplot2 (>= 3.0.0)
-    aesthetics = list(color = "grey35", size = 0.8))
+    aesthetics = list(fill = "grey90"))
 
 #
 # A binary classification example
@@ -148,6 +152,6 @@ pfun <- function(object, newdata) {
 # in the final tree have non-zero importance)
 set.seed(1046)  # for reproducibility
 vip(tree2, method = "permute", nsim = 10, target = "Class",
-    metric = "logloss", pred_wrapper = pfun, reference_class = "malignant")
+    metric = "logloss", pred_wrapper = pfun)
 }
 }

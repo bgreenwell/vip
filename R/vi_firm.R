@@ -43,7 +43,7 @@
 #'
 #' @details This approach is based on quantifying the relative "flatness" of the
 #' effect of each feature and assumes the user has some familiarity with the
-#' [pdp::partial()] function. The  Feature effects can be assessed
+#' [pdp::partial()] function. Feature effects can be assessed
 #' using *partial dependence* (PD) plots (Friedman, 2001) or
 #' *individual conditional expectation* (ICE) plots (Goldstein et al., 2014).
 #' These methods are model-agnostic and can be applied to any supervised
@@ -99,7 +99,7 @@
 #' # the training data or a prediction wrapper, but it's good practice.
 #' vi_firm(mtcars.ppr, train = mtcars)
 #'
-#' # For unsopported models, need to define a prediction wrapper; this approach
+#' # For unsupported models, need to define a prediction wrapper; this approach
 #' # will work for ANY model (supported or unsupported, so better to just always
 #' # define it pass it)
 #' pfun <- function(object, newdata) {
@@ -167,23 +167,12 @@ vi_firm.default <- function(
     firm(object, feature_name = x, var_continuous = var_continuous,
          var_categorical = var_categorical, train = train, ...)
   })
-  # vis <- numeric(length(feature_names))  # loses "effects" attribute
-  # for (i in seq_along(feature_names)) {
-  #   vis[i] <- firm(object, feature_name = feature_names[i],
-  #                  var_continuous = var_continuous,
-  #                  var_categorical = var_categorical, ...)
-  # }
-  tib <- tibble::tibble(
-    "Variable" = feature_names,
-    "Importance" = unlist(vis)
-  )
+  tib <- new_vi(feature_names, importance = unlist(vis), type = "firm")
+
+  # Include the estimated feature effects as an additional attribute
   fe <- lapply(vis, FUN = function(x) attr(x, which = "effects"))
   names(fe) <- feature_names
   attr(tib, which = "effects") <- fe
-  attr(tib, which = "type") <- "firm"
-
-  # Add "vi" class
-  class(tib) <- c("vi", class(tib))
 
   # Return results
   tib

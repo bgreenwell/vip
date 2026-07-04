@@ -48,14 +48,19 @@
 #' @param sample_size Integer specifying the size of the random sample to use
 #' for each Monte Carlo repetition. Default is `NULL` (i.e., use all of the
 #' available training data). Cannot be specified with `sample_frac`. Can be
-#' used to reduce computation time with large data sets.
+#' used to reduce computation time with large data sets. A single subsample is
+#' drawn per repetition and the baseline performance is recomputed on that
+#' subsample, so all features within a repetition are compared on the same
+#' rows.
 #'
 #' @param sample_frac Proportion specifying the size of the random sample to use
 #' for each Monte Carlo repetition. Default is `NULL` (i.e., use all of the
 #' available training data). Cannot be specified with `sample_size`. Can be
-#' used to reduce computation time with large data sets.
+#' used to reduce computation time with large data sets. See `sample_size` for
+#' details on how the subsampling is carried out.
 #'
-#' @param reference_class Deprecated, use `event_level` instead.
+#' @param reference_class Deprecated, use `event_level` instead; a warning is
+#' issued (and the argument otherwise ignored) if supplied.
 #'
 #' @param event_level String specifying which factor level of `truth` to
 #' consider as the "event". Options are `"first"` (the default) or `"second"`.
@@ -80,11 +85,11 @@
 #'
 #' @param parallel Logical indicating whether or not to run `vi_permute()`
 #' in parallel (using a backend provided by the [foreach][foreach::foreach]
-#' package). Default is `FALSE`. If `TRUE`, a
-#' [foreach][foreach::foreach]-compatible backend must be provided by must be
-#' provided. Note that `set.seed()` will not not work with
-#' [foreach][foreach::foreach]'s parellelized for loops; for a workaround, see
-#' [this solution](https://github.com/koalaverse/vip/issues/145).
+#' package). Default is `FALSE`. If `TRUE`, the **foreach** package must be
+#' installed and a [foreach][foreach::foreach]-compatible backend must be
+#' registered. Note that `set.seed()` will not work with
+#' [foreach][foreach::foreach]'s parallelized for loops; for a workaround, see
+#' [this solution](https://github.com/bgreenwell/vip/issues/145).
 #'
 #' @param parallelize_by Character string specifying whether to parallelize
 #' across features (`parallelize_by = "features"`) or repetitions
@@ -106,8 +111,6 @@
 #' deviation of the individual permutation scores for each feature is also
 #' returned; this helps assess the stability/variation of the individual
 #' permutation importance for each feature.
-#'
-#' @importFrom foreach foreach %do% %dopar%
 #'
 #' @references
 #' Brandon M. Greenwell and Bradley C. Boehmke, The R Journal (2020) 12:1,
@@ -131,7 +134,7 @@
 #' # Prediction wrapper
 #' pfun <- function(object, newdata) {
 #'   # Needs to return vector of predictions from a ranger object; see
-#'   # `ranger::predcit.ranger` for details on making predictions
+#'   # `ranger::predict.ranger` for details on making predictions
 #'   predict(object, data = newdata)$predictions
 #' }
 #'
@@ -147,7 +150,7 @@
 #'
 #' # Same as above, but using `vi_permute()` directly
 #' set.seed(2021)  # for reproducibility
-#' vi_permute(rfo, target = "y", metric = "rsq", pred_wrapper = pfun
+#' vi_permute(rfo, target = "y", metric = "rsq", pred_wrapper = pfun,
 #'            train = trn)
 #'
 #' # Plot VI scores (could also replace `vi()` with `vip()` in above example)
@@ -223,7 +226,7 @@
 #' }
 #'
 #' # Sanity check
-#' pfun_prob(rfo2, newdata = head(t1))  # estiated P(survived=yes | x)
+#' pfun_prob(rfo2, newdata = head(t1))  # estimated P(survived=yes | x)
 #' ##     1     2     3     4     5     6
 #' ## 0.990 0.864 0.486 0.282 0.630 0.078
 #'
@@ -264,7 +267,7 @@
 #' # we were hoping for; a telltale sign the event level and prediction wrapper
 #' do not match)
 #' set.seed(1413)  # for reproducibility
-#' vi(rfo,
+#' vi(rfo2,
 #'    method = "permute",
 #'    train = t1,
 #'    target = "survived",
@@ -305,27 +308,18 @@ vi_permute.default <- function(
   sample_frac = NULL,
   reference_class = NULL,  # deprecated
   event_level = NULL,
-  pred_wrapper = NULL,  # FIXME: Why give this a default?
+  pred_wrapper = NULL,
   verbose = FALSE,
   parallel = FALSE,
   parallelize_by = c("features", "repetitions"),
   ...
 ) {
 
-  # # Check for yardstick package
-  # if (!requireNamespace("yardstick", quietly = TRUE)) {
-  #   stop("Package \"yardstick\" needed for this function to work. ",
-  #        "Please install it.", call. = FALSE)
-  # }
-
-  # FIXME: Is there a better way to fix this?
-  #
-  # ❯ checking R code for possible problems ... NOTE
-  # vi_permute.default: no visible binding for global variable ‘j’
-  # Undefined global functions or variables:
-  #   j
-  i <- j <- NULL
-
+  # Catch deprecated arguments
+  if (!is.null(reference_class)) {
+    warning("Argument `reference_class` is deprecated and will be ignored; ",
+            "use `event_level` instead.", call. = FALSE)
+  }
 
   # Try to extract training data if not supplied
   if (is.null(train)) {
@@ -354,7 +348,7 @@ vi_permute.default <- function(
     if (is.null(feature_names)) {
       feature_names <- setdiff(colnames(train), target)
     }
-    train_x <- train[, feature_names]
+    train_x <- train[, feature_names, drop = FALSE]
     train_y <- train[, target, drop = TRUE]
   } else {
     if (is.null(feature_names)) {
@@ -404,12 +398,6 @@ vi_permute.default <- function(
            "`metric = yardstick::huber_loss_vec`).", call. = FALSE)
     }
 
-    # # Check if reference class is provided
-    # if (!is.null(reference_class)) {
-    #   reference_class <- train_y[1L]
-    # }
-    # train_y <- ifelse(train_y == reference_class, yes = 1, no = 0)
-
     # Performance function
     metric_fun <- metric
 
@@ -417,29 +405,29 @@ vi_permute.default <- function(
 
     # Get corresponding metric/performance function
     ys_metric <- get_metric(metric)
-    # metric_fun <- ys_metric[["metric_fun"]]
     smaller_is_better <- ys_metric[["smaller_is_better"]]
 
     # Get metric function and update `event_level` arg if needed
     metric_fun <- if (!is.null(event_level)) {
-      metric_fun <- function(truth, estimate) {
+      function(truth, estimate) {
         fun <- ys_metric[["metric_fun"]]
         fun(truth, estimate = estimate, event_level = event_level)
       }
     } else {
       if (metric %in% c("roc_auc", "pr_auc", "youden")) {
-        warning("Consider setting the `event_level` argument when using ",
-                deparse(substitute(metric)), " as the metric; see ",
-                "`?vip::vi_permute` for details. Defaulting to ",
-                "`event_level = \"first\"`.", call. = FALSE)
+        warning("Consider setting the `event_level` argument when using \"",
+                metric, "\" as the metric; see `?vip::vi_permute` for ",
+                "details. Defaulting to `event_level = \"first\"`.",
+                call. = FALSE)
       }
       ys_metric[["metric_fun"]]
     }
 
   }
 
-  # Compute baseline metric for comparison
-  baseline <- metric_fun(
+  # Compute baseline metric for comparison (recomputed on the subsample
+  # whenever sampling is requested; see below)
+  baseline_full <- metric_fun(
     truth = train_y,
     estimate = pred_wrapper(object, newdata = train_x)
   )
@@ -452,47 +440,80 @@ vi_permute.default <- function(
     `/`
   }
 
-  # Define ".do" operator
-  `%do.reps%` <- `%do.features%` <- `%do%`
+  # Determine which loop (if any) to run in parallel; foreach is only needed
+  # (and hence only required) when `parallel = TRUE`
+  par_reps <- par_features <- FALSE
   if (isTRUE(parallel)) {
+    if (!requireNamespace("foreach", quietly = TRUE)) {
+      stop("Package \"foreach\" needed for parallel execution (i.e., ",
+           "whenever `parallel = TRUE`). Please install it.", call. = FALSE)
+    }
     parallelize_by <- match.arg(parallelize_by)
     if (parallelize_by == "repetitions") {
       if (nsim == 1) {
-        warning("Parallelizing across repititions only works when `nsim > 1`.",
+        warning("Parallelizing across repetitions only works when `nsim > 1`.",
                 call. = FALSE)
-      } else{
-        `%do.reps%` <- `%dopar%`
+      } else {
+        par_reps <- TRUE
       }
     } else {
-      `%do.features%` <- `%dopar%`
+      par_features <- TRUE
+    }
+  }
+
+  # An lapply()-like loop that optionally runs in parallel via foreach; any
+  # additional arguments supplied via `...` (e.g., `.packages` or `.export`)
+  # are passed on to foreach()
+  fe_args <- list(...)
+  ploop <- function(X, FUN, parallel) {
+    if (parallel) {
+      `%dopar%` <- foreach::`%dopar%`
+      x <- NULL  # foreach's iteration variable (assigned by foreach itself)
+      fe <- do.call(foreach::foreach, args = c(list(x = X), fe_args))
+      fe %dopar% FUN(x)
+    } else {
+      lapply(X, FUN)
     }
   }
 
   # Construct VI scores
   #
-  # Loop through each feature and do the following:
+  # For each Monte Carlo repetition, optionally subsample the training data
+  # (recomputing the baseline performance on the subsample so all features are
+  # compared on the same rows), then loop through each feature and do the
+  # following:
   #
   #   1. make a copy of the training data;
   #   2. permute the values of the original feature;
   #   3. get new predictions based on permuted data set;
-  #   4. record difference in accuracy.
-
-  vis <- foreach(i = seq_len(nsim), .combine = "cbind") %do.reps% {
-    res <- foreach(j = seq_along(feature_names),
-                   .combine = "rbind", ...) %do.features% {
-      # if (verbose && !parallel) {
-      #   message("Computing variable importance for ", x, "...")
-      # }
-      if (!is.null(sample_size)) {
-        ids <- sample(length(train_y), size = sample_size, replace = FALSE)
-        train_x <- train_x[ids, ]
-        train_y <- train_y[ids]
+  #   4. record difference in performance.
+  df <- is.data.frame(train_x)
+  reps <- ploop(seq_len(nsim), parallel = par_reps, FUN = function(rep_id) {
+    if (!is.null(sample_size)) {
+      ids <- sample(length(train_y), size = sample_size, replace = FALSE)
+      xs <- train_x[ids, , drop = FALSE]
+      ys <- train_y[ids]
+      baseline <- metric_fun(
+        truth = ys,
+        estimate = pred_wrapper(object, newdata = xs)
+      )
+    } else {
+      xs <- train_x
+      ys <- train_y
+      baseline <- baseline_full
+    }
+    scores <- ploop(feature_names, parallel = par_features, FUN = function(nm) {
+      if (verbose && !parallel) {
+        message("Computing variable importance for ", nm, "...")
       }
-      permx <- train_x
-      permx[, feature_names[j]] <- permx[sample(nrow(permx)), feature_names[j]]
-      # train_x_permuted <- permute_columns(train_x, columns = feature_names[j])
+      permx <- xs
+      if (df) {
+        permx[[nm]] <- sample(permx[[nm]])
+      } else {
+        permx[, nm] <- permx[sample.int(nrow(permx)), nm]
+      }
       permuted <- metric_fun(
-        truth = train_y,
+        truth = ys,
         estimate = pred_wrapper(object, newdata = permx)
       )
       if (smaller_is_better) {
@@ -500,13 +521,15 @@ vi_permute.default <- function(
       } else {
         baseline %compare% permuted  # e.g., R-squared
       }
-    }
-  }
+    })
+    unlist(scores)
+  })
+  vis <- do.call(cbind, args = reps)  # features (rows) by repetitions (cols)
 
   # Construct tibble of variable importance scores
   tib <- tibble::tibble(
     "Variable" = feature_names,
-    "Importance" = apply(vis, MARGIN = 1, FUN = mean)
+    "Importance" = rowMeans(vis)
   )
   if (nsim > 1) {
     tib$StDev <- apply(vis, MARGIN = 1, FUN = stats::sd)

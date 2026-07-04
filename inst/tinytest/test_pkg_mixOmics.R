@@ -1,5 +1,5 @@
 # Skip on CRAN releases FIRST (Bioconductor dependency complexity)
-if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) exit_file("Skip on CRAN")
+exit_if_not(at_home())
 
 # Exits
 if (!requireNamespace("mixOmics", quietly = TRUE)) {

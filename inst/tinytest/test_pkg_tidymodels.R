@@ -1,5 +1,5 @@
 # Skip on CRAN releases FIRST (meta-package with 80+ dependency tree)
-if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) exit_file("Skip on CRAN")
+exit_if_not(at_home())
 
 # Exits
 if (!requireNamespace("ranger", quietly = TRUE)) {
