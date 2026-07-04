@@ -60,6 +60,25 @@ expect_identical(
 
 # FIXME: Why not identical? Conversion issues?
 
+# Non-GLM algorithms support the `type` argument for selecting which column
+# of the H2O variable importance table to use
+# https://github.com/bgreenwell/vip/issues/89
+fit4 <- h2o.gbm(  # regression
+  x = paste0("x", 1L:10L),
+  y = "y",
+  training_frame = as.h2o(friedman1),
+  ntrees = 10
+)
+h2o_imp <- as.data.frame(h2o.varimp(fit4))
+vis4 <- vi_model(fit4)  # default: relative_importance
+expect_identical(vis4$Importance, target = h2o_imp$relative_importance)
+expect_identical(attr(vis4, which = "type"), target = "relative_importance")
+vis4_pct <- vi_model(fit4, type = "percentage")
+expect_identical(vis4_pct$Importance, target = h2o_imp$percentage)
+expect_identical(attr(vis4_pct, which = "type"), target = "percentage")
+vis4_scl <- vi_model(fit4, type = "scaled_importance")
+expect_identical(vis4_scl$Importance, target = h2o_imp$scaled_importance)
+
 # Expectations for `get_training_data()`
 expect_equal(
   current = vip:::get_training_data.H2ORegressionModel(fit1),

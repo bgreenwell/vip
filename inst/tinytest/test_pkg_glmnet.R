@@ -68,3 +68,13 @@ expect_identical(
   current = vip:::get_feature_names.multnet(fit3),
   target = paste0("x", 1L:10L)
 )
+
+# Exactly-zero coefficients (e.g., lasso-shrunk) should get Sign = "ZERO"
+# https://github.com/bgreenwell/vip/issues/104
+vis_zero <- vi_model(fit1, lambda = 1.0)  # large penalty -> some zero coefs
+expect_true(any(vis_zero$Importance == 0))
+expect_identical(
+  current = vis_zero$Sign[vis_zero$Importance == 0],
+  target = rep("ZERO", times = sum(vis_zero$Importance == 0))
+)
+expect_true(all(vis_zero$Sign[vis_zero$Importance > 0] %in% c("POS", "NEG")))

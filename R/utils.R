@@ -42,6 +42,18 @@ new_vi <- function(variable, importance, type, sign = NULL) {
 }
 
 
+#' Sign of a coefficient/statistic
+#'
+#' Returns `"POS"`, `"NEG"`, or `"ZERO"`; exactly-zero coefficients (common
+#' with lasso models) should not be labelled positive or negative (#104).
+#'
+#' @keywords internal
+#' @noRd
+coef_sign <- function(x) {
+  ifelse(x > 0, yes = "POS", no = ifelse(x < 0, yes = "NEG", no = "ZERO"))
+}
+
+
 #' @keywords internal
 abbreviate_names <- function(x, minlength) {
   x$Variable <- abbreviate(x$Variable, minlength = minlength)

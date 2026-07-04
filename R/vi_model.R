@@ -33,8 +33,10 @@
 #' model-specific approach described in the details section below for the
 #' class of `object`.
 #'
-#' For [lm][stats::lm]/[glm][stats::glm]-like objects, the sign (i.e., POS/NEG)
-#' of the original coefficient is also included in a column called `Sign`.
+#' For [lm][stats::lm]/[glm][stats::glm]-like objects, the sign of the
+#' original coefficient (i.e., `"POS"`, `"NEG"`, or `"ZERO"` for exactly-zero
+#' coefficients, as can occur with lasso models) is also included in a column
+#' called `Sign`.
 #'
 #' @details
 #'
@@ -155,7 +157,11 @@
 #'
 #' * [H2OModel][h2o::H2OModel] - See [h2o.varimp][h2o::h2o.varimp] or visit
 #' \url{https://docs.h2o.ai/h2o/latest-stable/h2o-docs/variable-importance.html}
-#' for details.
+#' for details. For non-GLM algorithms, the `type` argument selects which
+#' column of the H2O variable importance table to use:
+#' `"relative_importance"` (the default), `"scaled_importance"`, or
+#' `"percentage"`. (For GLMs, H2O reports standardized coefficient magnitudes
+#' and the `type` argument is ignored.)
 #'
 #' * [nnet][nnet::nnet] - Two popular methods for constructing variable
 #' importance scores with neural networks are the Garson algorithm
@@ -407,7 +413,7 @@ vi_glmnet <- function(object, lambda) {
     names(coefs),
     importance = unname(abs(coefs)),  # strip names
     type = "|coefficient|",
-    sign = ifelse(coefs >= 0, yes = "POS", no = "NEG")
+    sign = coef_sign(coefs)
   )
 }
 
@@ -439,15 +445,19 @@ vi_model.cv.glmnet <- function(object, lambda = NULL, ...) {
 #' @rdname vi_model
 #'
 #' @export
-vi_model.H2OBinomialModel <- function(object, ...) {
+vi_model.H2OBinomialModel <- function(object,
+    type = c("relative_importance", "scaled_importance", "percentage"), ...) {
+  type <- match.arg(type)
   tib <- as.data.frame(h2o::h2o.varimp(object))
   if (object@algorithm == "glm") {
+    # h2o.varimp() returns standardized coefficient magnitudes for GLMs, so
+    # the `type` argument does not apply here
     names(tib) <- c("Variable", "Importance", "Sign")
     # FIXME: Extra row at the bottom?
     new_vi(tib$Variable, importance = tib$Importance, type = "h2o",
            sign = tib$Sign)
   } else {
-    new_vi(tib[[1L]], importance = tib[[2L]], type = "h2o")
+    new_vi(tib[["variable"]], importance = tib[[type]], type = type)
   }
 }
 
@@ -717,7 +727,7 @@ vi_spark_lm <- function(object, type, ...) {
     vis$term,
     importance = abs(vis$statistic),
     type = type,
-    sign = ifelse(vis$statistic >= 0, yes = "POS", no = "NEG")
+    sign = coef_sign(vis$statistic)
   )
 }
 
@@ -812,7 +822,7 @@ vi_model.lm <- function(object, type = c("stat", "raw"), ...) {
     rownames(coefs),
     importance = unname(abs(coefs[, pos])),
     type = label,
-    sign = ifelse(coefs[, "Estimate"] >= 0, yes = "POS", no = "NEG")
+    sign = coef_sign(coefs[, "Estimate"])
   )
 
 }

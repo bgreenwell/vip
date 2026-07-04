@@ -64,11 +64,23 @@ vi_model(object, ...)
 
 \method{vi_model}{cv.glmnet}(object, lambda = NULL, ...)
 
-\method{vi_model}{H2OBinomialModel}(object, ...)
+\method{vi_model}{H2OBinomialModel}(
+  object,
+  type = c("relative_importance", "scaled_importance", "percentage"),
+  ...
+)
 
-\method{vi_model}{H2OMultinomialModel}(object, ...)
+\method{vi_model}{H2OMultinomialModel}(
+  object,
+  type = c("relative_importance", "scaled_importance", "percentage"),
+  ...
+)
 
-\method{vi_model}{H2ORegressionModel}(object, ...)
+\method{vi_model}{H2ORegressionModel}(
+  object,
+  type = c("relative_importance", "scaled_importance", "percentage"),
+  ...
+)
 
 \method{vi_model}{lgb.Booster}(object, type = c("gain", "cover", "frequency"), ...)
 
@@ -157,8 +169,10 @@ model-specific approach described in the details section below for the
 class of \code{object}.
 }
 
-For \link[stats:lm]{lm}/\link[stats:glm]{glm}-like objects, the sign (i.e., POS/NEG)
-of the original coefficient is also included in a column called \code{Sign}.
+For \link[stats:lm]{lm}/\link[stats:glm]{glm}-like objects, the sign of the
+original coefficient (i.e., \code{"POS"}, \code{"NEG"}, or \code{"ZERO"} for exactly-zero
+coefficients, as can occur with lasso models) is also included in a column
+called \code{Sign}.
 }
 \description{
 Compute model-specific variable importance scores for the predictors in a
@@ -275,7 +289,11 @@ the entire training dataset (not the out-of-bag observations).
 }
 \item \link[h2o:H2OModel-class]{H2OModel} - See \link[h2o:h2o.varimp]{h2o.varimp} or visit
 \url{https://docs.h2o.ai/h2o/latest-stable/h2o-docs/variable-importance.html}
-for details.
+for details. For non-GLM algorithms, the \code{type} argument selects which
+column of the H2O variable importance table to use:
+\code{"relative_importance"} (the default), \code{"scaled_importance"}, or
+\code{"percentage"}. (For GLMs, H2O reports standardized coefficient magnitudes
+and the \code{type} argument is ignored.)
 \item \link[nnet:nnet]{nnet} - Two popular methods for constructing variable
 importance scores with neural networks are the Garson algorithm
 (Garson 1991), later modified by Goh (1995), and the Olden algorithm

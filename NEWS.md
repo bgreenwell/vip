@@ -1,5 +1,18 @@
 # vip (development version)
 
+## New features
+
+* `vi_model()` methods for non-GLM **h2o** models gained a `type` argument
+  for selecting which column of the H2O variable importance table to use:
+  `"relative_importance"` (the default), `"scaled_importance"`, or
+  `"percentage"` [(#89)](https://github.com/bgreenwell/vip/issues/89).
+
+## Changed
+
+* Exactly-zero coefficients (e.g., lasso-shrunk coefficients in **glmnet**
+  models) now get `Sign = "ZERO"` instead of being labelled positive or
+  negative [(#104)](https://github.com/bgreenwell/vip/issues/104).
+
 
 # vip 0.5.0
 
