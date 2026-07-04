@@ -53,6 +53,15 @@ jobs:
           # fastshap (Suggests) is distributed via r-universe, not CRAN
           extra-repositories: 'https://bgreenwell.r-universe.dev'
 
+      - name: Install gettext (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+          brew install gettext
+          echo "PKG_CONFIG_PATH=$(brew --prefix gettext)/lib/pkgconfig" >> $GITHUB_ENV
+          echo "CPPFLAGS=-I$(brew --prefix gettext)/include" >> $GITHUB_ENV
+          echo "LDFLAGS=-L$(brew --prefix gettext)/lib" >> $GITHUB_ENV
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
