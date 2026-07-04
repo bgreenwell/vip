@@ -77,14 +77,19 @@ attribute called \code{"raw_scores"}. (Only used when \code{nsim > 1}.)}
 \item{sample_size}{Integer specifying the size of the random sample to use
 for each Monte Carlo repetition. Default is \code{NULL} (i.e., use all of the
 available training data). Cannot be specified with \code{sample_frac}. Can be
-used to reduce computation time with large data sets.}
+used to reduce computation time with large data sets. A single subsample is
+drawn per repetition and the baseline performance is recomputed on that
+subsample, so all features within a repetition are compared on the same
+rows.}
 
 \item{sample_frac}{Proportion specifying the size of the random sample to use
 for each Monte Carlo repetition. Default is \code{NULL} (i.e., use all of the
 available training data). Cannot be specified with \code{sample_size}. Can be
-used to reduce computation time with large data sets.}
+used to reduce computation time with large data sets. See \code{sample_size} for
+details on how the subsampling is carried out.}
 
-\item{reference_class}{Deprecated, use \code{event_level} instead.}
+\item{reference_class}{Deprecated, use \code{event_level} instead; a warning is
+issued (and the argument otherwise ignored) if supplied.}
 
 \item{event_level}{String specifying which factor level of \code{truth} to
 consider as the "event". Options are \code{"first"} (the default) or \code{"second"}.
@@ -110,11 +115,11 @@ the construction of variable importance scores. Default is \code{FALSE}.}
 
 \item{parallel}{Logical indicating whether or not to run \code{vi_permute()}
 in parallel (using a backend provided by the \link[foreach:foreach]{foreach}
-package). Default is \code{FALSE}. If \code{TRUE}, a
-\link[foreach:foreach]{foreach}-compatible backend must be provided by must be
-provided. Note that \code{set.seed()} will not not work with
-\link[foreach:foreach]{foreach}'s parellelized for loops; for a workaround, see
-\href{https://github.com/koalaverse/vip/issues/145}{this solution}.}
+package). Default is \code{FALSE}. If \code{TRUE}, the \strong{foreach} package must be
+installed and a \link[foreach:foreach]{foreach}-compatible backend must be
+registered. Note that \code{set.seed()} will not work with
+\link[foreach:foreach]{foreach}'s parallelized for loops; for a workaround, see
+\href{https://github.com/bgreenwell/vip/issues/145}{this solution}.}
 
 \item{parallelize_by}{Character string specifying whether to parallelize
 across features (\code{parallelize_by = "features"}) or repetitions
@@ -122,7 +127,8 @@ across features (\code{parallelize_by = "features"}) or repetitions
 \code{nsim > 1}. Default is \code{"features"}.}
 }
 \value{
-A tidy data frame (i.e., a \link[tibble:tibble]{tibble} object) with two
+A tidy data frame (specifically, a data frame inheriting from class
+\code{"vi"}; use \code{tibble::as_tibble()} if you prefer a tibble) with two
 columns:
 \itemize{
 \item \code{Variable} - the corresponding feature name;
@@ -154,7 +160,7 @@ trn <- gen_friedman(500, seed = 101)  # ?vip::gen_friedman
 # Prediction wrapper
 pfun <- function(object, newdata) {
   # Needs to return vector of predictions from a ranger object; see
-  # `ranger::predcit.ranger` for details on making predictions
+  # `ranger::predict.ranger` for details on making predictions
   predict(object, data = newdata)$predictions
 }
 
@@ -170,7 +176,7 @@ print(vis)
 
 # Same as above, but using `vi_permute()` directly
 set.seed(2021)  # for reproducibility
-vi_permute(rfo, target = "y", metric = "rsq", pred_wrapper = pfun
+vi_permute(rfo, target = "y", metric = "rsq", pred_wrapper = pfun,
            train = trn)
 
 # Plot VI scores (could also replace `vi()` with `vip()` in above example)
@@ -229,7 +235,6 @@ vi(rfo2,
    pred_wrapper = pfun_class,
    nsim = 30  # use 30 repetitions
 )
-## # A tibble: 5 × 3
 ##   Variable Importance   StDev
 ##   <chr>         <dbl>   <dbl>
 ## 1 sex          0.228  0.0110
@@ -246,7 +251,7 @@ pfun_prob <- function(object, newdata) {
 }
 
 # Sanity check
-pfun_prob(rfo2, newdata = head(t1))  # estiated P(survived=yes | x)
+pfun_prob(rfo2, newdata = head(t1))  # estimated P(survived=yes | x)
 ##     1     2     3     4     5     6
 ## 0.990 0.864 0.486 0.282 0.630 0.078
 
@@ -262,7 +267,6 @@ vi(rfo2,
    nsim = 30  # use 30 repetitions
 )
 
-## # A tibble: 5 × 3
 ## Variable Importance   StDev
 ##   <chr>         <dbl>   <dbl>
 ## 1 sex          0.210  0.00869
@@ -287,7 +291,7 @@ levels(t1$survived)
 # we were hoping for; a telltale sign the event level and prediction wrapper
 do not match)
 set.seed(1413)  # for reproducibility
-vi(rfo,
+vi(rfo2,
    method = "permute",
    train = t1,
    target = "survived",
@@ -297,7 +301,6 @@ vi(rfo,
    nsim = 30  # use 30 repetitions
 )
 
-## # A tibble: 5 × 3
 ## Variable Importance   StDev
 ##   <chr>         <dbl>   <dbl>
 ## 1 sex          0.229  0.0137

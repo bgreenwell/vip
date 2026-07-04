@@ -20,6 +20,7 @@
 \alias{vi_model.Learner}
 \alias{vi_model.nn}
 \alias{vi_model.nnet}
+\alias{vi_model.mlp}
 \alias{vi_model.RandomForest}
 \alias{vi_model.constparty}
 \alias{vi_model.cforest}
@@ -27,15 +28,14 @@
 \alias{vi_model.randomForest}
 \alias{vi_model.ranger}
 \alias{vi_model.rpart}
-\alias{vi_model.mlp}
 \alias{vi_model.ml_model_decision_tree_regression}
 \alias{vi_model.ml_model_decision_tree_classification}
 \alias{vi_model.ml_model_gbt_regression}
 \alias{vi_model.ml_model_gbt_classification}
-\alias{vi_model.ml_model_generalized_linear_regression}
-\alias{vi_model.ml_model_linear_regression}
 \alias{vi_model.ml_model_random_forest_regression}
 \alias{vi_model.ml_model_random_forest_classification}
+\alias{vi_model.ml_model_generalized_linear_regression}
+\alias{vi_model.ml_model_linear_regression}
 \alias{vi_model.lm}
 \alias{vi_model.model_fit}
 \alias{vi_model.workflow}
@@ -84,6 +84,8 @@ vi_model(object, ...)
 
 \method{vi_model}{nnet}(object, type = c("olden", "garson"), ...)
 
+\method{vi_model}{mlp}(object, type = c("olden", "garson"), ...)
+
 \method{vi_model}{RandomForest}(object, type = c("accuracy", "auc"), ...)
 
 \method{vi_model}{constparty}(object, ...)
@@ -92,21 +94,11 @@ vi_model(object, ...)
 
 \method{vi_model}{mvr}(object, ...)
 
-\method{vi_model}{mixo_pls}(object, ncomp = NULL, ...)
-
-\method{vi_model}{mixo_spls}(object, ncomp = NULL, ...)
-
-\method{vi_model}{WrappedModel}(object, ...)
-
-\method{vi_model}{Learner}(object, ...)
-
 \method{vi_model}{randomForest}(object, ...)
 
 \method{vi_model}{ranger}(object, ...)
 
 \method{vi_model}{rpart}(object, ...)
-
-\method{vi_model}{mlp}(object, type = c("olden", "garson"), ...)
 
 \method{vi_model}{ml_model_decision_tree_regression}(object, ...)
 
@@ -116,13 +108,13 @@ vi_model(object, ...)
 
 \method{vi_model}{ml_model_gbt_classification}(object, ...)
 
-\method{vi_model}{ml_model_generalized_linear_regression}(object, ...)
-
-\method{vi_model}{ml_model_linear_regression}(object, ...)
-
 \method{vi_model}{ml_model_random_forest_regression}(object, ...)
 
 \method{vi_model}{ml_model_random_forest_classification}(object, ...)
+
+\method{vi_model}{ml_model_generalized_linear_regression}(object, ...)
+
+\method{vi_model}{ml_model_linear_regression}(object, ...)
 
 \method{vi_model}{lm}(object, type = c("stat", "raw"), ...)
 
@@ -155,13 +147,14 @@ to be used in the importance calculations. If more components are requested
 than were used in the model, all of the model's components are used.}
 }
 \value{
-A tidy data frame (i.e., a \link[tibble:tibble]{tibble} object) with two
+A tidy data frame (specifically, a data frame inheriting from class
+\code{"vi"}; use \code{tibble::as_tibble()} if you prefer a tibble) with two
 columns:
 \itemize{
 \item \code{Variable} - the corresponding feature name;
-\item \code{Importance} - the associated importance, computed as the average change in
-performance after a random permutation (or permutations, if \code{nsim > 1}) of
-the feature in question.
+\item \code{Importance} - the associated importance, computed using the
+model-specific approach described in the details section below for the
+class of \code{object}.
 }
 
 For \link[stats:lm]{lm}/\link[stats:glm]{glm}-like objects, the sign (i.e., POS/NEG)

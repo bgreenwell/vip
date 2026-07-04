@@ -49,7 +49,7 @@ gen_friedman <- function(n_samples = 100, n_features = 10, n_bins = NULL,
   if (!is.null(n_bins)) {
     n_bins <- as.integer(n_bins)
     if (n_bins < 2) {
-      stop("Argument `n_bins` shouls be a postive integer > 1.", call. = FALSE)
+      stop("Argument `n_bins` should be a positive integer > 1.", call. = FALSE)
     }
     friedman$y <- bin(friedman$y, n_bins = n_bins)
   }

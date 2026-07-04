@@ -1,3 +1,95 @@
+# vip 0.5.0
+
+## New features
+
+* New `plot()` method for `"vi"` objects; this is now the primary plotting
+  interface. Its `type` argument (`"bar"`, `"point"`, `"boxplot"`, or
+  `"violin"`) selects the display, and additional arguments are passed
+  directly on to `tinyplot::tinyplot()` (e.g.,
+  `plot(vi(fit), type = "point", col = "red", pch = 17)`). `vip()` remains as
+  a convenience wrapper that computes and plots in one call (its `...` are
+  reserved for `vi()`).
+
+## Breaking changes
+
+* `vip()` now draws plots with lightweight base R graphics via the
+  [tinyplot](https://grantmcdermott.com/tinyplot/) package instead of
+  returning a ggplot2 object. The plot is drawn as a side effect and the
+  underlying `"vi"` object is returned invisibly. Consequently:
+  - The `mapping` argument (a ggplot2 aesthetic mapping) is deprecated and
+    ignored with a warning.
+  - The `aesthetics` argument is deprecated in favor of `plot_args`, a named
+    list of base R graphical parameters (e.g., `col`, `fill`, `pch`, `cex`,
+    `lwd`) passed on to `tinyplot::tinyplot()`; supplying `aesthetics` warns
+    but still works for this release.
+  - `geom = "bar"` is the new preferred value for bar charts; the
+    ggplot2-era value `"col"` is retained as a silent legacy alias.
+  - ggplot2 was removed from the package's dependencies entirely.
+
+* `vi()` and friends now return a plain data frame with class `"vi"` instead
+  of a tibble; printing changes accordingly. Use `tibble::as_tibble()` on the
+  result if you prefer a tibble.
+
+* Slimmed down the dependency tree: **vip** now imports only `stats`,
+  `tinyplot`, and `utils`:
+  - `tibble` was removed entirely (see above).
+  - `foreach` moved to Suggests; it is only needed (and only loaded) when
+    calling `vi_permute()` with `parallel = TRUE`.
+  - `yardstick` moved to Suggests; it is only needed when specifying a
+    built-in metric by name (you can always supply your own metric function
+    instead).
+
+* When subsampling is requested via `sample_size` or `sample_frac`,
+  `vi_permute()` now draws a single subsample per Monte Carlo repetition and
+  recomputes the baseline performance on that subsample. Previously, a
+  different subsample was drawn for every feature and compared against a
+  baseline computed on the full training set, which biased the scores and
+  compared features on different rows. Results will differ slightly from
+  previous versions whenever subsampling is used.
+
+## Fixed
+
+* `vi(..., rank = TRUE)` now correctly assigns rank 1 to the most important
+  feature regardless of the `sort` and `decreasing` arguments; previously the
+  ranks were reversed (and essentially meaningless) whenever `sort = FALSE`.
+
+* `vi_permute()` no longer errors when computing importance for a single
+  feature (e.g., `feature_names` of length one with `nsim = 1`).
+
+* `list_metrics()` now returns the `smaller_is_better` column as a logical
+  (as documented) instead of a character vector, and correctly lists
+  `j_index_vec` as the yardstick function backing the `"youden"` metric.
+
+* The full test suite runs again under `R CMD check` in CI: `tests/tinytest.R`
+  now honors the `NOT_CRAN` environment variable in addition to the
+  development-version check, so `at_home()`-gated tests are no longer silently
+  skipped for release versions.
+
+* The (previously ignored) `verbose` argument to `vi_permute()` now works as
+  documented, and supplying the deprecated `reference_class` argument
+  triggers a deprecation warning instead of being silently ignored.
+
+* Exactly-zero coefficients (common with lasso models) now get `Sign = "POS"`
+  instead of `"NEG"` in `vi_model()` output for glmnet and Spark ML linear
+  models.
+
+## Changed
+
+* Major internal cleanup of `vi_model()`: all methods now share an internal
+  `new_vi()` constructor, duplicate method definitions were removed, and
+  identical methods are aliased. No user-visible changes.
+
+* Small speedups in `vi_permute()` (column-level permutation and `rowMeans()`)
+  and `vi_shap()` (`colMeans()`).
+
+* The introductory vignette was rewritten as a plain, fast-building
+  `rmarkdown::html_vignette` (the old precompiled, paper-length vignette is
+  superseded by the R Journal article).
+
+* Installation instructions now point to
+  [r-universe](https://bgreenwell.r-universe.dev/vip); the package is no
+  longer distributed on CRAN.
+
 # vip 0.4.6
 
 ## Fixed

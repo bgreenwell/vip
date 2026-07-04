@@ -17,11 +17,12 @@
 #' automatically. It is good practice to always specify this argument.
 #'
 #' @param ... Additional arguments to be passed on to [fastshap::explain()]
-#' (e.g., `nsim =  30`, `adjust = TRUE`, or avprediction wrapper via the
+#' (e.g., `nsim = 30`, `adjust = TRUE`, or a prediction wrapper via the
 #' `pred_wrapper` argument); see `?fastshap::explain` for details on these and
 #' other useful arguments.
 #'
-#' @return A tidy data frame (i.e., a [tibble][tibble::tibble] object) with two
+#' @return A tidy data frame (specifically, a data frame inheriting from class
+#' `"vi"`; use `tibble::as_tibble()` if you prefer a tibble) with two
 #' columns:
 #'
 #' * `Variable` - the corresponding feature name;
@@ -42,7 +43,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(ggplot2)  # for theme_light() function
 #' library(xgboost)
 #'
 #' # Simulate training data
@@ -60,8 +60,7 @@
 #' # functionality
 #' vip(bst, method = "shap", train = X, exact = TRUE, include_type = TRUE,
 #'     geom = "point", horizontal = FALSE,
-#'     aesthetics = list(color = "forestgreen", shape = 17, size = 5)) +
-#'   theme_light()
+#'     plot_args = list(col = "forestgreen", pch = 17, cex = 2))
 #'
 #' # Use Monte-Carlo approach, which works for any model; requires prediction
 #' # wrapper
@@ -74,7 +73,6 @@
 #' set.seed(853)  # for reproducibility
 #' vi_shap(rfo, train = subset(t1, select = -survived), pred_wrapper = pfun_prob,
 #'         nsim = 30)
-#' ## # A tibble: 5 × 2
 #' ## Variable Importance
 #' ##   <chr>         <dbl>
 #' ## 1 pclass       0.104
@@ -126,15 +124,12 @@ vi_shap.default <- function(object, feature_names = NULL, train = NULL, ...) {
   )
 
   # Construct SHAP-based variable importance scores
-  tib <- tibble::tibble(
-    "Variable" = colnames(shap),
-    "Importance" = apply(shap, MARGIN = 2, FUN = function(x) mean(abs(x)))
+  tib <- new_vi(
+    colnames(shap),
+    importance = unname(colMeans(abs(as.matrix(shap)))),
+    type = "mean(|Shapley value|)"
   )
   attr(tib, which = "shap") <- shap
-  attr(tib, which = "type") <- "mean(|Shapley value|)"
-
-  # Add "vi" class
-  class(tib) <- c("vi", class(tib))
 
   # Return results
   tib

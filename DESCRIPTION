@@ -1,7 +1,7 @@
 Package: vip
 Type: Package
 Title: Variable Importance Plots
-Version: 0.4.6
+Version: 0.5.0
 Authors@R: c(
   person(c("Brandon", "M."), family = "Greenwell", 
          email = "greenwell.brandon@gmail.com",
@@ -23,35 +23,32 @@ Description: A general framework for constructing variable importance plots from
   variance-based method for quantifying the relative strength of interaction 
   effects is also included (see the previous reference for details).
 License: GPL (>= 2)
-URL: https://github.com/koalaverse/vip/,
-    https://koalaverse.github.io/vip/
-BugReports: https://github.com/koalaverse/vip/issues
+URL: https://github.com/bgreenwell/vip,
+    https://bgreenwell.github.io/vip/,
+    https://bgreenwell.r-universe.dev/vip
+BugReports: https://github.com/bgreenwell/vip/issues
 Encoding: UTF-8
 VignetteBuilder: knitr
 Depends: R (>= 4.1.0)
-Imports: 
-    foreach,
-    ggplot2 (>= 0.9.0),
+Imports:
     stats,
-    tibble,
-    utils,
-    yardstick
-Suggests: 
-    bookdown,
-    DT,
+    tinyplot (>= 0.3.0),
+    utils
+Suggests:
     covr,
     doParallel,
-    dplyr,
     fastshap (>= 0.1.0),
+    foreach,
     knitr,
-    lattice,
     mlbench,
     modeldata,
     NeuralNetTools,
     pdp,
     rmarkdown,
-    tinytest (>= 1.4.1),
-    varImp
+    rpart,
+    tinytest (>= 1.4.3),
+    varImp,
+    yardstick
 Enhances: 
     C50,
     caret,
@@ -72,11 +69,11 @@ Enhances:
     pls,
     randomForest,
     ranger,
-    rpart,
     RSNNS,
     sparklyr (>= 0.8.0),
     tidymodels,
     workflows (>= 0.2.3),
-    xgboost
+    xgboost (>= 3.2.0)
+Additional_repositories: https://bgreenwell.r-universe.dev
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)

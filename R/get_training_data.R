@@ -13,60 +13,9 @@ get_training_data <- function(object) {
 
 #' @keywords internal
 get_training_data.default <- function(object) {
-
-  # # Throw error message for S4 objects (for now)
-  # if (isS4(object)) {
-  #   stop(msg, call. = FALSE)
-  # }
-  #
-  # # Grab the call
-  # mcall <- tryCatch(stats::getCall(object), error = function(e) {
-  #   stop(msg, call. = FALSE)
-  # })
-  #
-  # # If data component of the call is NULL, then try to make sure each
-  # # component is named before proceeding (taken from Advanced R, 2nd ed.)
-  # if (is.null(mcall[[arg]])) {
-  #   f <- tryCatch(eval(mcall[[1L]], envir = env), error = function(e) {
-  #     stop(msg, call. = FALSE)
-  #   })
-  #   if (!is.primitive(f)) {
-  #     mcall <- match.call(f, call = mcall)
-  #   }
-  # }
-  #
-  # # Grab the data component (if it exists)
-  # n <- 1
-  # while(length(env) != 0) {
-  #   train <- tryCatch(eval(mcall[[arg]], envir = env), error = function(e) {
-  #     NULL
-  #   })
-  #   if (!is.null(train) || identical(env, globalenv())) {
-  #     break
-  #   }
-  #   env <- parent.frame(n)  # inspect calling environment
-  #   n <- n + 1
-  # }
-  # if (is.null(train)) {
-  #   stop(msg, call. = FALSE)
-  # } else {
-  #   if (!(is.data.frame(train))) {
-  #     if (is.matrix(train) || is.list(train)) {
-  #       train <- as.data.frame(train)
-  #       # } else if (inherits(train, what = "dgCMatrix")) {
-  #       #   train <- as.data.frame(data.matrix(train))
-  #     } else {
-  #       stop(msg, call. = FALSE)
-  #     }
-  #   }
-  # }
-  #
-  # # Return original training data
-  # train
   stop("Training data cannot be extracted from fitted model object. Please ",
        "supply the raw training data using the `train` argument.",
        call. = FALSE)
-
 }
 
 
@@ -123,7 +72,7 @@ get_training_data.RandomForest <- function(object) {
   object@data@get("input")
 }
 
-library
+
 # Package: workflow ------------------------------------------------------------
 
 #' @keywords internal

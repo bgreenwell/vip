@@ -14,7 +14,7 @@ vi_shap(object, ...)
 \link[randomForest:randomForest]{randomForest} object).}
 
 \item{...}{Additional arguments to be passed on to \code{\link[fastshap:explain]{fastshap::explain()}}
-(e.g., \code{nsim =  30}, \code{adjust = TRUE}, or avprediction wrapper via the
+(e.g., \code{nsim = 30}, \code{adjust = TRUE}, or a prediction wrapper via the
 \code{pred_wrapper} argument); see \code{?fastshap::explain} for details on these and
 other useful arguments.}
 
@@ -29,7 +29,8 @@ internal \code{get_training_data()} function will be called to try and extract i
 automatically. It is good practice to always specify this argument.}
 }
 \value{
-A tidy data frame (i.e., a \link[tibble:tibble]{tibble} object) with two
+A tidy data frame (specifically, a data frame inheriting from class
+\code{"vi"}; use \code{tibble::as_tibble()} if you prefer a tibble) with two
 columns:
 \itemize{
 \item \code{Variable} - the corresponding feature name;
@@ -52,7 +53,6 @@ predictions with feature contributions. Knowledge and information systems
 }
 \examples{
 \dontrun{
-library(ggplot2)  # for theme_light() function
 library(xgboost)
 
 # Simulate training data
@@ -70,8 +70,7 @@ bst <- xgboost(X, label = trn$y, nrounds = 338, max_depth = 3, eta = 0.1,
 # functionality
 vip(bst, method = "shap", train = X, exact = TRUE, include_type = TRUE,
     geom = "point", horizontal = FALSE,
-    aesthetics = list(color = "forestgreen", shape = 17, size = 5)) +
-  theme_light()
+    plot_args = list(col = "forestgreen", pch = 17, cex = 2))
 
 # Use Monte-Carlo approach, which works for any model; requires prediction
 # wrapper
@@ -84,7 +83,6 @@ pfun_prob <- function(object, newdata) {  # prediction wrapper
 set.seed(853)  # for reproducibility
 vi_shap(rfo, train = subset(t1, select = -survived), pred_wrapper = pfun_prob,
         nsim = 30)
-## # A tibble: 5 × 2
 ## Variable Importance
 ##   <chr>         <dbl>
 ## 1 pclass       0.104

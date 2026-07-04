@@ -1,5 +1,5 @@
 # Skip on CRAN releases FIRST to avoid h2o initialization issues
-if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) exit_file("Skip on CRAN")
+exit_if_not(at_home())
 
 # Exits
 if (!requireNamespace("h2o", quietly = TRUE)) {

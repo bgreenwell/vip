@@ -1,5 +1,5 @@
 # Skip on CRAN releases FIRST (platform-specific compilation issues)
-if (!identical(tolower(Sys.getenv("NOT_CRAN")), "true")) exit_file("Skip on CRAN")
+exit_if_not(at_home())
 
 # Exits
 if (!requireNamespace("lightgbm", quietly = TRUE)) {
@@ -48,8 +48,9 @@ expect_identical(
 # Expectations for `get_training_data()`
 expect_error(vip:::get_training_data.default(bst))
 
-# Call `vip::vip()` directly
+# Call `vip::vip()` directly; draws a plot (tinyplot/base R graphics) as a
+# side effect and invisibly returns the plotted "vi" object
+pdf(NULL)  # null graphics device
 p <- vip(bst, method = "model", include_type = TRUE)
-
-# Expect `p` to be a ggplot object (compatible with ggplot2 S7 transition)
-expect_true(ggplot2::is_ggplot(p))
+dev.off()
+expect_inherits(p, class = "vi")

@@ -65,13 +65,15 @@ Potentially useful when comparing variable importance scores across different
 models using different methods.}
 }
 \value{
-A tidy data frame (i.e., a \link[tibble:tibble]{tibble} object) with two
+A tidy data frame (specifically, a data frame inheriting from class
+\code{"vi"}; use \code{tibble::as_tibble()} if you prefer a tibble) with two
 columns:
 \itemize{
 \item \code{Variable} - the corresponding feature name;
-\item \code{Importance} - the associated importance, computed as the average change in
-performance after a random permutation (or permutations, if \code{nsim > 1}) of
-the feature in question.
+\item \code{Importance} - the associated importance, computed by the requested
+\code{method} (e.g., the average change in performance after permutation for
+\code{method = "permute"}, or a model-specific measure for \code{method = "model"});
+see the help page for the corresponding \verb{vi_*()} function for details.
 }
 
 For \link[stats:lm]{lm}/\link[stats:glm]{glm}-like objects, whenever
@@ -106,9 +108,10 @@ set.seed(1434)  # for reproducibility
 (vis <- vi(mtcars.ppr, method = "permute", target = "mpg", nsim = 10,
            metric = "rmse", pred_wrapper = pfun, train = mtcars))
 
-# Plot variable importance scores
-vip(vis, include_type = TRUE, all_permutations = TRUE,
-    geom = "point", aesthetics = list(color = "forestgreen", size = 3))
+# Plot variable importance scores (`plot()` passes its `...` on to
+# `tinyplot::tinyplot()`)
+plot(vis, type = "point", include_type = TRUE, all_permutations = TRUE,
+     col = "forestgreen", cex = 2)
 
 #
 # A binary classification example

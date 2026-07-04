@@ -48,13 +48,15 @@
 #' [vi_permute][vip::vi_permute], or [vi_shap][vip::vi_shap]; see their
 #' respective help pages for details.
 #'
-#' @return A tidy data frame (i.e., a [tibble][tibble::tibble] object) with two
+#' @return A tidy data frame (specifically, a data frame inheriting from class
+#' `"vi"`; use `tibble::as_tibble()` if you prefer a tibble) with two
 #' columns:
 #'
 #' * `Variable` - the corresponding feature name;
-#' * `Importance` - the associated importance, computed as the average change in
-#' performance after a random permutation (or permutations, if `nsim > 1`) of
-#' the feature in question.
+#' * `Importance` - the associated importance, computed by the requested
+#' `method` (e.g., the average change in performance after permutation for
+#' `method = "permute"`, or a model-specific measure for `method = "model"`);
+#' see the help page for the corresponding `vi_*()` function for details.
 #'
 #' For [lm][stats::lm]/[glm][stats::glm]-like objects, whenever
 #' `method = "model"`, the sign (i.e., POS/NEG) of the original coefficient is
@@ -89,9 +91,10 @@
 #' (vis <- vi(mtcars.ppr, method = "permute", target = "mpg", nsim = 10,
 #'            metric = "rmse", pred_wrapper = pfun, train = mtcars))
 #'
-#' # Plot variable importance scores
-#' vip(vis, include_type = TRUE, all_permutations = TRUE,
-#'     geom = "point", aesthetics = list(color = "forestgreen", size = 3))
+#' # Plot variable importance scores (`plot()` passes its `...` on to
+#' # `tinyplot::tinyplot()`)
+#' plot(vis, type = "point", include_type = TRUE, all_permutations = TRUE,
+#'      col = "forestgreen", cex = 2)
 #'
 #' #
 #' # A binary classification example
@@ -162,7 +165,7 @@ vi.default <- function(
     }
   }
 
-  # Construct tibble of VI scores
+  # Construct data frame of VI scores
   tib <- switch(method,
     "model" = vi_model(object, ...),
     "firm" = vi_firm(object, feature_names = feature_names, ...),
@@ -191,9 +194,10 @@ vi.default <- function(
     tib$Importance <- tib$Importance / max(tib$Importance) * 100
   }
 
-  # Rank VI scores (i.e., convert to integer ranks)
+  # Rank VI scores (i.e., convert to ranks with 1 = most important); works
+  # regardless of whether or how the scores are sorted
   if (rank) {
-    tib$Importance <- rev(rank(tib$Importance, ties.method = "average"))
+    tib$Importance <- rank(-tib$Importance, ties.method = "average")
   }
 
   # Restore attribute
