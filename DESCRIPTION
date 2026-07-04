@@ -75,5 +75,6 @@ Enhances:
     tidymodels,
     workflows (>= 0.2.3),
     xgboost (>= 3.2.0)
+Additional_repositories: https://bgreenwell.r-universe.dev
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)

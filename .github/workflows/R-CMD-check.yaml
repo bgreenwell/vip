@@ -50,6 +50,8 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
+          # fastshap (Suggests) is distributed via r-universe, not CRAN
+          extra-repositories: 'https://bgreenwell.r-universe.dev'
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
