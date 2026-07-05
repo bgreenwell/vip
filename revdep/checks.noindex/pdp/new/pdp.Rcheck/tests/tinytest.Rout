@@ -1,84 +1,0 @@
-
-R version 4.2.3 (2023-03-15) -- "Shortstop Beagle"
-Copyright (C) 2023 The R Foundation for Statistical Computing
-Platform: aarch64-apple-darwin20 (64-bit)
-
-R is free software and comes with ABSOLUTELY NO WARRANTY.
-You are welcome to redistribute it under certain conditions.
-Type 'license()' or 'licence()' for distribution details.
-
-R is a collaborative project with many contributors.
-Type 'contributors()' for more information and
-'citation()' on how to cite R or R packages in publications.
-
-Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for an HTML browser interface to help.
-Type 'q()' to quit R.
-
-> # Run tests in local environment
-> if (requireNamespace("tinytest", quietly = TRUE)) {
-+   home <- length(unclass(packageVersion("pdp"))[[1]]) == 4
-+   tinytest::test_package("pdp", at_home = home)
-+ }
-test_cats_argument.R..........    0 tests    test_cats_argument.R..........    0 tests    test_cats_argument.R..........    0 tests    test_cats_argument.R..........    0 tests    test_cats_argument.R..........    0 tests    test_cats_argument.R..........    0 tests    test_cats_argument.R..........    0 tests    test_cats_argument.R..........    0 tests    test_cats_argument.R..........    4 tests [0;32mOK[0m randomForest 4.7-1.1
-Type rfNews() to see new features/changes/bug fixes.
-test_cats_argument.R..........    5 tests [0;32mOK[0m [0;34m0.1s[0m
-test_exemplar.R...............    0 tests    test_exemplar.R...............    0 tests    test_exemplar.R...............    0 tests    test_exemplar.R...............    1 tests [0;32mOK[0m [0;36m6ms[0m
-test_get_training_data.R......    0 tests    
-Attaching package: 'ggplot2'
-
-The following object is masked from 'package:randomForest':
-
-    margin
-
-test_get_training_data.R......    2 tests [0;32mOK[0m test_get_training_data.R......    5 tests [0;32mOK[0m test_get_training_data.R......    8 tests [0;32mOK[0m 
-Attaching package: 'ranger'
-
-The following object is masked from 'package:randomForest':
-
-    importance
-
-test_get_training_data.R......   10 tests [0;32mOK[0m [0;34m1.1s[0m
-test_pkg_C50.R................    0 tests    test_pkg_C50.R................    4 tests [0;32mOK[0m [0;36m24ms[0m
-test_pkg_MASS.R...............    0 tests    test_pkg_MASS.R...............    0 tests    test_pkg_MASS.R...............    8 tests [0;32mOK[0m [0;34m0.4s[0m
-test_pkg_e1071.R..............    0 tests    test_pkg_e1071.R..............    0 tests    test_pkg_e1071.R..............    0 tests    test_pkg_e1071.R..............    0 tests    test_pkg_e1071.R..............    8 tests [0;32mOK[0m [0;34m0.2s[0m
-
-Attaching package: 'zoo'
-
-The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric
-
-test_pkg_party.R..............   12 tests [0;32mOK[0m [0;34m18.2s[0m
-test_pkg_ranger.R.............    0 tests    test_pkg_ranger.R.............    0 tests    
-Attaching package: 'parsnip'
-
-The following object is masked from 'package:party':
-
-    fit
-
-The following object is masked from 'package:modeltools':
-
-    fit
-
-The following object is masked from 'package:e1071':
-
-    tune
-
-test_pkg_ranger.R.............    9 tests [0;32mOK[0m [0;34m1.7s[0m
-test_pkg_stats.R..............   10 tests [0;32mOK[0m [0;34m0.3s[0m
-test_pkg_xgboost.R............    0 tests    test_pkg_xgboost.R............    0 tests    test_pkg_xgboost.R............    0 tests    test_pkg_xgboost.R............    0 tests    test_pkg_xgboost.R............    0 tests    test_pkg_xgboost.R............    0 tests    test_pkg_xgboost.R............   12 tests [0;32mOK[0m [0;34m0.6s[0m
-test_pred_grid.R..............    0 tests    test_pred_grid.R..............    0 tests    test_pred_grid.R..............    0 tests    test_pred_grid.R..............    0 tests    test_pred_grid.R..............    0 tests    test_pred_grid.R..............    1 tests [0;32mOK[0m test_pred_grid.R..............    2 tests [0;32mOK[0m test_pred_grid.R..............    3 tests [0;32mOK[0m test_pred_grid.R..............    4 tests [0;32mOK[0m test_pred_grid.R..............    5 tests [0;32mOK[0m test_pred_grid.R..............    6 tests [0;32mOK[0m test_pred_grid.R..............    6 tests [0;32mOK[0m test_pred_grid.R..............    6 tests [0;32mOK[0m test_pred_grid.R..............    7 tests [0;32mOK[0m [0;36m2ms[0m
-test_xgboost_pima.R...........   12 tests [0;32mOK[0m [0;34m1.5s[0m
-All ok, 98 results (24.2s)
-Warning messages:
-1: In partial.default(fit4, pred.var = "x.4", prob = TRUE, ice = TRUE,  :
-  Centering may result in probabilities outside of [0, 1].
-2: glm.fit: algorithm did not converge 
-3: glm.fit: fitted probabilities numerically 0 or 1 occurred 
-4: In partial.default(fit2_glm, pred.var = "x.3", prob = TRUE, ice = TRUE,  :
-  Centering may result in probabilities outside of [0, 1].
-> 
-> proc.time()
-   user  system elapsed 
- 25.947   3.031  24.525 

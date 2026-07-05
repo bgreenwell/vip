@@ -1,60 +1,0 @@
-
-R version 4.2.3 (2023-03-15) -- "Shortstop Beagle"
-Copyright (C) 2023 The R Foundation for Statistical Computing
-Platform: aarch64-apple-darwin20 (64-bit)
-
-R is free software and comes with ABSOLUTELY NO WARRANTY.
-You are welcome to redistribute it under certain conditions.
-Type 'license()' or 'licence()' for distribution details.
-
-R is a collaborative project with many contributors.
-Type 'contributors()' for more information and
-'citation()' on how to cite R or R packages in publications.
-
-Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for an HTML browser interface to help.
-Type 'q()' to quit R.
-
-> 
-> if ( requireNamespace("tinytest", quietly = TRUE) ){
-+   home <- length(unclass(packageVersion("gbm"))[[1L]]) == 4
-+   tinytest::test_package("gbm", at_home = home)
-+ }
-Loaded gbm 2.1.8.1
-test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    CV: 1 
-CV: 2 
-CV: 3 
-CV: 4 
-CV: 5 
-test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    0 tests    test_bernoulli.R..............    1 tests [0;32mOK[0m [0;34m1.1s[0m
-test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    CV: 1 
-CV: 2 
-CV: 3 
-CV: 4 
-CV: 5 
-test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    0 tests    test_coxph.R..................    1 tests [0;32mOK[0m [0;34m3.4s[0m
-test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    CV: 1 
-CV: 2 
-CV: 3 
-CV: 4 
-CV: 5 
-CV: 6 
-CV: 7 
-CV: 8 
-CV: 9 
-CV: 10 
-test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    0 tests    test_least_squares.R..........    1 tests [0;32mOK[0m test_least_squares.R..........    2 tests [0;32mOK[0m [0;34m3.3s[0m
-test_relative_influence.R.....    0 tests    test_relative_influence.R.....    0 tests    test_relative_influence.R.....    0 tests    test_relative_influence.R.....    0 tests    test_relative_influence.R.....    0 tests    test_relative_influence.R.....    0 tests    test_relative_influence.R.....    0 tests    Distribution not specified, assuming bernoulli ...
-CV: 1 
-CV: 2 
-CV: 3 
-CV: 4 
-CV: 5 
-test_relative_influence.R.....    0 tests    n.trees not given. Using 1000 trees.
-test_relative_influence.R.....    0 tests    test_relative_influence.R.....    0 tests    test_relative_influence.R.....    0 tests    test_relative_influence.R.....    1 tests [0;32mOK[0m [0;34m4.3s[0m
-All ok, 5 results (12.0s)
-> 
-> 
-> proc.time()
-   user  system elapsed 
- 12.319   0.160  12.480 
